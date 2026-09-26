@@ -11,6 +11,12 @@ import Events from "./pages/public/Events";
 import Gallery from "./pages/public/Gallery";
 import Contact from "./pages/public/Contact";
 import Login from "./pages/public/Login";
+import Register from "./pages/public/Register";
+
+import Dashboard from "./pages/portal/Dashboard";
+import Profile from "./pages/portal/Profile";
+import Resources from "./pages/portal/Resources";
+import Announcements from "./pages/portal/Announcements";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
@@ -20,6 +26,7 @@ export default function App() {
       <Navbar />
       <main className="min-h-[70vh]">
         <Routes>
+          {/* Public */}
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
           <Route path="/executives" element={<Executives />} />
@@ -28,6 +35,15 @@ export default function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Member portal */}
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/resources" element={<ProtectedRoute><Resources /></ProtectedRoute>} />
+          <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
+
+          {/* Admin */}
           <Route
             path="/admin"
             element={

@@ -4,6 +4,10 @@ import { supabase } from "../../lib/supabase";
 import ManageNews from "./ManageNews";
 import ManageEvents from "./ManageEvents";
 import ManageExecutives from "./ManageExecutives";
+import ManageAnnouncements from "./ManageAnnouncements";
+import ManageResources from "./ManageResources";
+import ManageMembers from "./ManageMembers";
+import Messages from "./Messages";
 
 export default function AdminDashboard() {
   const { profile } = useAuth();
@@ -13,6 +17,16 @@ export default function AdminDashboard() {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
+
+  const tabs = [
+    { id: "news", label: "News" },
+    { id: "events", label: "Events" },
+    { id: "executives", label: "Executives" },
+    { id: "announcements", label: "Announcements" },
+    { id: "resources", label: "Resources" },
+    { id: "members", label: "Members" },
+    { id: "messages", label: "Messages" },
+  ];
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-10">
@@ -26,16 +40,12 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      <div className="flex gap-2 mb-6 border-b">
-        {[
-          { id: "news", label: "News" },
-          { id: "events", label: "Events" },
-          { id: "executives", label: "Executives" },
-        ].map((t) => (
+      <div className="flex flex-wrap gap-2 mb-6 border-b overflow-x-auto">
+        {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 font-semibold border-b-2 -mb-px transition ${
+            className={`px-4 py-2 font-semibold border-b-2 -mb-px transition whitespace-nowrap ${
               tab === t.id
                 ? "border-nacos-blue text-nacos-blue"
                 : "border-transparent text-gray-500 hover:text-nacos-blue"
@@ -49,6 +59,10 @@ export default function AdminDashboard() {
       {tab === "news" && <ManageNews />}
       {tab === "events" && <ManageEvents />}
       {tab === "executives" && <ManageExecutives />}
+      {tab === "announcements" && <ManageAnnouncements />}
+      {tab === "resources" && <ManageResources />}
+      {tab === "members" && <ManageMembers />}
+      {tab === "messages" && <Messages />}
     </section>
   );
 }
