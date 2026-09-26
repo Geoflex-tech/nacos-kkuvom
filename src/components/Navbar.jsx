@@ -19,8 +19,13 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-nacos-blue text-white shadow-lg">
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-          <span>NACOS <span className="text-nacos-gold">KKU VOM</span></span>
-        </Link>
+  <img
+  src="/logo.jpeg"
+  alt="NACOS KKU VOM"
+  className="h-10 w-10 object-contain"
+/>
+  <span>NACOS <span className="text-nacos-gold">KKU VOM</span></span>
+</Link>
 
         <ul className="hidden md:flex items-center gap-6 text-sm font-medium">
           {links.map((l) => (

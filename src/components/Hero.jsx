@@ -12,21 +12,30 @@ export default function Hero() {
             Welcome to <span className="text-nacos-gold">NACOS KKU VOM</span> Chapter
           </h1>
           <p className="text-white/85 mb-6 text-lg">
-           Uniting Computer Science students of Karl Kumm University, Vom Campus  building skills, community, and a legacy of excellence.
+            Uniting Computer Science students of Karl Kumm University, Vom Campus — building skills, community, and a legacy of excellence.
           </p>
           <div className="flex flex-wrap gap-3">
-            <Link to="/about" className="bg-nacos-gold text-nacos-blue px-5 py-2.5 rounded-md font-semibold hover:opacity-90">
+            <Link
+              to="/about"
+              className="bg-nacos-gold text-nacos-blue px-5 py-2.5 rounded-md font-semibold hover:opacity-90"
+            >
               Learn More
             </Link>
-            <Link to="/executives" className="border border-white/40 px-5 py-2.5 rounded-md font-semibold hover:bg-white/10">
+            <Link
+              to="/executives"
+              className="border border-white/40 px-5 py-2.5 rounded-md font-semibold hover:bg-white/10"
+            >
               Meet Executives
             </Link>
           </div>
         </div>
+
         <div className="hidden md:flex justify-center">
-          <div className="h-48 w-48 rounded-full bg-white/10 border-4 border-nacos-gold flex items-center justify-center text-6xl font-bold">
-            N
-          </div>
+          <img
+  src="/logo.jpeg"
+  alt="NACOS KKU VOM Logo"
+  className="h-56 w-56 object-contain drop-shadow-2xl"
+/>
         </div>
       </div>
     </section>
