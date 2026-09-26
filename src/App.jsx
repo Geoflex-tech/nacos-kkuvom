@@ -1,21 +1,44 @@
-import { useEffect, useState } from "react";
-import { supabase } from "./lib/supabase";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import Home from "./pages/public/Home";
+import About from "./pages/public/About";
+import Executives from "./pages/public/Executives";
+import News from "./pages/public/News";
+import Events from "./pages/public/Events";
+import Gallery from "./pages/public/Gallery";
+import Contact from "./pages/public/Contact";
+import Login from "./pages/public/Login";
+
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 export default function App() {
-  const [status, setStatus] = useState("Checking...");
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ error }) => {
-      setStatus(error ? "Error: " + error.message : "Supabase connected ✅");
-    });
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-nacos-blue text-white">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">NACOS KKU VOM</h1>
-        <p className="text-nacos-gold text-lg">{status}</p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Navbar />
+      <main className="min-h-[70vh]">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/executives" element={<Executives />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireRole="exec">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </main>
+      <Footer />
+    </BrowserRouter>
   );
 }

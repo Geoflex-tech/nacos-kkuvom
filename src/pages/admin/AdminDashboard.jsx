@@ -1,0 +1,54 @@
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../lib/supabase";
+import ManageNews from "./ManageNews";
+import ManageEvents from "./ManageEvents";
+import ManageExecutives from "./ManageExecutives";
+
+export default function AdminDashboard() {
+  const { profile } = useAuth();
+  const [tab, setTab] = useState("news");
+
+  const logout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
+
+  return (
+    <section className="max-w-6xl mx-auto px-4 py-10">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-nacos-blue">Admin Dashboard</h1>
+          <p className="text-sm text-gray-500">Welcome, {profile?.full_name || profile?.email}</p>
+        </div>
+        <button onClick={logout} className="text-sm text-red-600 font-semibold hover:underline">
+          Logout
+        </button>
+      </div>
+
+      <div className="flex gap-2 mb-6 border-b">
+        {[
+          { id: "news", label: "News" },
+          { id: "events", label: "Events" },
+          { id: "executives", label: "Executives" },
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 font-semibold border-b-2 -mb-px transition ${
+              tab === t.id
+                ? "border-nacos-blue text-nacos-blue"
+                : "border-transparent text-gray-500 hover:text-nacos-blue"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "news" && <ManageNews />}
+      {tab === "events" && <ManageEvents />}
+      {tab === "executives" && <ManageExecutives />}
+    </section>
+  );
+}
