@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ManageGallery from "./ManageGallery";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 import ManageNews from "./ManageNews";
@@ -20,6 +21,7 @@ export default function AdminDashboard() {
 
   const tabs = [
     { id: "news", label: "News" },
+    { id: "gallery", label: "Gallery" },
     { id: "events", label: "Events" },
     { id: "executives", label: "Executives" },
     { id: "announcements", label: "Announcements" },
@@ -57,6 +59,7 @@ export default function AdminDashboard() {
       </div>
 
       {tab === "news" && <ManageNews />}
+      {tab === "gallery" && <ManageGallery />}
       {tab === "events" && <ManageEvents />}
       {tab === "executives" && <ManageExecutives />}
       {tab === "announcements" && <ManageAnnouncements />}
