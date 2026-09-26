@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans text-gray-800 bg-white antialiased;
+}
+
+.btn-primary {
+  @apply bg-nacos-blue text-white px-5 py-2.5 rounded-md font-semibold hover:opacity-90 transition;
+}
+.btn-gold {
+  @apply bg-nacos-gold text-nacos-blue px-5 py-2.5 rounded-md font-semibold hover:opacity-90 transition;
+}
+.btn-outline {
+  @apply border border-nacos-blue text-nacos-blue px-5 py-2.5 rounded-md font-semibold hover:bg-nacos-blue hover:text-white transition;
+}
+.card {
+  @apply bg-white border rounded-xl shadow-sm hover:shadow-md transition;
+}
+.input {
+  @apply w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-nacos-blue/40;
+}
