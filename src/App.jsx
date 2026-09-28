@@ -22,7 +22,8 @@ import Resources from "./pages/portal/Resources";
 import Announcements from "./pages/portal/Announcements";
 import Verify from "./pages/public/Verify";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-
+import MyCertificates from "./pages/portal/MyCertificates";
+import CertificateView from "./pages/portal/CertificateView";
 export default function App() {
   return (
     <BrowserRouter>
@@ -50,6 +51,22 @@ export default function App() {
           <Route path="/resources" element={<ProtectedRoute><Resources /></ProtectedRoute>} />
           <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
+          <Route
+  path="/certificates"
+  element={
+    <ProtectedRoute>
+      <MyCertificates />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/certificates/:id"
+  element={
+    <ProtectedRoute>
+      <CertificateView />
+    </ProtectedRoute>
+  }
+/>
 
           {/* Admin */}
           <Route
