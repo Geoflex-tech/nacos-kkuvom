@@ -1,19 +1,21 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
+import AdminOverview from "./AdminOverview";
+import ManageAdministrations from "./ManageAdministrations";
 import ManageNews from "./ManageNews";
 import ManageEvents from "./ManageEvents";
 import ManageExecutives from "./ManageExecutives";
-import ManageAdministrations from "./ManageAdministrations";
 import ManageAnnouncements from "./ManageAnnouncements";
 import ManageResources from "./ManageResources";
 import ManageGallery from "./ManageGallery";
 import ManageMembers from "./ManageMembers";
-import Messages from "./Messages";
 import ManageCertificates from "./ManageCertificates";
+import Messages from "./Messages";
+
 export default function AdminDashboard() {
   const { profile } = useAuth();
-  const [tab, setTab] = useState("administrations");
+  const [tab, setTab] = useState("overview");
 
   const logout = async () => {
     await supabase.auth.signOut();
@@ -21,17 +23,18 @@ export default function AdminDashboard() {
   };
 
   const tabs = [
-  { id: "administrations", label: "Administrations" },
-  { id: "news", label: "News" },
-  { id: "events", label: "Events" },
-  { id: "executives", label: "Executives" },
-  { id: "announcements", label: "Announcements" },
-  { id: "resources", label: "Resources" },
-  { id: "gallery", label: "Gallery" },
-  { id: "members", label: "Members" },
-  { id: "certificates", label: "Certificates" },
-  { id: "messages", label: "Messages" },
-];
+    { id: "overview", label: "Overview" },
+    { id: "administrations", label: "Administrations" },
+    { id: "news", label: "News" },
+    { id: "events", label: "Events" },
+    { id: "executives", label: "Executives" },
+    { id: "announcements", label: "Announcements" },
+    { id: "resources", label: "Resources" },
+    { id: "gallery", label: "Gallery" },
+    { id: "members", label: "Members" },
+    { id: "certificates", label: "Certificates" },
+    { id: "messages", label: "Messages" },
+  ];
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-10">
@@ -66,6 +69,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
+      {tab === "overview" && <AdminOverview />}
       {tab === "administrations" && <ManageAdministrations />}
       {tab === "news" && <ManageNews />}
       {tab === "events" && <ManageEvents />}
@@ -74,8 +78,8 @@ export default function AdminDashboard() {
       {tab === "resources" && <ManageResources />}
       {tab === "gallery" && <ManageGallery />}
       {tab === "members" && <ManageMembers />}
-      {tab === "messages" && <Messages />}
       {tab === "certificates" && <ManageCertificates />}
+      {tab === "messages" && <Messages />}
     </section>
   );
 }
