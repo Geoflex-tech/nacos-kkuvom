@@ -24,6 +24,7 @@ import Verify from "./pages/public/Verify";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import MyCertificates from "./pages/portal/MyCertificates";
 import CertificateView from "./pages/portal/CertificateView";
+import TechHub from "./pages/public/TechHub";
 export default function App() {
   return (
     <BrowserRouter>
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/history" element={<History />} />
           <Route path="/administration/:id" element={<AdministrationDetail />} />
           <Route path="/verify" element={<Verify />} />
+          <Route path="/tech-hub" element={<TechHub />} />
           {/* Member portal */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

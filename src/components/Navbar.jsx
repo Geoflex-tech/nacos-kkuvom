@@ -12,6 +12,7 @@ const links = [
   { to: "/news", label: "News" },
   { to: "/events", label: "Events" },
   { to: "/gallery", label: "Gallery" },
+  { to: "/tech-hub", label: "Tech Hub" },
   { to: "/contact", label: "Contact" },
 ];
 
