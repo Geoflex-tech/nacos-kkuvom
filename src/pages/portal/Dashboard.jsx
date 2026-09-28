@@ -42,7 +42,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="mt-8 grid md:grid-cols-3 gap-4">
+      <div className="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link to="/profile" className="card p-5 hover:shadow-md">
           <h3 className="font-bold text-nacos-blue">Edit Profile →</h3>
           <p className="text-sm text-gray-500 mt-1">
@@ -61,6 +61,12 @@ export default function Dashboard() {
             Chapter news & updates
           </p>
         </Link>
+        <Link to="/dues" className="card p-5 hover:shadow-md">
+  <h3 className="font-bold text-nacos-blue">Pay Dues →</h3>
+  <p className="text-sm text-gray-500 mt-1">
+    {profile?.dues_paid ? "Paid ✅" : "Click to pay"}
+  </p>
+</Link>
       </div>
     </section>
   );

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NewsDetail from "./pages/public/NewsDetail";
+import Dues from "./pages/portal/Dues";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -30,6 +31,7 @@ export default function App() {
           {/* Public */}
           <Route path="/" element={<Home />} />
           <Route path="/news/:slug" element={<NewsDetail />} />
+          <Route path="/dues" element={<ProtectedRoute><Dues /></ProtectedRoute>} />
           <Route path="/about" element={<About />} />
           <Route path="/executives" element={<Executives />} />
           <Route path="/news" element={<News />} />
