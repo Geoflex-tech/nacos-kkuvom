@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
+import { Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
 export default function ManageExecutives() {
   const [items, setItems] = useState([]);
   const [administrations, setAdministrations] = useState([]);
+  const [editing, setEditing] = useState(null);
   const [uploading, setUploading] = useState(false);
-  const [form, setForm] = useState({
+  const [message, setMessage] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const emptyForm = {
     name: "",
     position: "",
     level: "",
@@ -14,7 +19,9 @@ export default function ManageExecutives() {
     phone: "",
     order_index: 0,
     administration_id: "",
-  });
+  };
+
+  const [form, setForm] = useState(emptyForm);
 
   const load = async () => {
     const { data } = await supabase
@@ -25,11 +32,10 @@ export default function ManageExecutives() {
 
     const { data: admins } = await supabase
       .from("administrations")
-      .select("id, session_label, administration_name")
+      .select("id, session_label, administration_name, is_current")
       .order("start_date", { ascending: false });
     setAdministrations(admins || []);
 
-    // Default to the current administration
     if (admins && admins.length > 0 && !form.administration_id) {
       const current = admins.find((a) => a.is_current) || admins[0];
       setForm((f) => ({ ...f, administration_id: current.id }));
@@ -40,17 +46,24 @@ export default function ManageExecutives() {
     load();
   }, []);
 
+  const resetForm = () => {
+    const current = administrations.find((a) => a.is_current) || administrations[0];
+    setForm({ ...emptyForm, administration_id: current?.id || "" });
+    setEditing(null);
+    setMessage("");
+  };
+
   const uploadImage = async (file) => {
     if (!file) return null;
     setUploading(true);
     const ext = file.name.split(".").pop();
     const fileName = `exec-${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
+    const { error } = await supabase.storage
       .from("avatars")
-      .upload(fileName, file);
+      .upload(fileName, file, { upsert: true });
     setUploading(false);
-    if (uploadError) {
-      alert("Upload failed: " + uploadError.message);
+    if (error) {
+      alert("Upload failed: " + error.message);
       return null;
     }
     const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
@@ -63,25 +76,51 @@ export default function ManageExecutives() {
     if (url) setForm({ ...form, image_url: url });
   };
 
-  const add = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
+    setSaving(true);
+    setMessage("");
+
     const payload = {
       ...form,
+      order_index: Number(form.order_index) || 0,
       administration_id: form.administration_id || null,
     };
-    const { error } = await supabase.from("executives").insert([payload]);
-    if (error) return alert(error.message);
+
+    if (editing) {
+      const { error } = await supabase
+        .from("executives")
+        .update(payload)
+        .eq("id", editing);
+      setSaving(false);
+      if (error) return setMessage("Error: " + error.message);
+      setMessage("Executive updated ✅");
+      resetForm();
+      load();
+    } else {
+      const { error } = await supabase.from("executives").insert([payload]);
+      setSaving(false);
+      if (error) return setMessage("Error: " + error.message);
+      setMessage("Executive added ✅");
+      resetForm();
+      load();
+    }
+  };
+
+  const edit = (item) => {
+    setEditing(item.id);
     setForm({
-      name: "",
-      position: "",
-      level: "",
-      image_url: "",
-      email: "",
-      phone: "",
-      order_index: 0,
-      administration_id: form.administration_id,
+      name: item.name || "",
+      position: item.position || "",
+      level: item.level || "",
+      image_url: item.image_url || "",
+      email: item.email || "",
+      phone: item.phone || "",
+      order_index: item.order_index || 0,
+      administration_id: item.administration_id || "",
     });
-    load();
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const remove = async (id) => {
@@ -94,7 +133,22 @@ export default function ManageExecutives() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={add} className="card p-5 grid md:grid-cols-2 gap-3">
+      <form onSubmit={submit} className="card p-5 grid md:grid-cols-2 gap-3">
+        <div className="md:col-span-2 flex items-center justify-between">
+          <h3 className="font-bold text-nacos-blue">
+            {editing ? "Edit Executive" : "Add Executive"}
+          </h3>
+          {editing && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="text-xs text-red-600 font-semibold flex items-center gap-1"
+            >
+              <X size={14} /> Cancel editing
+            </button>
+          )}
+        </div>
+
         <input
           className="input"
           placeholder="Full name"
@@ -145,13 +199,14 @@ export default function ManageExecutives() {
           {administrations.map((a) => (
             <option key={a.id} value={a.id}>
               {a.session_label} — {a.administration_name}
+              {a.is_current ? " (current)" : ""}
             </option>
           ))}
         </select>
 
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Photo
+            Photo {editing ? "" : "(recommended)"}
           </label>
           <div className="flex items-center gap-3">
             {form.image_url && (
@@ -167,17 +222,33 @@ export default function ManageExecutives() {
               onChange={handleFileChange}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-nacos-blue file:text-white file:font-semibold hover:file:opacity-90"
             />
-            {uploading && <span className="text-xs text-gray-500">Uploading...</span>}
+            {uploading && (
+              <span className="text-xs text-gray-500">Uploading...</span>
+            )}
           </div>
         </div>
 
         <button
           type="submit"
-          disabled={uploading}
+          disabled={uploading || saving}
           className="btn-primary md:col-span-2"
         >
-          {uploading ? "Uploading..." : "Add Executive"}
+          {saving
+            ? "Saving..."
+            : editing
+            ? "Save Changes"
+            : "Add Executive"}
         </button>
+
+        {message && (
+          <p
+            className={`md:col-span-2 text-sm ${
+              message.startsWith("Error") ? "text-red-500" : "text-green-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
       </form>
 
       <div className="space-y-2">
@@ -187,31 +258,48 @@ export default function ManageExecutives() {
           items.map((x) => (
             <div
               key={x.id}
-              className="card p-3 flex items-center justify-between"
+              className={`card p-3 flex items-center justify-between gap-4 ${
+                editing === x.id ? "ring-2 ring-nacos-blue" : ""
+              }`}
             >
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 min-w-0">
                 {x.image_url ? (
                   <img
                     src={x.image_url}
                     alt={x.name}
-                    className="h-12 w-12 rounded-full object-cover border-2 border-nacos-gold"
+                    className="h-12 w-12 rounded-full object-cover border-2 border-nacos-gold shrink-0"
                   />
                 ) : (
-                  <div className="h-12 w-12 rounded-full bg-nacos-blue text-white flex items-center justify-center font-bold">
+                  <div className="h-12 w-12 rounded-full bg-nacos-blue text-white flex items-center justify-center font-bold shrink-0">
                     {x.name?.[0]}
                   </div>
                 )}
-                <div>
-                  <p className="font-medium text-nacos-blue">{x.name}</p>
-                  <p className="text-xs text-gray-500">{x.position}</p>
+                <div className="min-w-0">
+                  <p className="font-medium text-nacos-blue truncate">
+                    {x.name}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate">
+                    {x.position}
+                    {x.level ? ` · ${x.level}` : ""}
+                  </p>
                 </div>
               </div>
-              <button
-                onClick={() => remove(x.id)}
-                className="text-red-600 text-sm font-semibold"
-              >
-                Delete
-              </button>
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={() => edit(x)}
+                  className="text-nacos-blue hover:text-nacos-green transition"
+                  title="Edit"
+                >
+                  <Pencil size={16} />
+                </button>
+                <button
+                  onClick={() => remove(x.id)}
+                  className="text-red-600 hover:text-red-700 transition"
+                  title="Delete"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             </div>
           ))
         )}
