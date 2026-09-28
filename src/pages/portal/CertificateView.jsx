@@ -25,7 +25,6 @@ export default function CertificateView() {
         return;
       }
 
-      // Authorization: only owner or issuer can view full certificate
       const isOwner = c.member_id === session?.user?.id;
       const isIssuer = hasPermission("certificates.issue");
 
@@ -94,16 +93,32 @@ export default function CertificateView() {
         <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-nacos-blue" />
 
         <div className="text-center">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <img src="/logo.jpeg" alt="NACOS" className="h-12 w-12 object-contain" />
+          {/* Logos — equal height, vertically centered */}
+          <div className="flex items-center justify-center gap-8 md:gap-14 mb-5">
+            <div className="h-24 w-24 md:h-28 md:w-28 flex items-center justify-center">
+              <img
+                src="/logo.jpeg"
+                alt="NACOS KKU VOM"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+            <div className="h-24 w-24 md:h-28 md:w-28 flex items-center justify-center">
+              <img
+                src="/kku-logo.jpeg"
+                alt="Karl Kumm University"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
           </div>
-          <p className="text-sm uppercase tracking-[0.2em] text-gray-500">
-            National Association of Computing Students
+
+          <p className="text-sm uppercase tracking-[0.2em] text-gray-600 font-semibold">
+            Nigeria Association of Computing Students
           </p>
           <p className="text-xs uppercase tracking-widest text-gray-400 mt-1">
             Karl Kumm University, Vom Chapter
           </p>
 
+          {/* Certificate title */}
           <div className="my-8">
             <p className="text-xs uppercase tracking-[0.3em] text-gray-400 mb-2">
               Certificate of
