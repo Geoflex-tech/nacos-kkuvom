@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NewsDetail from "./pages/public/NewsDetail";
+import History from "./pages/public/History";
+import AdministrationDetail from "./pages/public/AdministrationDetail";
 import Dues from "./pages/portal/Dues";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -47,6 +49,8 @@ export default function App() {
           <Route path="/administration/:id" element={<AdministrationDetail />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/tech-hub" element={<TechHub />} />
+          <Route path="/history" element={<History />} />
+         <Route path="/history/:id" element={<AdministrationDetail />} />
           {/* Member portal */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
