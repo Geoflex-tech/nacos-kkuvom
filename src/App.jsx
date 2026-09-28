@@ -4,7 +4,7 @@ import Dues from "./pages/portal/Dues";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import NotFound from "./pages/public/NotFound";
 import Home from "./pages/public/Home";
 import About from "./pages/public/About";
 import Executives from "./pages/public/Executives";
@@ -48,6 +48,7 @@ export default function App() {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/resources" element={<ProtectedRoute><Resources /></ProtectedRoute>} />
           <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
+          <Route path="*" element={<NotFound />} />
 
           {/* Admin */}
           <Route

@@ -12,6 +12,24 @@ export default function About() {
           </p>
         </div>
       </section>
+      <div>
+  <h2 className="text-2xl font-bold text-nacos-blue mb-4">Where We Are</h2>
+  <div className="card p-6 space-y-2">
+    <p className="text-gray-700">
+      <span className="font-semibold text-nacos-blue">Location:</span>{" "}
+      Karl Kumm University, Vom,Jos South Plateau State, Nigeria
+    </p>
+    <p className="text-gray-700">
+      <span className="font-semibold text-nacos-blue">Email:</span>{" "}
+      <a href="mailto:nacoskkuvom@gmail.com" className="text-nacos-green hover:underline">
+        nacoskkuvom@gmail.com
+      </a>
+    </p>
+    <p className="text-gray-700">
+      <span className="font-semibold text-nacos-blue">Phone:</span> 0908 485 0109
+    </p>
+  </div>
+</div>
 
       <section className="max-w-4xl mx-auto px-4 py-16 space-y-12">
         <div>
