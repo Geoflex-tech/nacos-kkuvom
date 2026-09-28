@@ -16,6 +16,7 @@ export default function Home() {
   const [news, setNews] = useState([]);
   const [events, setEvents] = useState([]);
   const [execs, setExecs] = useState([]);
+  const [president, setPresident] = useState(null);
   const [stats, setStats] = useState({
     members: 0,
     events: 0,
@@ -25,36 +26,50 @@ export default function Home() {
 
   useEffect(() => {
     (async () => {
-      const [newsRes, eventsRes, execsRes, membersRes, certsRes, resourcesRes] =
-        await Promise.all([
-          supabase
-            .from("news")
-            .select("*")
-            .order("published_at", { ascending: false })
-            .limit(3),
-          supabase
-            .from("events")
-            .select("*")
-            .gte("event_date", new Date().toISOString())
-            .order("event_date", { ascending: true })
-            .limit(3),
-          supabase
-            .from("executives")
-            .select("*")
-            .order("order_index")
-            .limit(4),
-          supabase.from("profiles").select("*", { count: "exact", head: true }),
-          supabase
-            .from("certificates")
-            .select("*", { count: "exact", head: true }),
-          supabase
-            .from("tech_hub_resources")
-            .select("*", { count: "exact", head: true }),
-        ]);
+      const [
+        newsRes,
+        eventsRes,
+        execsRes,
+        membersRes,
+        certsRes,
+        resourcesRes,
+        presidentRes,
+      ] = await Promise.all([
+        supabase
+          .from("news")
+          .select("*")
+          .order("published_at", { ascending: false })
+          .limit(3),
+        supabase
+          .from("events")
+          .select("*")
+          .gte("event_date", new Date().toISOString())
+          .order("event_date", { ascending: true })
+          .limit(3),
+        supabase
+          .from("executives")
+          .select("*")
+          .order("order_index")
+          .limit(4),
+        supabase.from("profiles").select("*", { count: "exact", head: true }),
+        supabase
+          .from("certificates")
+          .select("*", { count: "exact", head: true }),
+        supabase
+          .from("tech_hub_resources")
+          .select("*", { count: "exact", head: true }),
+        supabase
+          .from("executives")
+          .select("*")
+          .or("position.ilike.%president%,position.ilike.%President%")
+          .order("order_index")
+          .limit(1),
+      ]);
 
       setNews(newsRes.data || []);
       setEvents(eventsRes.data || []);
       setExecs(execsRes.data || []);
+      setPresident(presidentRes.data?.[0] || null);
       setStats({
         members: membersRes.count || 0,
         events: eventsRes.data?.length || 0,
@@ -63,6 +78,12 @@ export default function Home() {
       });
     })();
   }, []);
+
+  // Fallback if no president exec is found
+  const presidentName = president?.name || "Ezekiel Geoffrey Izam";
+  const presidentPosition = president?.position
+    ? `${president.position}, NACOS KKU VOM Chapter`
+    : "Acting President, NACOS KKU VOM Chapter";
 
   return (
     <>
@@ -106,9 +127,17 @@ export default function Home() {
             <div className="card-flat p-8 md:p-10">
               <div className="flex flex-col md:flex-row gap-6 items-start">
                 <div className="shrink-0 mx-auto md:mx-0">
-                  <div className="h-24 w-24 rounded-full bg-gradient-to-br from-nacos-blue to-nacos-green flex items-center justify-center text-white text-3xl font-bold border-4 border-nacos-gold">
-                    E
-                  </div>
+                  {president?.image_url ? (
+                    <img
+                      src={president.image_url}
+                      alt={presidentName}
+                      className="h-28 w-28 rounded-full object-cover border-4 border-nacos-gold shadow-card"
+                    />
+                  ) : (
+                    <div className="h-28 w-28 rounded-full bg-gradient-to-br from-nacos-blue to-nacos-green flex items-center justify-center text-white text-4xl font-bold border-4 border-nacos-gold">
+                      {presidentName[0].toUpperCase()}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 text-center md:text-left">
                   <p className="text-gray-700 leading-relaxed mb-4">
@@ -129,10 +158,10 @@ export default function Home() {
                   </p>
                   <div>
                     <p className="font-bold text-nacos-blue">
-                      Ezekiel Geoffrey Izam
+                      {presidentName}
                     </p>
                     <p className="text-sm text-gray-500">
-                      Acting President, NACOS KKU VOM Chapter
+                      {presidentPosition}
                     </p>
                   </div>
                 </div>
