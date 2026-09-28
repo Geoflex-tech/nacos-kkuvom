@@ -4,15 +4,15 @@ export default {
     extend: {
       colors: {
         nacos: {
-          blue: "#0B3D91",
-          "blue-light": "#1E50B5",
-          "blue-dark": "#082B6B",
-          green: "#1B7A3D",
-          "green-light": "#229B4D",
-          "green-dark": "#125A2C",
-          gold: "#F5B301",
-          "gold-light": "#FFC833",
-          "gold-dark": "#D49A00",
+          blue: "#1E40AF",
+          "blue-light": "#3B82F6",
+          "blue-dark": "#1E3A8A",
+          green: "#059669",
+          "green-light": "#10B981",
+          "green-dark": "#047857",
+          gold: "#F59E0B",
+          "gold-light": "#FBBF24",
+          "gold-dark": "#D97706",
         },
       },
       fontFamily: {
@@ -21,9 +21,9 @@ export default {
       },
       boxShadow: {
         soft: "0 2px 8px rgba(0,0,0,0.04)",
-        card: "0 4px 16px rgba(11,61,145,0.06)",
-        "card-hover": "0 12px 32px rgba(11,61,145,0.12)",
-        glow: "0 0 24px rgba(245,179,1,0.35)",
+        card: "0 4px 16px rgba(30,64,175,0.06)",
+        "card-hover": "0 12px 32px rgba(30,64,175,0.12)",
+        glow: "0 0 24px rgba(245,158,11,0.35)",
       },
       animation: {
         "fade-in": "fadeIn 0.6s ease-out",

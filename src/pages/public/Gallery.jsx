@@ -20,7 +20,7 @@ export default function Gallery() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue-dark to-nacos-green">
+      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/10 blur-3xl animate-float-slow" />
           <div className="absolute -bottom-32 -right-24 w-96 h-96 rounded-full bg-nacos-green-light/20 blur-3xl animate-float" />

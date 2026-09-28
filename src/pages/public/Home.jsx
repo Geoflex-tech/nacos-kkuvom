@@ -347,7 +347,7 @@ export default function Home() {
       {/* Tech Hub teaser */}
       <section className="bg-white">
         <div className="section">
-          <div className="rounded-3xl bg-gradient-to-br from-nacos-blue via-nacos-blue-dark to-nacos-green p-8 md:p-12 text-white relative overflow-hidden">
+          <div className="rounded-3xl bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green p-8 md:p-12 text-white relative overflow-hidden">
             <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-nacos-gold/20 blur-3xl" />
             <div className="relative grid md:grid-cols-[1fr_auto] items-center gap-6">
               <div>

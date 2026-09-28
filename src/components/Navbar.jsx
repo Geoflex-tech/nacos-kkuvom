@@ -37,7 +37,7 @@ export default function Navbar() {
   const dashboardLabel = isExec ? "Admin" : "Dashboard";
 
   return (
-    <header className="sticky top-0 z-50 bg-nacos-blue text-white shadow-lg">
+   <header className="sticky top-0 z-50 bg-nacos-blue/95 backdrop-blur-md text-white shadow-sm">
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-bold text-lg shrink-0">

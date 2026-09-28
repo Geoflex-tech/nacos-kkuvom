@@ -121,7 +121,7 @@ export default function AdministrationDetail() {
   return (
     <>
       {/* Hero with cover image */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue-dark to-nacos-green">
+      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
         {admin.cover_image && (
           <div className="absolute inset-0">
             <img
@@ -129,7 +129,7 @@ export default function AdministrationDetail() {
               alt=""
               className="w-full h-full object-cover opacity-25"
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-nacos-blue/80 via-nacos-blue-dark/80 to-nacos-green/80" />
+            <div className="absolute inset-0 bg-gradient-to-br from-nacos-blue/80 via-nacos-blue/80 to-nacos-green/80" />
           </div>
         )}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -431,7 +431,7 @@ export default function AdministrationDetail() {
               Legacy Note
             </h2>
 
-            <div className="relative bg-gradient-to-br from-nacos-blue via-nacos-blue-dark to-nacos-green text-white rounded-3xl p-8 md:p-10 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green text-white rounded-3xl p-8 md:p-10 overflow-hidden">
               <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-nacos-gold/20 blur-3xl" />
               <Quote
                 size={48}
