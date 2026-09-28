@@ -80,6 +80,7 @@ export default function AdminDashboard() {
       {tab === "members" && <ManageMembers />}
       {tab === "certificates" && <ManageCertificates />}
       {tab === "messages" && <Messages />}
+      {tab === "techhub" && <ManageTechHub />}
     </section>
   );
 }
