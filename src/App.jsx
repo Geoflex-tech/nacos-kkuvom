@@ -20,7 +20,7 @@ import Dashboard from "./pages/portal/Dashboard";
 import Profile from "./pages/portal/Profile";
 import Resources from "./pages/portal/Resources";
 import Announcements from "./pages/portal/Announcements";
-
+import Verify from "./pages/public/Verify";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
 export default function App() {
@@ -43,6 +43,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/history" element={<History />} />
           <Route path="/administration/:id" element={<AdministrationDetail />} />
+          <Route path="/verify" element={<Verify />} />
           {/* Member portal */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
