@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext();
@@ -8,6 +8,26 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const loadUser = useCallback(async (id) => {
+    const { data: profileRow } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", id)
+      .single();
+    setProfile(profileRow);
+
+    if (profileRow?.role) {
+      const { data: perms } = await supabase
+        .from("role_permissions")
+        .select("permission_code")
+        .eq("role", profileRow.role);
+      setPermissions((perms || []).map((p) => p.permission_code));
+    } else {
+      setPermissions([]);
+    }
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -27,34 +47,18 @@ export function AuthProvider({ children }) {
     });
 
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [loadUser]);
 
-  const loadUser = async (id) => {
-    // Load profile
-    const { data: profileRow } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", id)
-      .single();
-    setProfile(profileRow);
-
-    // Load permissions for the user's role
-    if (profileRow?.role) {
-      const { data: perms } = await supabase
-        .from("role_permissions")
-        .select("permission_code")
-        .eq("role", profileRow.role);
-      setPermissions((perms || []).map((p) => p.permission_code));
-    } else {
-      setPermissions([]);
-    }
-
-    setLoading(false);
-  };
+  const refreshProfile = useCallback(async () => {
+    if (session?.user?.id) await loadUser(session.user.id);
+  }, [session, loadUser]);
 
   const hasPermission = (code) => permissions.includes(code);
 
-  const isAdmin = profile?.role === "admin" || profile?.role === "president" || profile?.role === "super_admin";
+  const isAdmin =
+    profile?.role === "admin" ||
+    profile?.role === "president" ||
+    profile?.role === "super_admin";
   const isExec = permissions.length > 0;
   const isMember = !!profile;
 
@@ -69,6 +73,7 @@ export function AuthProvider({ children }) {
         isAdmin,
         isExec,
         isMember,
+        refreshProfile,
       }}
     >
       {children}

@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { Camera, X, Save } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Profile() {
-  const { profile, session } = useAuth();
+  const { profile, session, refreshProfile } = useAuth();
   const [form, setForm] = useState({
     full_name: "",
     matric_no: "",
@@ -11,7 +12,10 @@ export default function Profile() {
     phone: "",
     department: "Computer Science",
   });
+  const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -23,69 +27,274 @@ export default function Profile() {
         phone: profile.phone || "",
         department: profile.department || "Computer Science",
       });
+      setAvatarPreview(profile.avatar_url || null);
     }
   }, [profile]);
+
+  const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+
+  const handleAvatarPick = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setMessage("Error: Please choose an image file.");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage("Error: Photo must be under 2 MB.");
+      return;
+    }
+
+    setAvatarFile(file);
+    setAvatarPreview(URL.createObjectURL(file));
+    setMessage("");
+  };
+
+  const cancelAvatarChange = () => {
+    setAvatarFile(null);
+    setAvatarPreview(profile?.avatar_url || null);
+  };
 
   const save = async (e) => {
     e.preventDefault();
     setSaving(true);
     setMessage("");
-    const { error } = await supabase
+
+    let newAvatarUrl = profile?.avatar_url || null;
+
+    // Upload new avatar if user picked one
+    if (avatarFile) {
+      setUploading(true);
+      const ext = avatarFile.name.split(".").pop().toLowerCase();
+      const fileName = `member-${session.user.id}-${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(fileName, avatarFile, { upsert: true });
+
+      setUploading(false);
+
+      if (uploadError) {
+        setMessage("Photo upload failed: " + uploadError.message);
+        setSaving(false);
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(fileName);
+      newAvatarUrl = data.publicUrl;
+    }
+
+    const { error: profileError } = await supabase
       .from("profiles")
-      .update(form)
+      .update({
+        ...form,
+        avatar_url: newAvatarUrl,
+      })
       .eq("id", session.user.id);
+
     setSaving(false);
-    setMessage(error ? "Error: " + error.message : "Profile updated ✅");
+
+    if (profileError) {
+      setMessage("Error: " + profileError.message);
+      return;
+    }
+
+    setMessage("Profile updated ✅");
+    setAvatarFile(null);
+    await refreshProfile();
   };
 
-  const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+  const initials = (form.full_name || profile?.email || "M")
+    .split(" ")
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
-    <section className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-nacos-blue mb-2">My Profile</h1>
-      <p className="text-gray-500 mb-6">Update your personal information</p>
+    <section className="max-w-3xl mx-auto px-4 py-10">
+      <div className="mb-8">
+        <p className="section-eyebrow">Account</p>
+        <h1 className="section-title text-2xl md:text-3xl">My Profile</h1>
+        <p className="text-gray-500 mt-2">
+          Manage your personal information and profile photo
+        </p>
+      </div>
 
-      <form onSubmit={save} className="card p-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-          <input className="input" value={form.full_name} onChange={update("full_name")} required />
+      <form onSubmit={save} className="space-y-6">
+        {/* Avatar section */}
+        <div className="card-flat p-6">
+          <div className="flex flex-col sm:flex-row items-center gap-6">
+            {/* Avatar display */}
+            <div className="relative">
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt="Avatar"
+                  className="h-28 w-28 rounded-full object-cover border-4 border-nacos-gold shadow-card"
+                />
+              ) : (
+                <div className="h-28 w-28 rounded-full bg-gradient-to-br from-nacos-blue to-nacos-green text-white flex items-center justify-center text-4xl font-bold border-4 border-nacos-gold">
+                  {initials}
+                </div>
+              )}
+
+              {/* Upload camera button */}
+              <label className="absolute bottom-0 right-0 h-9 w-9 rounded-full bg-nacos-blue text-white flex items-center justify-center cursor-pointer hover:bg-nacos-blue-light transition shadow-md border-2 border-white">
+                <Camera size={16} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarPick}
+                  className="hidden"
+                />
+              </label>
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 text-center sm:text-left">
+              <p className="font-bold text-nacos-blue text-lg">
+                {form.full_name || "Member"}
+              </p>
+              <p className="text-sm text-gray-500">{profile?.email}</p>
+              <p className="text-xs text-gray-400 mt-1">
+                {profile?.matric_no || "No matric yet"}
+              </p>
+
+              <div className="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
+                <label className="text-xs text-nacos-blue font-semibold hover:underline cursor-pointer">
+                  Change photo
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarPick}
+                    className="hidden"
+                  />
+                </label>
+                {avatarFile && (
+                  <button
+                    type="button"
+                    onClick={cancelAvatarChange}
+                    className="text-xs text-red-600 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    <X size={12} /> Cancel
+                  </button>
+                )}
+              </div>
+
+              <p className="text-xs text-gray-400 mt-2">
+                JPG or PNG · Max 2 MB
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Matric Number</label>
-          <input className="input" value={form.matric_no} onChange={update("matric_no")} required />
-        </div>
+        {/* Info fields */}
+        <div className="card-flat p-6 space-y-4">
+          <h2 className="font-bold text-nacos-blue">Personal Information</h2>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Level</label>
-          <select className="input" value={form.level} onChange={update("level")} required>
-            <option value="">Select level</option>
-            <option value="100L">100L</option>
-            <option value="200L">200L</option>
-            <option value="300L">300L</option>
-            <option value="400L">400L</option>
-            <option value="500L">500L</option>
-          </select>
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Full Name
+            </label>
+            <input
+              className="input"
+              value={form.full_name}
+              onChange={update("full_name")}
+              required
+            />
+          </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-          <input className="input" value={form.phone} onChange={update("phone")} required />
-        </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Matric Number
+              </label>
+              <input
+                className="input"
+                value={form.matric_no}
+                onChange={update("matric_no")}
+                required
+              />
+            </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
-          <input className="input" value={form.department} onChange={update("department")} />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Level
+              </label>
+              <select
+                className="input"
+                value={form.level}
+                onChange={update("level")}
+                required
+              >
+                <option value="">Select level</option>
+                <option value="100L">100L</option>
+                <option value="200L">200L</option>
+                <option value="300L">300L</option>
+                <option value="400L">400L</option>
+                <option value="500L">500L</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone
+            </label>
+            <input
+              className="input"
+              value={form.phone}
+              onChange={update("phone")}
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Department
+            </label>
+            <input
+              className="input bg-gray-50 cursor-not-allowed"
+              value={form.department}
+              disabled
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Department is fixed to Computer Science
+            </p>
+          </div>
         </div>
 
         {message && (
-          <p className={message.startsWith("Error") ? "text-red-500 text-sm" : "text-green-600 text-sm"}>
+          <p
+            className={`text-sm rounded-md p-3 ${
+              message.startsWith("Error")
+                ? "text-red-600 bg-red-50 border border-red-100"
+                : "text-green-600 bg-green-50 border border-green-100"
+            }`}
+          >
             {message}
           </p>
         )}
 
-        <button type="submit" disabled={saving} className="btn-primary w-full">
-          {saving ? "Saving..." : "Save Changes"}
+        <button
+          type="submit"
+          disabled={saving || uploading}
+          className="btn-primary w-full py-3"
+        >
+          {uploading ? (
+            "Uploading photo..."
+          ) : saving ? (
+            "Saving..."
+          ) : (
+            <>
+              <Save size={16} />
+              Save Changes
+            </>
+          )}
         </button>
       </form>
     </section>
