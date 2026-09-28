@@ -18,12 +18,13 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold mb-3">Quick Links</h4>
           <ul className="text-sm space-y-2 text-white/80">
-            <li><Link to="/about" className="hover:text-nacos-gold">About</Link></li>
-            <li><Link to="/executives" className="hover:text-nacos-gold">Executives</Link></li>
-            <li><Link to="/news" className="hover:text-nacos-gold">News</Link></li>
-            <li><Link to="/events" className="hover:text-nacos-gold">Events</Link></li>
-            <li><Link to="/contact" className="hover:text-nacos-gold">Contact</Link></li>
-          </ul>
+  <li><Link to="/about" className="hover:text-nacos-gold">About</Link></li>
+  <li><Link to="/executives" className="hover:text-nacos-gold">Executives</Link></li>
+  <li><Link to="/history" className="hover:text-nacos-gold">History</Link></li>
+  <li><Link to="/news" className="hover:text-nacos-gold">News</Link></li>
+  <li><Link to="/events" className="hover:text-nacos-gold">Events</Link></li>
+  <li><Link to="/contact" className="hover:text-nacos-gold">Contact</Link></li>
+</ul>
         </div>
 
         <div>
