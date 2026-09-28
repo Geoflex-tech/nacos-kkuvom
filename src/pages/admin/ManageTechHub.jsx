@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pencil, Trash2, X, ExternalLink } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
 const CATEGORIES = [
@@ -30,10 +31,12 @@ const LEVELS = ["beginner", "intermediate", "advanced", "all"];
 
 export default function ManageTechHub() {
   const [items, setItems] = useState([]);
+  const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({
+
+  const emptyForm = {
     title: "",
     description: "",
     category: "programming",
@@ -41,7 +44,8 @@ export default function ManageTechHub() {
     url: "",
     level: "beginner",
     tags: "",
-  });
+  };
+  const [form, setForm] = useState(emptyForm);
 
   const load = async () => {
     const { data } = await supabase
@@ -55,7 +59,13 @@ export default function ManageTechHub() {
     load();
   }, []);
 
-  const add = async (e) => {
+  const resetForm = () => {
+    setForm(emptyForm);
+    setEditing(null);
+    setMessage("");
+  };
+
+  const submit = async (e) => {
     e.preventDefault();
     setSaving(true);
     setMessage("");
@@ -70,24 +80,41 @@ export default function ManageTechHub() {
         : [],
     };
 
-    const { error } = await supabase
-      .from("tech_hub_resources")
-      .insert([payload]);
-    setSaving(false);
+    if (editing) {
+      const { error } = await supabase
+        .from("tech_hub_resources")
+        .update(payload)
+        .eq("id", editing);
+      setSaving(false);
+      if (error) return setMessage("Error: " + error.message);
+      setMessage("Resource updated ✅");
+      resetForm();
+      load();
+    } else {
+      const { error } = await supabase
+        .from("tech_hub_resources")
+        .insert([payload]);
+      setSaving(false);
+      if (error) return setMessage("Error: " + error.message);
+      setMessage("Resource added ✅");
+      resetForm();
+      load();
+    }
+  };
 
-    if (error) return setMessage("Error: " + error.message);
-
-    setMessage("Resource added ✅");
+  const edit = (item) => {
+    setEditing(item.id);
     setForm({
-      title: "",
-      description: "",
-      category: "programming",
-      resource_type: "course",
-      url: "",
-      level: "beginner",
-      tags: "",
+      title: item.title || "",
+      description: item.description || "",
+      category: item.category || "programming",
+      resource_type: item.resource_type || "course",
+      url: item.url || "",
+      level: item.level || "beginner",
+      tags: (item.tags || []).join(", "),
     });
-    load();
+    setMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const remove = async (id) => {
@@ -110,10 +137,21 @@ export default function ManageTechHub() {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={add} className="card p-5 grid md:grid-cols-2 gap-3">
-        <h3 className="md:col-span-2 font-bold text-nacos-blue">
-          Add Tech Hub Resource
-        </h3>
+      <form onSubmit={submit} className="card p-5 grid md:grid-cols-2 gap-3">
+        <div className="md:col-span-2 flex items-center justify-between">
+          <h3 className="font-bold text-nacos-blue">
+            {editing ? "Edit Tech Hub Resource" : "Add Tech Hub Resource"}
+          </h3>
+          {editing && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="text-xs text-red-600 font-semibold flex items-center gap-1"
+            >
+              <X size={14} /> Cancel editing
+            </button>
+          )}
+        </div>
 
         <input
           className="input md:col-span-2"
@@ -164,11 +202,7 @@ export default function ManageTechHub() {
           ))}
         </select>
 
-        <select
-          className="input"
-          value={form.level}
-          onChange={update("level")}
-        >
+        <select className="input" value={form.level} onChange={update("level")}>
           {LEVELS.map((l) => (
             <option key={l} value={l}>
               {l}
@@ -188,7 +222,11 @@ export default function ManageTechHub() {
           disabled={saving}
           className="btn-primary md:col-span-2"
         >
-          {saving ? "Adding..." : "Add Resource"}
+          {saving
+            ? "Saving..."
+            : editing
+            ? "Save Changes"
+            : "Add Resource"}
         </button>
 
         {message && (
@@ -227,20 +265,22 @@ export default function ManageTechHub() {
             filtered.map((r) => (
               <div
                 key={r.id}
-                className="card p-4 flex items-start justify-between gap-4"
+                className={`card p-4 flex items-start justify-between gap-4 ${
+                  editing === r.id ? "ring-2 ring-nacos-blue" : ""
+                }`}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="text-xs bg-nacos-green/10 text-nacos-green font-semibold px-2 py-0.5 rounded">
+                    <span className="badge bg-nacos-green/10 text-nacos-green">
                       {r.category}
                     </span>
                     {r.level && (
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                      <span className="badge bg-gray-100 text-gray-600">
                         {r.level}
                       </span>
                     )}
                     {r.resource_type && (
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">
+                      <span className="badge bg-gray-100 text-gray-600">
                         {r.resource_type}
                       </span>
                     )}
@@ -252,17 +292,28 @@ export default function ManageTechHub() {
                     href={r.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-nacos-green hover:underline truncate block"
+                    className="text-xs text-nacos-green hover:underline truncate flex items-center gap-1"
                   >
-                    {r.url}
+                    {r.url} <ExternalLink size={10} />
                   </a>
                 </div>
-                <button
-                  onClick={() => remove(r.id)}
-                  className="text-xs text-red-600 font-semibold hover:underline shrink-0"
-                >
-                  Delete
-                </button>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={() => edit(r)}
+                    className="text-nacos-blue hover:text-nacos-green transition"
+                    title="Edit"
+                  >
+                    <Pencil size={16} />
+                  </button>
+                  <button
+                    onClick={() => remove(r.id)}
+                    className="text-red-600 hover:text-red-700 transition"
+                    title="Delete"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             ))
           )}
