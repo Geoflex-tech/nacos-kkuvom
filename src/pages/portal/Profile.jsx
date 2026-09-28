@@ -3,7 +3,7 @@ import { Camera, X, Save } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { compressImage } from "../../utils/compressImage";
-
+import ChangePasswordCard from "../../components/ChangePasswordCard";
 export default function Profile() {
   const { profile, session, refreshProfile } = useAuth();
   const [form, setForm] = useState({
@@ -235,7 +235,7 @@ export default function Profile() {
                 <option value="200L">200L</option>
                 <option value="300L">300L</option>
                 <option value="400L">400L</option>
-                <option value="500L">500L</option>
+            
               </select>
             </div>
           </div>
@@ -298,6 +298,10 @@ export default function Profile() {
           )}
         </button>
       </form>
+      {/* Password change section */}
+<div className="mt-6">
+  <ChangePasswordCard />
+</div>
     </section>
   );
 }
