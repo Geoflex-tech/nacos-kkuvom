@@ -10,7 +10,7 @@ import ManageResources from "./ManageResources";
 import ManageGallery from "./ManageGallery";
 import ManageMembers from "./ManageMembers";
 import Messages from "./Messages";
-
+import ManageCertificates from "./ManageCertificates";
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const [tab, setTab] = useState("administrations");
@@ -21,16 +21,17 @@ export default function AdminDashboard() {
   };
 
   const tabs = [
-    { id: "administrations", label: "Administrations" },
-    { id: "news", label: "News" },
-    { id: "events", label: "Events" },
-    { id: "executives", label: "Executives" },
-    { id: "announcements", label: "Announcements" },
-    { id: "resources", label: "Resources" },
-    { id: "gallery", label: "Gallery" },
-    { id: "members", label: "Members" },
-    { id: "messages", label: "Messages" },
-  ];
+  { id: "administrations", label: "Administrations" },
+  { id: "news", label: "News" },
+  { id: "events", label: "Events" },
+  { id: "executives", label: "Executives" },
+  { id: "announcements", label: "Announcements" },
+  { id: "resources", label: "Resources" },
+  { id: "gallery", label: "Gallery" },
+  { id: "members", label: "Members" },
+  { id: "certificates", label: "Certificates" },
+  { id: "messages", label: "Messages" },
+];
 
   return (
     <section className="max-w-6xl mx-auto px-4 py-10">
@@ -74,6 +75,7 @@ export default function AdminDashboard() {
       {tab === "gallery" && <ManageGallery />}
       {tab === "members" && <ManageMembers />}
       {tab === "messages" && <Messages />}
+      {tab === "certificates" && <ManageCertificates />}
     </section>
   );
 }
