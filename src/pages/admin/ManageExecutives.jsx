@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, X } from "lucide-react";
 import { supabase } from "../../lib/supabase";
-
+import { compressImage } from "../../utils/compressImage";
 export default function ManageExecutives() {
   const [items, setItems] = useState([]);
   const [administrations, setAdministrations] = useState([]);
@@ -71,10 +71,16 @@ export default function ManageExecutives() {
   };
 
   const handleFileChange = async (e) => {
-    const file = e.target.files[0];
-    const url = await uploadImage(file);
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const compressed = await compressImage(file, 800, 0.82);
+    const url = await uploadImage(compressed);
     if (url) setForm({ ...form, image_url: url });
-  };
+  } catch (err) {
+    alert("Could not process photo: " + err.message);
+  }
+};
 
   const submit = async (e) => {
     e.preventDefault();

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Camera, X, Save } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { compressImage } from "../../utils/compressImage";
 
 export default function Profile() {
   const { profile, session, refreshProfile } = useAuth();
@@ -33,7 +34,7 @@ export default function Profile() {
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
-  const handleAvatarPick = (e) => {
+  const handleAvatarPick = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -41,19 +42,23 @@ export default function Profile() {
       setMessage("Error: Please choose an image file.");
       return;
     }
-    if (file.size > 2 * 1024 * 1024) {
-      setMessage("Error: Photo must be under 2 MB.");
-      return;
-    }
 
-    setAvatarFile(file);
-    setAvatarPreview(URL.createObjectURL(file));
-    setMessage("");
+    setMessage("Compressing photo...");
+
+    try {
+      const compressed = await compressImage(file, 800, 0.82);
+      setAvatarFile(compressed);
+      setAvatarPreview(URL.createObjectURL(compressed));
+      setMessage("");
+    } catch (err) {
+      setMessage("Error: " + err.message);
+    }
   };
 
   const cancelAvatarChange = () => {
     setAvatarFile(null);
     setAvatarPreview(profile?.avatar_url || null);
+    setMessage("");
   };
 
   const save = async (e) => {
@@ -63,10 +68,9 @@ export default function Profile() {
 
     let newAvatarUrl = profile?.avatar_url || null;
 
-    // Upload new avatar if user picked one
     if (avatarFile) {
       setUploading(true);
-      const ext = avatarFile.name.split(".").pop().toLowerCase();
+      const ext = "jpg";
       const fileName = `member-${session.user.id}-${Date.now()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
@@ -125,10 +129,8 @@ export default function Profile() {
       </div>
 
       <form onSubmit={save} className="space-y-6">
-        {/* Avatar section */}
         <div className="card-flat p-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            {/* Avatar display */}
             <div className="relative">
               {avatarPreview ? (
                 <img
@@ -142,7 +144,6 @@ export default function Profile() {
                 </div>
               )}
 
-              {/* Upload camera button */}
               <label className="absolute bottom-0 right-0 h-9 w-9 rounded-full bg-nacos-blue text-white flex items-center justify-center cursor-pointer hover:bg-nacos-blue-light transition shadow-md border-2 border-white">
                 <Camera size={16} />
                 <input
@@ -154,7 +155,6 @@ export default function Profile() {
               </label>
             </div>
 
-            {/* Text */}
             <div className="flex-1 text-center sm:text-left">
               <p className="font-bold text-nacos-blue text-lg">
                 {form.full_name || "Member"}
@@ -186,13 +186,12 @@ export default function Profile() {
               </div>
 
               <p className="text-xs text-gray-400 mt-2">
-                JPG or PNG · Max 2 MB
+                Any size accepted · Auto-compressed on upload
               </p>
             </div>
           </div>
         </div>
 
-        {/* Info fields */}
         <div className="card-flat p-6 space-y-4">
           <h2 className="font-bold text-nacos-blue">Personal Information</h2>
 
@@ -273,6 +272,8 @@ export default function Profile() {
             className={`text-sm rounded-md p-3 ${
               message.startsWith("Error")
                 ? "text-red-600 bg-red-50 border border-red-100"
+                : message.includes("Compressing")
+                ? "text-blue-600 bg-blue-50 border border-blue-100"
                 : "text-green-600 bg-green-50 border border-green-100"
             }`}
           >

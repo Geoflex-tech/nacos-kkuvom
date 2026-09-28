@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, X, Upload } from "lucide-react";
 import { supabase } from "../../lib/supabase";
-
+import { compressImage } from "../../utils/compressImage";
 export default function ManageGallery() {
   const [items, setItems] = useState([]);
   const [file, setFile] = useState(null);
@@ -23,12 +23,17 @@ export default function ManageGallery() {
     load();
   }, []);
 
-  const handleFileChange = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
-    setFile(f);
-    setPreview(URL.createObjectURL(f));
-  };
+  const handleFileChange = async (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  try {
+    const compressed = await compressImage(f, 1400, 0.85);
+    setFile(compressed);
+    setPreview(URL.createObjectURL(compressed));
+  } catch (err) {
+    alert("Could not process image: " + err.message);
+  }
+};
 
   const clearFile = () => {
     setFile(null);

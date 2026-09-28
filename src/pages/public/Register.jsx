@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Upload, X, User as UserIcon } from "lucide-react";
 import { supabase } from "../../lib/supabase";
-
+import { compressImage } from "../../utils/compressImage";
 export default function Register() {
   const [form, setForm] = useState({
     full_name: "",
@@ -20,24 +20,24 @@ export default function Register() {
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleAvatarChange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      setError("Profile photo must be an image file (JPG, PNG).");
-      return;
-    }
-    if (file.size > 2 * 1024 * 1024) {
-      setError("Profile photo must be under 2 MB.");
-      return;
-    }
+  if (!file.type.startsWith("image/")) {
+    setError("Profile photo must be an image file (JPG, PNG).");
+    return;
+  }
 
-    setError("");
-    setAvatar(file);
-    setAvatarPreview(URL.createObjectURL(file));
-  };
-
+  setError("");
+  try {
+    const compressed = await compressImage(file, 800, 0.82);
+    setAvatar(compressed);
+    setAvatarPreview(URL.createObjectURL(compressed));
+  } catch (err) {
+    setError("Could not process photo: " + err.message);
+  }
+};
   const clearAvatar = () => {
     setAvatar(null);
     if (avatarPreview) URL.revokeObjectURL(avatarPreview);
