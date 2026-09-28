@@ -2,22 +2,158 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  @apply font-sans text-gray-800 bg-white antialiased;
+/* ============================================
+   BASE
+   ============================================ */
+html {
+  scroll-behavior: smooth;
 }
 
+body {
+  @apply font-sans text-gray-800 bg-white antialiased;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5 {
+  @apply font-display;
+}
+
+/* ============================================
+   COMPONENTS
+   ============================================ */
+
+/* Buttons */
 .btn-primary {
-  @apply bg-nacos-blue text-white px-5 py-2.5 rounded-md font-semibold hover:opacity-90 transition;
+  @apply inline-flex items-center justify-center gap-2
+         bg-nacos-blue text-white px-5 py-2.5 rounded-lg
+         font-semibold shadow-soft
+         hover:bg-nacos-blue-light hover:shadow-card
+         active:scale-[0.98] transition-all duration-200;
 }
+
 .btn-gold {
-  @apply bg-nacos-gold text-nacos-blue px-5 py-2.5 rounded-md font-semibold hover:opacity-90 transition;
+  @apply inline-flex items-center justify-center gap-2
+         bg-nacos-gold text-nacos-blue px-5 py-2.5 rounded-lg
+         font-semibold shadow-soft
+         hover:bg-nacos-gold-light hover:shadow-glow
+         active:scale-[0.98] transition-all duration-200;
 }
+
 .btn-outline {
-  @apply border border-nacos-blue text-nacos-blue px-5 py-2.5 rounded-md font-semibold hover:bg-nacos-blue hover:text-white transition;
+  @apply inline-flex items-center justify-center gap-2
+         border-2 border-nacos-blue text-nacos-blue
+         px-5 py-2.5 rounded-lg font-semibold
+         hover:bg-nacos-blue hover:text-white
+         active:scale-[0.98] transition-all duration-200;
 }
+
+.btn-ghost {
+  @apply inline-flex items-center justify-center gap-2
+         text-nacos-blue px-4 py-2 rounded-lg font-medium
+         hover:bg-nacos-blue/5 transition-all duration-200;
+}
+
+/* Cards */
 .card {
-  @apply bg-white border rounded-xl shadow-sm hover:shadow-md transition;
+  @apply bg-white border border-gray-100 rounded-2xl
+         shadow-soft hover:shadow-card-hover
+         transition-all duration-300;
 }
+
+.card-flat {
+  @apply bg-white border border-gray-100 rounded-2xl shadow-soft;
+}
+
+/* Inputs */
 .input {
-  @apply w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-nacos-blue/40;
+  @apply w-full border border-gray-200 rounded-lg px-4 py-2.5
+         bg-white text-gray-800 placeholder-gray-400
+         focus:outline-none focus:ring-2 focus:ring-nacos-blue/30
+         focus:border-nacos-blue
+         transition-all duration-200;
+}
+
+/* Section utilities */
+.section {
+  @apply max-w-7xl mx-auto px-4 py-16 md:py-20;
+}
+
+.section-title {
+  @apply text-3xl md:text-4xl font-bold text-nacos-blue tracking-tight;
+}
+
+.section-eyebrow {
+  @apply text-xs md:text-sm uppercase tracking-[0.2em]
+         text-nacos-green font-semibold mb-2;
+}
+
+/* Badges */
+.badge {
+  @apply inline-flex items-center text-xs font-semibold
+         px-2.5 py-1 rounded-full;
+}
+
+/* ============================================
+   SCROLLBAR (subtle)
+   ============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ============================================
+   PRINT — hide nav & footer on certificates
+   ============================================ */
+@media print {
+  body {
+    background: white;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  nav,
+  header,
+  footer {
+    display: none !important;
+  }
+  .card {
+    box-shadow: none !important;
+  }
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.text-gradient {
+  background: linear-gradient(135deg, #F5B301 0%, #FFC833 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-grid-pattern {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
