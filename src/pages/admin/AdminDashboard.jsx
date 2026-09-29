@@ -8,11 +8,13 @@ import ManageEvents from "./ManageEvents";
 import ManageExecutives from "./ManageExecutives";
 import ManageAnnouncements from "./ManageAnnouncements";
 import ManageResources from "./ManageResources";
+import ManageTechHub from "./ManageTechHub";
+import ManageOpportunities from "./ManageOpportunities";
 import ManageGallery from "./ManageGallery";
 import ManageMembers from "./ManageMembers";
 import ManageCertificates from "./ManageCertificates";
 import Messages from "./Messages";
-import ManageTechHub from "./ManageTechHub";
+
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const [tab, setTab] = useState("overview");
@@ -23,19 +25,21 @@ export default function AdminDashboard() {
   };
 
   const tabs = [
-  { id: "overview", label: "Overview" },
-  { id: "administrations", label: "Administrations" },
-  { id: "news", label: "News" },
-  { id: "events", label: "Events" },
-  { id: "executives", label: "Executives" },
-  { id: "announcements", label: "Announcements" },
-  { id: "resources", label: "Resources" },
-  { id: "techhub", label: "Tech Hub" },
-  { id: "gallery", label: "Gallery" },
-  { id: "members", label: "Members" },
-  { id: "certificates", label: "Certificates" },
-  { id: "messages", label: "Messages" },
-];
+    { id: "overview", label: "Overview" },
+    { id: "administrations", label: "Administrations" },
+    { id: "news", label: "News" },
+    { id: "events", label: "Events" },
+    { id: "executives", label: "Executives" },
+    { id: "announcements", label: "Announcements" },
+    { id: "resources", label: "Resources" },
+    { id: "techhub", label: "Tech Hub" },
+    { id: "opportunities", label: "Opportunities" },
+    { id: "gallery", label: "Gallery" },
+    { id: "members", label: "Members" },
+    { id: "certificates", label: "Certificates" },
+    { id: "messages", label: "Messages" },
+  ];
+
   return (
     <section className="max-w-6xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-6">
@@ -76,11 +80,12 @@ export default function AdminDashboard() {
       {tab === "executives" && <ManageExecutives />}
       {tab === "announcements" && <ManageAnnouncements />}
       {tab === "resources" && <ManageResources />}
+      {tab === "techhub" && <ManageTechHub />}
+      {tab === "opportunities" && <ManageOpportunities />}
       {tab === "gallery" && <ManageGallery />}
       {tab === "members" && <ManageMembers />}
       {tab === "certificates" && <ManageCertificates />}
       {tab === "messages" && <Messages />}
-      {tab === "techhub" && <ManageTechHub />}
     </section>
   );
 }
