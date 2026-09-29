@@ -161,7 +161,9 @@ export default function Home() {
             ))}
           </dl>
         </div>
-        <style>{`@media(max-width:640px){.stats-grid{grid-template-columns:repeat(2,1fr)!important;}}`}</style>
+        <style>{`@media(max-width:640px){.stats-grid{grid-template-columns:repeat(2,1fr)!important;}}
+          @media(max-width:360px){.stats-grid{grid-template-columns:1fr!important;}}
+        `}</style>
       </section>
 
       {/* ── Leadership — Meet the Pioneer Team ───────────── */}
@@ -204,6 +206,7 @@ export default function Home() {
         <style>{`
           @media(max-width:1023px){ .home-lc-grid{ grid-template-columns:repeat(2,1fr)!important; } }
           @media(max-width:479px){  .home-lc-grid{ grid-template-columns:repeat(2,1fr)!important; gap:10px!important; } }
+          @media(max-width:360px){  .home-lc-grid{ grid-template-columns:1fr!important; } }
           @keyframes home-shimmer{ from{background-position:200% 0} to{background-position:-200% 0} }
           @media(prefers-reduced-motion:reduce){ .home-lc-grid div[style*="animation"]{ animation:none!important; background:#E2E8F0!important; } }
         `}</style>
@@ -315,9 +318,8 @@ export default function Home() {
               </div>
               <div>
                 <Link to="/tech-hub"
-                  style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1.5rem", borderRadius: "var(--radius-pill)", background: "#FCD34D", color: "var(--color-blue-dark)", fontWeight: "var(--weight-bold)", fontSize: "var(--text-base)", whiteSpace: "nowrap", transition: "transform 150ms ease-out", textDecoration: "none" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-2px)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = ""; }}
+                  className="techhub-cta-btn"
+                  style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.75rem 1.5rem", borderRadius: "var(--radius-pill)", background: "#FCD34D", color: "var(--color-blue-dark)", fontWeight: "var(--weight-bold)", fontSize: "var(--text-base)", whiteSpace: "nowrap", textDecoration: "none" }}
                 >
                   Explore Tech Hub <ArrowRight size={16} aria-hidden="true" />
                 </Link>
@@ -325,7 +327,15 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <style>{`@media(max-width:640px){.techhub-layout{grid-template-columns:1fr!important;}}`}</style>
+        <style>{`@media(max-width:640px){
+          .techhub-layout{grid-template-columns:1fr!important;}
+          .techhub-layout > div:last-child { width: 100%; }
+          .techhub-layout a { width: 100%; justify-content: center; }
+        }
+        @media(hover:hover){.techhub-cta-btn:hover{transform:translateY(-2px);}}
+        .techhub-cta-btn{transition:transform 150ms ease-out;}
+        @media(prefers-reduced-motion:reduce){.techhub-cta-btn{transition:none!important;transform:none!important;}}
+        `}</style>
       </section>
 
       {/* ── Gallery Preview ───────────────────────────────── */}
@@ -357,9 +367,8 @@ export default function Home() {
                         src={img.image_url}
                         alt={img.caption || "Gallery photo"}
                         loading="lazy"
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 300ms ease-out" }}
-                        onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.06)"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.transform = ""; }}
+                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        className="home-gallery-img"
                       />
                       {img.caption && (
                         <div style={{ position: "absolute", inset: "auto 0 0 0", background: "linear-gradient(to top,rgba(0,0,0,0.65),transparent)", padding: "20px 10px 8px", pointerEvents: "none" }}>
@@ -383,7 +392,9 @@ export default function Home() {
         </div>
         <style>{`
           @media(max-width:639px){ .gallery-grid{ grid-template-columns:repeat(2,1fr)!important; } }
-          @media(prefers-reduced-motion:reduce){ .gallery-grid img{ transition:none!important; } }
+          @media (hover: hover) { .home-gallery-img:hover { transform: scale(1.06); } }
+          .home-gallery-img { transition: transform 300ms ease-out; }
+          @media(prefers-reduced-motion:reduce){ .gallery-grid img, .home-gallery-img{ transition:none!important; transform:none!important; } }
         `}</style>
       </section>
 

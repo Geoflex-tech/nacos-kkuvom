@@ -120,10 +120,12 @@ export default function LeadershipCard({ leader, onReadBio, triggerRef }) {
                       box-shadow 150ms ease-out;
           outline: none;
         }
-        .lc-filled:hover {
-          transform: translateY(-2px);
-          border-color: #B0BCDB;
-          box-shadow: 0 6px 18px rgba(30,64,175,0.10);
+        @media (hover: hover) {
+          .lc-filled:hover {
+            transform: translateY(-2px);
+            border-color: #B0BCDB;
+            box-shadow: 0 6px 18px rgba(30,64,175,0.10);
+          }
         }
         .lc-filled:focus-visible {
           box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1E40AF;
