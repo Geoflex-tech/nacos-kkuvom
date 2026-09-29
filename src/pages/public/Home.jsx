@@ -2,65 +2,131 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Users, Calendar, Award, BookOpen,
-  ArrowRight, MapPin, Clock,
+  ArrowRight, MapPin, Clock, User,
 } from "lucide-react";
 import Hero from "../../components/Hero";
 import { SectionHeader, Card } from "../../components/ui";
 import { supabase } from "../../lib/supabase";
-import LeadershipCard from "../../components/LeadershipCard";
-import BioDialog from "../../components/BioDialog";
 import { useLeadership } from "../../hooks/useLeadership";
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
+import BioDialog from "../../components/BioDialog";
+import LeadershipCard from "../../components/LeadershipCard";
 
+/* ── Vacant box — used for unfilled positions ─────────────── */
+function VacantBox({ position }) {
+  return (
+    <article
+      aria-label={`${position}, coming soon`}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "24px 14px",
+        border: "1px dashed #C3CCE0",
+        borderRadius: "12px",
+        background: "transparent",
+        height: "100%",
+        minHeight: "160px",
+        boxSizing: "border-box",
+      }}
+    >
+      {/* Icon */}
+      <div
+        aria-hidden="true"
+        style={{
+          width: "52px", height: "52px",
+          borderRadius: "50%",
+          background: "#EEF3FB",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          marginBottom: "12px",
+          flexShrink: 0,
+        }}
+      >
+        <User size={22} color="#94A3B8" strokeWidth={1.5} aria-hidden="true" />
+      </div>
+
+      {/* Position title */}
+      <p style={{
+        fontSize: "13px",
+        fontWeight: 500,
+        color: "#64748B",
+        lineHeight: 1.4,
+        margin: "0 0 10px",
+      }}>
+        {position}
+      </p>
+
+      {/* Coming soon pill */}
+      <span style={{
+        display: "inline-flex",
+        alignItems: "center",
+        padding: "3px 10px",
+        borderRadius: "9999px",
+        background: "#FEF3C7",
+        color: "#B45309",
+        fontSize: "11px",
+        fontWeight: 600,
+        letterSpacing: "0.3px",
+        whiteSpace: "nowrap",
+      }}>
+        Coming soon
+      </span>
+    </article>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════ */
 export default function Home() {
-  const [news, setNews]           = useState([]);
-  const [events, setEvents]       = useState([]);
-  const [president, setPresident] = useState(null);
-  const [gallery, setGallery]     = useState([]);
-  const [stats, setStats]         = useState({ members: 0, events: 0, certificates: 0, resources: 0 });
+  const [news, setNews]       = useState([]);
+  const [events, setEvents]   = useState([]);
+  const [gallery, setGallery] = useState([]);
+  const [stats, setStats]     = useState({ members: 0, events: 0, certificates: 0, resources: 0 });
 
-  // Leadership data — live from DB
-  const { filled, vacant, total, loading: leaderLoading } = useLeadership();
-  const [activeBio, setActiveBio]   = useState(null);
+  /* Leadership — live from DB, no hardcoded names */
+  const { leaders, filled, loading: leaderLoading } = useLeadership();
+  const [activeBio, setActiveBio] = useState(null);
   const [bioTrigger, setBioTrigger] = useState(null);
 
   const openBio = useCallback((leader, btnRef) => {
     setActiveBio(leader);
     setBioTrigger(btnRef);
   }, []);
-  const closeBio = useCallback(() => {
-    setActiveBio(null);
-  }, []);
+  const closeBio = useCallback(() => { setActiveBio(null); }, []);
 
   useEffect(() => {
     (async () => {
-      const [newsRes, eventsRes, membersRes, certsRes, resourcesRes, presidentRes, galleryRes] =
+      const [newsRes, eventsRes, membersRes, certsRes, resourcesRes, galleryRes] =
         await Promise.all([
           supabase.from("news").select("*").order("published_at", { ascending: false }).limit(3),
           supabase.from("events").select("*").gte("event_date", new Date().toISOString()).order("event_date", { ascending: true }).limit(3),
           supabase.from("profiles").select("*", { count: "exact", head: true }),
           supabase.from("certificates").select("*", { count: "exact", head: true }),
           supabase.from("tech_hub_resources").select("*", { count: "exact", head: true }),
-          supabase.from("executives").select("*").or("position.ilike.%president%,position.ilike.%President%").eq("status","filled").order("rank").limit(1),
           supabase.from("gallery").select("id,image_url,caption").order("uploaded_at", { ascending: false }).limit(6),
         ]);
       setNews(newsRes.data || []);
       setEvents(eventsRes.data || []);
-      setPresident(presidentRes.data?.[0] || null);
       setGallery(galleryRes.data || []);
       setStats({
-        members:      membersRes.count  || 0,
+        members:      membersRes.count     || 0,
         events:       eventsRes.data?.length || 0,
-        certificates: certsRes.count    || 0,
-        resources:    resourcesRes.count || 0,
+        certificates: certsRes.count       || 0,
+        resources:    resourcesRes.count   || 0,
       });
     })();
   }, []);
 
-  const presidentName     = president?.name     || "Ezekiel Geoffrey Izam";
-  const presidentPosition = president?.position
-    ? `${president.position}, NACOS KKU VOM Chapter`
-    : "Acting President, NACOS KKU VOM Chapter";
+  /*
+    Home leadership preview — first 4 executive positions by rank.
+    Show filled cards for any that are filled, vacant boxes for the rest.
+    Total is always exactly 4.
+  */
+  const PREVIEW_RANKS = [1, 2, 3, 4]; // President, VP, Sec-Gen, Asst Sec-Gen
+  const previewSlots = PREVIEW_RANKS.map((rank) =>
+    leaders.find((l) => l.rank === rank) || null
+  );
 
   return (
     <>
@@ -76,10 +142,10 @@ export default function Home() {
         <div className="container section-pad">
           <dl style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "var(--space-4)" }} className="stats-grid">
             {[
-              { label: "Members",        value: stats.members,      Icon: Users,    accent: "var(--color-blue)",   bg: "var(--color-blue-light)"         },
-              { label: "Events",         value: stats.events,       Icon: Calendar, accent: "var(--color-green)",  bg: "var(--color-green-light)"        },
-              { label: "Certificates",   value: stats.certificates, Icon: Award,    accent: "var(--color-yellow)", bg: "var(--color-yellow-light)"       },
-              { label: "Tech Resources", value: stats.resources,    Icon: BookOpen, accent: "var(--color-blue)",   bg: "var(--color-blue-light)"         },
+              { label: "Members",        value: stats.members,      Icon: Users,    accent: "var(--color-blue)",   bg: "var(--color-blue-light)"   },
+              { label: "Events",         value: stats.events,       Icon: Calendar, accent: "var(--color-green)",  bg: "var(--color-green-light)"  },
+              { label: "Certificates",   value: stats.certificates, Icon: Award,    accent: "var(--color-yellow)", bg: "var(--color-yellow-light)" },
+              { label: "Tech Resources", value: stats.resources,    Icon: BookOpen, accent: "var(--color-blue)",   bg: "var(--color-blue-light)"   },
             ].map(({ label, value, Icon, accent, bg }) => (
               <div key={label} style={{ textAlign: "center" }}>
                 <div aria-hidden="true" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "3rem", height: "3rem", borderRadius: "var(--radius-sm)", background: bg, marginBottom: "var(--space-1)" }}>
@@ -96,43 +162,6 @@ export default function Home() {
           </dl>
         </div>
         <style>{`@media(max-width:640px){.stats-grid{grid-template-columns:repeat(2,1fr)!important;}}`}</style>
-      </section>
-
-      {/* ── President's Welcome ───────────────────────────── */}
-      <section style={{ background: "var(--color-bg)" }}>
-        <div className="container section-pad">
-          <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-            <SectionHeader eyebrow="A Message from the President" heading="Built for the next generation" center />
-            <Card style={{ marginTop: "var(--space-4)", padding: "var(--space-4)" }}>
-              <div style={{ display: "flex", gap: "var(--space-4)", alignItems: "flex-start" }} className="president-layout">
-                <div style={{ flexShrink: 0 }}>
-                  {president?.image_url ? (
-                    <img src={president.image_url} alt={presidentName} loading="lazy"
-                      style={{ width: "6rem", height: "6rem", borderRadius: "50%", objectFit: "cover", border: "3px solid var(--color-yellow)" }} />
-                  ) : (
-                    <div style={{ width: "6rem", height: "6rem", borderRadius: "50%", background: "var(--color-blue)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "var(--text-xl)", fontWeight: "var(--weight-bold)", border: "3px solid var(--color-yellow)" }}>
-                      {presidentName[0].toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <div style={{ flex: 1 }}>
-                  {[
-                    "Welcome to the official digital home of NACOS KKU VOM Chapter. Whether you're a current student, a prospective member, an alumnus, or a friend of the chapter — you are welcome here.",
-                    "As the pioneer administration, we are not just building a website. We are laying the digital foundation that every future generation of this chapter will stand on.",
-                    "I invite you to join us. Register as a member, attend our events, use our resources, and be part of building something that lasts.",
-                  ].map((para, i) => (
-                    <p key={i} style={{ fontSize: "var(--text-base)", color: "var(--color-text-secondary)", lineHeight: 1.7, marginBottom: "var(--space-2)" }}>
-                      {para}
-                    </p>
-                  ))}
-                  <p style={{ fontWeight: "var(--weight-semibold)", color: "var(--color-blue-dark)" }}>{presidentName}</p>
-                  <p style={{ fontSize: "var(--text-sm)", color: "var(--color-text-muted)" }}>{presidentPosition}</p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-        <style>{`@media(max-width:640px){.president-layout{flex-direction:column!important;align-items:center!important;}}`}</style>
       </section>
 
       {/* ── Leadership — Meet the Pioneer Team ───────────── */}
@@ -156,87 +185,31 @@ export default function Home() {
             </div>
           )}
 
-          {/* filled cards */}
-          {!leaderLoading && filled.length > 0 && (
+          {/* 4 slots: filled card or vacant box */}
+          {!leaderLoading && (
             <ul style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "14px", listStyle: "none", margin: 0, padding: 0 }}
               className="home-lc-grid" role="list">
-              {filled.map((leader) => (
-                <li key={leader.id} style={{ display: "flex", flexDirection: "column" }}>
-                  <LeadershipCard leader={leader} onReadBio={openBio} />
+              {previewSlots.map((leader, i) => (
+                <li key={leader?.id || `vacant-preview-${i}`} style={{ display: "flex", flexDirection: "column" }}>
+                  {leader && leader.status === "filled" && leader.name
+                    ? <LeadershipCard leader={leader} onReadBio={openBio} />
+                    : <VacantBox position={leader?.position || ["President", "Vice President", "Secretary-General", "Assistant Secretary-General"][i]} />
+                  }
                 </li>
               ))}
-
-              {/* summary vacant card */}
-              {vacant.length > 0 && (
-                <li style={{ display: "flex", flexDirection: "column" }}>
-                  <Link
-                    to="/leadership"
-                    style={{ textDecoration: "none", display: "flex", flex: 1 }}
-                    aria-label={`${vacant.length} more positions coming soon — view all`}
-                  >
-                    <article className="home-vacant-summary">
-                      <span className="home-vacant-count">{vacant.length}</span>
-                      <p className="home-vacant-label">more positions<br />coming soon</p>
-                      <span className="lc-coming-soon" style={{ marginTop: "auto" }}>View all →</span>
-                    </article>
-                  </Link>
-                </li>
-              )}
             </ul>
           )}
         </div>
 
         <style>{`
-          @media(max-width:1023px){ .home-lc-grid{ grid-template-columns:repeat(3,1fr)!important; } }
-          @media(max-width:639px){  .home-lc-grid{ grid-template-columns:repeat(2,1fr)!important; gap:10px!important; } }
+          @media(max-width:1023px){ .home-lc-grid{ grid-template-columns:repeat(2,1fr)!important; } }
+          @media(max-width:479px){  .home-lc-grid{ grid-template-columns:repeat(2,1fr)!important; gap:10px!important; } }
           @keyframes home-shimmer{ from{background-position:200% 0} to{background-position:-200% 0} }
-          @media(prefers-reduced-motion:reduce){ .home-lc-grid [style*="animation"]{ animation:none!important; } }
-
-          .home-vacant-summary {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            border-radius: 12px;
-            border: 1px dashed #C3CCE0;
-            padding: 20px 14px;
-            flex: 1;
-            transition: border-color 150ms ease-out, background 150ms ease-out;
-          }
-          .home-vacant-summary:hover {
-            border-color: #1E40AF;
-            background: rgba(30,64,175,0.03);
-          }
-          .home-vacant-count {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1E40AF;
-            line-height: 1;
-          }
-          .home-vacant-label {
-            font-size: 12px;
-            color: #94A3B8;
-            margin: 6px 0 10px;
-            line-height: 1.4;
-          }
-          /* pill reuse from LeadershipCard */
-          .lc-coming-soon {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 10px;
-            border-radius: 999px;
-            background: #FEF3C7;
-            color: #B45309;
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 0.3px;
-            white-space: nowrap;
-          }
+          @media(prefers-reduced-motion:reduce){ .home-lc-grid div[style*="animation"]{ animation:none!important; background:#E2E8F0!important; } }
         `}</style>
       </section>
 
-      {/* Bio dialog (home page) */}
+      {/* Bio dialog — only reachable when a position is filled */}
       <BioDialog leader={activeBio} triggerRef={bioTrigger} onClose={closeBio} />
 
       {/* ── News + Events ─────────────────────────────────── */}
@@ -366,7 +339,6 @@ export default function Home() {
           </div>
 
           {gallery.length === 0 ? (
-            /* placeholder grid when no photos yet */
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "10px" }} className="gallery-grid">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} style={{ aspectRatio: "1", borderRadius: "12px", background: "#EEF3FB", display: "flex", alignItems: "center", justifyContent: "center" }} aria-hidden="true">
