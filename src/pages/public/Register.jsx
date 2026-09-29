@@ -174,8 +174,8 @@ export default function Register() {
             </div>
           ) : (
             <label className="af-avatar-upload" aria-label="Upload profile photo">
-              <UserCircle2 size={26} aria-hidden="true" />
-              <span style={{ fontSize: "0.6875rem" }}>Upload</span>
+              <UserCircle2 size={22} aria-hidden="true" />
+              <span style={{ fontSize: "0.625rem" }}>Upload</span>
               <input
                 type="file"
                 accept="image/*"
