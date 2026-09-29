@@ -1,111 +1,137 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, ArrowLeft } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import AuthShell from "../../components/AuthShell";
+import { AuthFormStyles } from "./Login";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail]   = useState("");
   const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState("");
+  const [sent, setSent]     = useState(false);
+  const [error, setError]   = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setLoading(true);
     setError("");
 
-    const redirectTo = `${window.location.origin}/reset-password`;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo,
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     setLoading(false);
-
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
+    if (err) { setError(err.message); return; }
     setSent(true);
   };
 
   return (
-    <section className="max-w-md mx-auto px-4 py-20">
-      <div className="text-center mb-8">
-        <div className="inline-flex h-14 w-14 rounded-2xl bg-nacos-blue/10 text-nacos-blue items-center justify-center mb-4">
-          <Mail size={24} />
-        </div>
-        <h1 className="text-2xl font-bold text-nacos-blue mb-2">
-          Reset your password
-        </h1>
-        <p className="text-gray-500 text-sm">
-          Enter your email and we'll send you a reset link.
-        </p>
-      </div>
-
+    <AuthShell
+      headline="Reset your password."
+      subtext="Enter your email and we'll send you a link to set a new password."
+    >
       {sent ? (
-        <div className="card-flat p-8 text-center">
-          <div className="h-16 w-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 size={32} />
+        /* ── Success state ── */
+        <div>
+          <div className="af-head" style={{ textAlign: "center" }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: "50%",
+              background: "#F0FDF4", display: "flex",
+              alignItems: "center", justifyContent: "center",
+              margin: "0 auto 16px",
+            }}>
+              <CheckCircle2 size={28} color="#059669" aria-hidden="true" />
+            </div>
+            <h1 className="af-title" style={{ textAlign: "center" }}>Check your email</h1>
+            <p className="af-sub">
+              We sent a password reset link to{" "}
+              <strong style={{ color: "#0F172A" }}>{email}</strong>.
+              Click the link in that email to set a new password.
+            </p>
+            <p style={{
+              fontSize: "0.8125rem", color: "#9CA3AF",
+              marginTop: 12,
+            }}>
+              Didn't get it? Check your spam folder, or{" "}
+              <button
+                type="button"
+                onClick={() => setSent(false)}
+                style={{
+                  background: "none", border: "none",
+                  color: "#1E40AF", fontSize: "inherit",
+                  fontWeight: 500, cursor: "pointer", padding: 0,
+                }}
+              >
+                try again
+              </button>.
+            </p>
           </div>
-          <h2 className="text-xl font-bold text-nacos-blue mb-2">
-            Check your email
-          </h2>
-          <p className="text-gray-600 text-sm mb-6">
-            We sent a password reset link to{" "}
-            <span className="font-semibold text-nacos-blue">{email}</span>.
-            Click the link in that email to set a new password.
-          </p>
-          <p className="text-xs text-gray-400 mb-6">
-            Didn't get the email? Check spam, or try again.
-          </p>
-          <Link to="/login" className="btn-outline inline-flex">
-            <ArrowLeft size={16} />
-            Back to login
+          <Link
+            to="/login"
+            className="af-btn"
+            style={{ display: "flex", marginTop: 24, textDecoration: "none" }}
+          >
+            <ArrowLeft size={15} aria-hidden="true" />
+            Back to sign in
           </Link>
         </div>
       ) : (
-        <form onSubmit={submit} className="card-flat p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email address
-            </label>
-            <input
-              type="email"
-              className="input"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        /* ── Form state ── */
+        <div>
+          <div className="af-head">
+            <h1 className="af-title">Forgot password?</h1>
+            <p className="af-sub">
+              Enter the email you registered with and we'll send a reset link.
+            </p>
           </div>
 
           {error && (
-            <p className="text-red-500 text-sm bg-red-50 border border-red-100 rounded-md p-2.5">
-              {error}
-            </p>
+            <div className="af-err-box" role="alert" aria-live="assertive">
+              <AlertCircle size={15} aria-hidden="true" />
+              <span>{error}</span>
+            </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-primary w-full"
-          >
-            {loading ? "Sending..." : "Send Reset Link"}
-          </button>
+          <form onSubmit={submit} noValidate>
+            <div className="af-field">
+              <label htmlFor="fp-email" className="af-label">Email address</label>
+              <input
+                id="fp-email"
+                type="email"
+                autoComplete="email"
+                inputMode="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="af-input"
+                required
+                disabled={loading}
+              />
+            </div>
 
-          <p className="text-center text-sm text-gray-500">
-            Remembered it?{" "}
-            <Link
-              to="/login"
-              className="text-nacos-blue font-semibold hover:underline"
+            <button
+              type="submit"
+              className="af-btn"
+              disabled={loading}
+              aria-busy={loading}
             >
-              Back to login
-            </Link>
+              {loading ? (
+                <><span className="af-spinner" aria-hidden="true" /> Sending link…</>
+              ) : (
+                "Send reset link"
+              )}
+            </button>
+          </form>
+
+          <p className="af-footer-text">
+            Remembered it?{" "}
+            <Link to="/login" className="af-link">Sign in</Link>
           </p>
-        </form>
+        </div>
       )}
-    </section>
+
+      <AuthFormStyles />
+    </AuthShell>
   );
 }

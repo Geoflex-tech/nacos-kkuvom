@@ -1,14 +1,12 @@
 /**
- * History — /history
+ * HistoryMilestones — /history
  *
  * Vertical timeline of chapter milestones, sorted by sort_date ascending.
  * Data-driven: no hardcoded content. Shows empty state when no milestones exist.
  * Cards alternate left/right on desktop, single column on mobile.
- *
- * Milestones are managed by admins via the Admin Dashboard → Manage Milestones.
- * DB table: public.milestones (run supabase/milestones_migration.sql if not yet applied)
  */
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { BookOpen } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import PageHeader from "../../components/PageHeader";
@@ -35,7 +33,7 @@ function SkeletonTimeline() {
 /* ── Single milestone card ───────────────────────────────── */
 function MilestoneCard({ milestone, side }) {
   return (
-    <li className={`ht-item ht-item--${side}`} role="listitem">
+    <div className={`ht-item ht-item--${side}`}>
       <div className="ht-dot" aria-hidden="true" />
       <article className="ht-card">
         {/* year pill */}
@@ -47,17 +45,16 @@ function MilestoneCard({ milestone, side }) {
             src={milestone.image_url}
             alt={milestone.title}
             loading="lazy"
-            decoding="async"
             className="ht-img"
           />
         )}
       </article>
-    </li>
+    </div>
   );
 }
 
 /* ══════════════════════════════════════════════════════════ */
-export default function History() {
+export default function HistoryMilestones() {
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
@@ -108,7 +105,7 @@ export default function History() {
 
           {/* Timeline */}
           {!loading && !error && milestones.length > 0 && (
-            <ol className="ht-timeline" aria-label="Chapter history timeline">
+            <div className="ht-timeline" role="list" aria-label="Chapter history timeline">
               {milestones.map((m, i) => (
                 <MilestoneCard
                   key={m.id}
@@ -116,7 +113,7 @@ export default function History() {
                   side={i % 2 === 0 ? "left" : "right"}
                 />
               ))}
-            </ol>
+            </div>
           )}
 
         </div>
@@ -174,6 +171,7 @@ export default function History() {
           display: flex;
           align-items: flex-start;
           margin-bottom: 40px;
+          /* alternate: left = card on left, right = card on right */
         }
         .ht-item--left  { flex-direction: row-reverse; }
         .ht-item--right { flex-direction: row; }
@@ -242,26 +240,11 @@ export default function History() {
 
         /* ── Skeleton ───────────────────────────────────── */
         .ht-card--skeleton { pointer-events: none; }
-        .ht-skel-pill  {
-          height: 20px; width: 60px; border-radius: 999px; margin-bottom: 10px;
-          background-image: linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%);
-          background-size: 200% 100%; animation: ht-shimmer 1.4s infinite;
-        }
-        .ht-skel-title {
-          height: 16px; width: 80%; border-radius: 6px; margin-bottom: 8px;
-          background-image: linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%);
-          background-size: 200% 100%; animation: ht-shimmer 1.4s infinite;
-        }
-        .ht-skel-body {
-          height: 12px; width: 100%; border-radius: 6px; margin-bottom: 6px;
-          background-image: linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%);
-          background-size: 200% 100%; animation: ht-shimmer 1.4s infinite;
-        }
+        .ht-skel-pill  { height: 20px; width: 60px; border-radius: 999px; background: #E2E8F0; margin-bottom: 10px; animation: ht-shimmer 1.4s infinite; background-size: 200% 100%; background-image: linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%); }
+        .ht-skel-title { height: 16px; width: 80%;  border-radius: 6px;   background-image: linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%); background-size: 200% 100%; animation: ht-shimmer 1.4s infinite; margin-bottom: 8px; }
+        .ht-skel-body  { height: 12px; width: 100%; border-radius: 6px;   background-image: linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%); background-size: 200% 100%; animation: ht-shimmer 1.4s infinite; margin-bottom: 6px; }
         .ht-skel-body--short { width: 65%; }
-        @keyframes ht-shimmer {
-          from { background-position: 200% 0; }
-          to   { background-position: -200% 0; }
-        }
+        @keyframes ht-shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
 
         /* ── Mobile: single column ──────────────────────── */
         @media (max-width: 639px) {

@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { Mail, Phone, MapPin, Send, CheckCircle2 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import PageHeader from "../../components/PageHeader";
 
 export default function Contact() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [status, setStatus] = useState("idle");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -17,11 +13,7 @@ export default function Contact() {
     setStatus("sending");
     setErrorMsg("");
     const { error } = await supabase.from("contact_messages").insert([form]);
-    if (error) {
-      setStatus("error");
-      setErrorMsg(error.message);
-      return;
-    }
+    if (error) { setStatus("error"); setErrorMsg(error.message); return; }
     setStatus("success");
     setForm({ name: "", email: "", subject: "", message: "" });
   };
@@ -29,58 +21,36 @@ export default function Contact() {
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   const contactCards = [
-    {
-      Icon: Mail,
-      label: "Email",
-      value: "nacoskkuvom@gmail.com",
-      href: "mailto:nacoskkuvom@gmail.com",
-      color: "bg-blue-50 text-nacos-blue",
-    },
-    {
-      Icon: Phone,
-      label: "Phone",
-      value: "0908 485 0109",
-      href: "tel:09084850109",
-      color: "bg-green-50 text-nacos-green",
-    },
-    {
-      Icon: MapPin,
-      label: "Location",
-      value: "Karl Kumm University, Vom",
-      color: "bg-yellow-50 text-yellow-700",
-    },
+    { Icon: Mail,   label: "Email",    value: "nacoskkuvom@gmail.com",  href: "mailto:nacoskkuvom@gmail.com", color: "bg-blue-50 text-nacos-blue"    },
+    { Icon: Phone,  label: "Phone",    value: "0908 485 0109",           href: "tel:09084850109",              color: "bg-green-50 text-nacos-green"  },
+    { Icon: MapPin, label: "Location", value: "Karl Kumm University, Vom",                                     color: "bg-yellow-50 text-yellow-700"  },
   ];
 
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/10 blur-3xl animate-float-slow" />
-          <div className="absolute -bottom-32 -right-24 w-96 h-96 rounded-full bg-nacos-green-light/20 blur-3xl animate-float" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-30" />
-        </div>
-        <div className="relative max-w-5xl mx-auto px-4 py-16 md:py-20 text-center text-white">
-          <p className="text-sm uppercase tracking-widest text-white/70 mb-3">
-            Get in Touch
-          </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Contact Us</h1>
-          <p className="text-white/85 text-lg max-w-2xl mx-auto">
-            Questions, suggestions, or partnership ideas? We'd love to hear
-            from you.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        label="Get in Touch"
+        titleBold="CONTACT"
+        titleLight="US"
+        description="Questions, suggestions, or partnership ideas? We'd love to hear from you."
+      />
 
-      <section className="max-w-5xl mx-auto px-4 py-12">
+      <section className="max-w-5xl mx-auto px-4 py-12" style={{ marginTop: "48px" }}>
         {/* Contact cards */}
         <div className="grid md:grid-cols-3 gap-4 mb-12">
           {contactCards.map(({ Icon, label, value, href, color }) => {
             const content = (
               <>
                 <div
-                  className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 ${color}`}
+                  className={`flex items-center justify-center mb-3 ${color}`}
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    flexShrink: 0,
+                  }}
                 >
-                  <Icon size={22} />
+                  <Icon size={18} />
                 </div>
                 <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold mb-1">
                   {label}
@@ -91,11 +61,35 @@ export default function Contact() {
               </>
             );
             return href ? (
-              <a key={label} href={href} className="card p-5 block hover:-translate-y-0.5 transition-transform">
+              <a
+                key={label}
+                href={href}
+                style={{
+                  display: "block",
+                  padding: "20px",
+                  border: "1px solid #E6EAF2",
+                  borderRadius: "12px",
+                  background: "#fff",
+                  textDecoration: "none",
+                  transition: "border-color 150ms ease-out",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "var(--color-blue)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#E6EAF2"; }}
+              >
                 {content}
               </a>
             ) : (
-              <div key={label} className="card p-5">{content}</div>
+              <div
+                key={label}
+                style={{
+                  padding: "20px",
+                  border: "1px solid #E6EAF2",
+                  borderRadius: "12px",
+                  background: "#fff",
+                }}
+              >
+                {content}
+              </div>
             );
           })}
         </div>

@@ -11,8 +11,10 @@ import {
 } from "lucide-react";
 import Hero from "../../components/Hero";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Home() {
+  const { isMember } = useAuth();
   const [news, setNews] = useState([]);
   const [events, setEvents] = useState([]);
   const [execs, setExecs] = useState([]);
@@ -343,7 +345,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tech Hub teaser */}
+      {/* Tech Hub teaser — auth-gated */}
       <section className="bg-gray-50">
         <div className="section">
           <div className="rounded-3xl bg-gradient-to-br from-nacos-blue to-nacos-green p-8 md:p-12 text-white relative overflow-hidden">
@@ -351,7 +353,7 @@ export default function Home() {
             <div className="relative grid md:grid-cols-[1fr_auto] items-center gap-6">
               <div>
                 <p className="text-xs uppercase tracking-widest text-nacos-gold font-bold mb-2">
-                  New · Learn Free
+                  Members Only · Learn Free
                 </p>
                 <h2 className="text-2xl md:text-4xl font-extrabold mb-3">
                   {stats.resources}+ curated resources, handpicked
@@ -359,14 +361,31 @@ export default function Home() {
                 <p className="text-white/90 max-w-xl">
                   From freeCodeCamp to fast.ai — the best free courses, books,
                   and tools for Computing students, organized by category and
-                  skill level.
+                  skill level. Available exclusively to registered members.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/tech-hub" className="btn-gold whitespace-nowrap">
-                  Explore Tech Hub
-                  <ArrowRight size={16} />
-                </Link>
+              <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+                {isMember ? (
+                  /* Logged-in: go directly to the dashboard Tech Hub */
+                  <Link to="/dashboard/tech-hub" className="btn-gold whitespace-nowrap">
+                    Open Tech Hub
+                    <ArrowRight size={16} />
+                  </Link>
+                ) : (
+                  /* Logged-out: prompt to sign in or register */
+                  <>
+                    <Link to="/login" className="btn-gold whitespace-nowrap">
+                      Sign in to access
+                      <ArrowRight size={16} />
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="whitespace-nowrap inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/40 text-white text-sm font-semibold hover:bg-white/10 transition"
+                    >
+                      Create account
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

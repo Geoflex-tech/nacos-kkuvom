@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Award, ArrowRight } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
+import { DashPageStyles } from "./Announcements";
 
 export default function MyCertificates() {
   const { session } = useAuth();
-  const [items, setItems] = useState([]);
+  const [items, setItems]     = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,61 +24,84 @@ export default function MyCertificates() {
   }, [session]);
 
   return (
-    <section className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold text-nacos-blue mb-2">My Certificates</h1>
-      <p className="text-gray-500 mb-8">
-        Certificates issued to you by NACOS KKU Vom Chapter
-      </p>
+    <div className="dp-wrap">
+      <div className="dp-page-head">
+        <div className="dp-page-icon" aria-hidden="true">
+          <Award size={20} />
+        </div>
+        <div>
+          <h1 className="dp-page-title">My Certificates</h1>
+          <p className="dp-page-sub">
+            Certificates issued to you by NACOS KKU Vom Chapter
+          </p>
+        </div>
+      </div>
 
-      {loading ? (
-        <p className="text-gray-500">Loading...</p>
-      ) : items.length === 0 ? (
-        <div className="card p-10 text-center">
-          <div className="text-5xl mb-3">🎓</div>
-          <p className="text-gray-600 mb-2">You don't have any certificates yet.</p>
-          <p className="text-sm text-gray-500">
+      {/* Loading */}
+      {loading && (
+        <div className="dp-cert-grid" aria-busy="true">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="dp-card dp-card--skel" aria-hidden="true">
+              <div className="dp-skel dp-skel--title" />
+              <div className="dp-skel dp-skel--meta"  />
+              <div className="dp-skel dp-skel--body"  />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty */}
+      {!loading && items.length === 0 && (
+        <div className="dp-empty">
+          <Award size={36} aria-hidden="true" style={{ color: "#D1D5DB", marginBottom: 12 }} />
+          <p className="dp-empty-text">No certificates yet.</p>
+          <p className="dp-empty-sub">
             Attend workshops, events, and chapter activities to earn certificates.
           </p>
         </div>
-      ) : (
-        <div className="grid md:grid-cols-2 gap-4">
+      )}
+
+      {/* Grid */}
+      {!loading && items.length > 0 && (
+        <div className="dp-cert-grid">
           {items.map((c) => (
             <Link
               key={c.id}
               to={`/certificates/${c.id}`}
-              className="card p-5 block hover:shadow-md transition"
+              className="dp-cert-card"
             >
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <span className="text-3xl">🏆</span>
+              <div className="dp-cert-top">
+                <div className="dp-cert-icon" aria-hidden="true">
+                  <Award size={20} />
+                </div>
                 <span
-                  className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                  className="dp-cert-status"
+                  style={
                     c.status === "valid"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-red-100 text-red-700"
-                  }`}
+                      ? { background: "#D1FAE5", color: "#065F46" }
+                      : { background: "#FEE2E2", color: "#991B1B" }
+                  }
                 >
                   {c.status}
                 </span>
               </div>
-              <h3 className="font-bold text-nacos-blue leading-tight">{c.title}</h3>
+              <h3 className="dp-cert-title">{c.title}</h3>
               {c.description && (
-                <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                  {c.description}
-                </p>
+                <p className="dp-cert-desc">{c.description}</p>
               )}
-              <p className="text-xs text-gray-400 mt-3 font-mono">
-                {c.certificate_number}
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="dp-cert-meta">{c.certificate_number}</p>
+              <p className="dp-cert-meta" style={{ marginTop: 3 }}>
                 Issued {new Date(c.issued_date).toDateString()}
               </p>
-              <span className="inline-block mt-3 text-xs text-nacos-green font-semibold">
-                View certificate →
+              <span className="dp-cert-cta">
+                View certificate <ArrowRight size={12} aria-hidden="true" />
               </span>
             </Link>
           ))}
         </div>
       )}
-    </section>
+
+      <DashPageStyles />
+    </div>
   );
 }

@@ -1,24 +1,25 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PageHeader from "../../components/PageHeader";
+import { supabase } from "../../lib/supabase";
 
 export default function About() {
+  const [milestoneCount, setMilestoneCount] = useState(0);
+
+  useEffect(() => {
+    supabase
+      .from("milestones")
+      .select("id", { count: "exact", head: true })
+      .then(({ count }) => setMilestoneCount(count || 0));
+  }, []);
   return (
     <>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-nacos-blue to-nacos-green text-white">
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center">
-          <p className="text-sm uppercase tracking-widest text-white/70 mb-3">
-            About Us
-          </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-            NACOS KKU VOM Chapter
-          </h1>
-          <p className="text-white/85 text-lg max-w-2xl mx-auto">
-            The Nigeria Association of Computing Students,
-            Karl Kumm University, Vom Chapter — raising the next generation of
-            Nigerian tech leaders.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        label="NACOS KKU Vom Chapter"
+        titleBold="ABOUT"
+        titleLight="US"
+        description="The Nigeria Association of Computing Students, Karl Kumm University, Vom Chapter — raising the next generation of Nigerian tech leaders."
+      />
 
       <section className="max-w-4xl mx-auto px-4 py-16 space-y-14">
         {/* Who we are */}
@@ -175,6 +176,28 @@ export default function About() {
             </p>
           </div>
         </div>
+
+        {/* Our Story teaser — shown only when milestones data exists */}
+        {milestoneCount > 0 && (
+          <div className="card p-6 bg-gradient-to-br from-nacos-blue/5 to-nacos-blue/10 border border-nacos-blue/20">
+            <p className="text-xs uppercase tracking-widest text-nacos-green font-bold mb-2">
+              Our Story
+            </p>
+            <h2 className="text-xl font-bold text-nacos-blue mb-2">
+              A Chapter with History
+            </h2>
+            <p className="text-gray-600 text-sm leading-relaxed mb-4">
+              From our founding moments to present-day milestones — the full story of
+              NACOS KKU VOM Chapter is documented, milestone by milestone.
+            </p>
+            <Link
+              to="/history"
+              className="inline-flex items-center gap-1 text-nacos-blue font-semibold text-sm hover:underline"
+            >
+              Read our history →
+            </Link>
+          </div>
+        )}
 
         {/* CTA */}
         <div className="card p-8 text-center bg-gradient-to-br from-nacos-blue to-nacos-green text-white">
