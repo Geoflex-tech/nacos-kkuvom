@@ -50,8 +50,8 @@ body {
   min-width: 320px;
   /* Prevent content from overflowing horizontally — find the REAL cause, not just hide it */
   overflow-x: clip;
-  /* Prevents the white rubber-band bounce at the top on iOS/Android */
-  overscroll-behavior-y: none;
+  /* Prevents the white rubber-band bounce at the top AND sides on iOS/Android */
+  overscroll-behavior: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -70,6 +70,12 @@ img, video, svg, canvas, iframe, embed, object {
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+/* Textareas should never be wider than their container */
+textarea {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Long words, emails, URLs — wrap instead of overflow */
