@@ -55,3 +55,18 @@ Located in `supabase/functions/`:
 ## Migrations
 
 Run in order to set up a fresh environment:
+
+## Paystack Setup
+
+### Test Mode
+1. Get test keys from https://dashboard.paystack.com/#/settings/developers
+2. Copy the **Test Secret Key** (starts with `sk_test_`)
+3. Set in Supabase: Edge Functions → Secrets → `PAYSTACK_SECRET_KEY`
+4. Set `SITE_URL=https://nacos-kkuvom.vercel.app`
+5. Test card: `4084 0840 8408 4081` / CVV `408` / PIN `0000` / OTP `123456`
+
+### Live Mode
+1. Complete Paystack business verification
+2. Get the **Live Secret Key** (`sk_live_...`)
+3. Replace `PAYSTACK_SECRET_KEY` in Supabase Secrets
+4. Real payments now flow to the chapter's bank account
