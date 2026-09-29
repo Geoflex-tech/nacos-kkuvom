@@ -7,17 +7,27 @@ export default function Events() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("upcoming");
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     supabase
       .from("events")
       .select("*")
       .order("event_date", { ascending: false })
-      .then(({ data }) => {
-        setItems(data || []);
+      .then(({ data, error: err }) => {
+        if (err) {
+          console.error("[Events] Failed to load:", err.code, err.message, err.details);
+          setError("Couldn't load events. Please try again.");
+        } else {
+          setItems(data || []);
+        }
         setLoading(false);
       });
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const now = new Date();
   const filtered = items.filter((e) => {
@@ -59,7 +69,12 @@ export default function Events() {
           ))}
         </div>
 
-        {loading ? (
+        {error ? (
+          <div className="text-center py-16">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button onClick={load} className="px-5 py-2 rounded-full bg-blue-800 text-white text-sm font-semibold">Try again</button>
+          </div>
+        ) : loading ? (
           <p className="text-center text-gray-500 py-16">Loading events...</p>
         ) : filtered.length === 0 ? (
           <div className="card-flat p-10 text-center">

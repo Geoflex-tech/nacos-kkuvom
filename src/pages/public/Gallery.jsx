@@ -7,17 +7,27 @@ export default function Gallery() {
   const [items, setItems]   = useState([]);
   const [active, setActive] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     supabase
       .from("gallery")
       .select("*")
       .order("uploaded_at", { ascending: false })
-      .then(({ data }) => {
-        setItems(data || []);
+      .then(({ data, error: err }) => {
+        if (err) {
+          console.error("[Gallery] Failed to load:", err.code, err.message, err.details);
+          setError("Couldn't load gallery. Please try again.");
+        } else {
+          setItems(data || []);
+        }
         setLoading(false);
       });
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /* close lightbox on Escape */
   const handleKey = useCallback((e) => {
@@ -47,7 +57,12 @@ export default function Gallery() {
       />
 
       <section className="max-w-6xl mx-auto px-4 py-12">
-        {loading ? (
+        {error ? (
+          <div className="text-center py-16">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button onClick={load} className="px-5 py-2 rounded-full bg-blue-800 text-white text-sm font-semibold">Try again</button>
+          </div>
+        ) : loading ? (
           /* skeleton grid */
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {Array.from({ length: 8 }).map((_, i) => (
