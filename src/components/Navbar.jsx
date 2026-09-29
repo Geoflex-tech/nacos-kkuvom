@@ -299,7 +299,7 @@ export default function Navbar() {
           color: var(--color-blue-dark);
           white-space: nowrap;
         }
-        .pill-logo__accent { color: var(--color-yellow); }
+        .pill-logo__accent { color: var(--color-blue-dark); }
 
         /* ─── Centre links ───────────────────────────────────── */
         .pill-links {

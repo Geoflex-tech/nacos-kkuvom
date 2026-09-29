@@ -190,21 +190,21 @@ export function AuthFormStyles() {
   return (
     <style>{`
       /* ── Heading ─────────────────────────────────────── */
-      .af-head { margin-bottom: 28px; }
+      .af-head { margin-bottom: 16px; }
       .af-title {
-        font-size: 1.375rem; font-weight: 500;
-        color: #0F172A; margin: 0 0 6px;
+        font-size: 1.125rem; font-weight: 600;
+        color: #0F172A; margin: 0 0 3px;
       }
       .af-sub {
-        font-size: 0.875rem; color: #64748B; margin: 0; line-height: 1.5;
+        font-size: 0.8125rem; color: #64748B; margin: 0; line-height: 1.4;
       }
 
       /* ── Form-level error box ────────────────────────── */
       .af-err-box {
         display: flex; align-items: flex-start; gap: 8px;
-        padding: 10px 14px; margin-bottom: 20px;
+        padding: 8px 12px; margin-bottom: 12px;
         background: #FEF2F2; border: 1px solid #FECACA;
-        border-radius: 8px;
+        border-radius: 7px;
         font-size: 0.8125rem; color: #B91C1C; line-height: 1.5;
       }
       .af-err-box svg { flex-shrink: 0; margin-top: 1px; }
@@ -212,24 +212,24 @@ export function AuthFormStyles() {
       /* ── Success box ─────────────────────────────────── */
       .af-ok-box {
         display: flex; align-items: flex-start; gap: 8px;
-        padding: 10px 14px; margin-bottom: 20px;
+        padding: 8px 12px; margin-bottom: 12px;
         background: #F0FDF4; border: 1px solid #BBF7D0;
-        border-radius: 8px;
+        border-radius: 7px;
         font-size: 0.8125rem; color: #166534; line-height: 1.5;
       }
       .af-ok-box svg { flex-shrink: 0; margin-top: 1px; }
 
       /* ── Fields ──────────────────────────────────────── */
-      .af-field { margin-bottom: 18px; }
+      .af-field { margin-bottom: 10px; }
 
       .af-label-row {
         display: flex; align-items: center;
-        justify-content: space-between; margin-bottom: 6px;
+        justify-content: space-between; margin-bottom: 4px;
       }
 
       .af-label {
-        display: block; margin-bottom: 6px;
-        font-size: 0.8125rem; font-weight: 500; color: #374151;
+        display: block; margin-bottom: 4px;
+        font-size: 0.75rem; font-weight: 500; color: #374151;
       }
       .af-label-row .af-label { margin-bottom: 0; }
 
@@ -246,10 +246,10 @@ export function AuthFormStyles() {
       /* Input */
       .af-input {
         width: 100%;
-        height: 44px;
-        padding: 0 12px;
+        height: 40px;
+        padding: 0 10px;
         border: 1px solid #D3D9E8;
-        border-radius: 8px;
+        border-radius: 7px;
         background: #fff;
         /* 16px minimum to prevent iOS Safari auto-zoom on focus */
         font-size: 1rem;
@@ -271,24 +271,24 @@ export function AuthFormStyles() {
       .af-input--pw { padding-right: 44px; }
       .af-pw-toggle {
         position: absolute; right: 0; top: 0;
-        width: 44px; height: 44px;
+        width: 40px; height: 40px;
         display: flex; align-items: center; justify-content: center;
         background: none; border: none; cursor: pointer;
         color: #9CA3AF;
         transition: color 150ms ease-out;
-        border-radius: 0 8px 8px 0;
+        border-radius: 0 7px 7px 0;
       }
       .af-pw-toggle:hover { color: #374151; }
       .af-pw-toggle:focus-visible {
         outline: 2px solid #1E40AF; outline-offset: -2px;
-        border-radius: 0 8px 8px 0;
+        border-radius: 0 7px 7px 0;
       }
 
       /* Select */
       .af-select {
-        width: 100%; height: 44px;
-        padding: 0 12px;
-        border: 1px solid #D3D9E8; border-radius: 8px;
+        width: 100%; height: 40px;
+        padding: 0 10px;
+        border: 1px solid #D3D9E8; border-radius: 7px;
         background: #fff; font-size: 1rem;
         color: #0F172A; font-family: inherit;
         box-sizing: border-box;
@@ -297,8 +297,8 @@ export function AuthFormStyles() {
         appearance: none;
         background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
         background-repeat: no-repeat;
-        background-position: right 12px center;
-        padding-right: 36px;
+        background-position: right 10px center;
+        padding-right: 32px;
       }
       .af-select:focus {
         border-color: #1E40AF;
@@ -316,10 +316,10 @@ export function AuthFormStyles() {
       .af-btn {
         display: flex; align-items: center; justify-content: center;
         gap: 8px;
-        width: 100%; height: 44px;
-        margin-top: 8px;
+        width: 100%; height: 40px;
+        margin-top: 6px;
         background: #1F3A9A; color: #fff;
-        border: none; border-radius: 8px;
+        border: none; border-radius: 7px;
         font-size: 0.875rem; font-weight: 500;
         font-family: inherit; cursor: pointer;
         transition: background 150ms ease-out;
@@ -346,8 +346,8 @@ export function AuthFormStyles() {
       /* ── Footer text ─────────────────────────────────── */
       .af-footer-text {
         text-align: center;
-        font-size: 0.875rem; color: #6B7280;
-        margin-top: 24px;
+        font-size: 0.8125rem; color: #6B7280;
+        margin-top: 14px;
       }
       .af-link {
         color: #1E40AF; font-weight: 500; text-decoration: none;
@@ -371,7 +371,7 @@ export function AuthFormStyles() {
 
       /* ── Info banner ─────────────────────────────────── */
       .af-info {
-        padding: 10px 14px; margin-bottom: 20px;
+        padding: 8px 12px; margin-bottom: 14px;
         background: #EFF6FF; border: 1px solid #BFDBFE;
         border-radius: 8px;
         font-size: 0.8125rem; color: #1E40AF; line-height: 1.5;
@@ -380,20 +380,20 @@ export function AuthFormStyles() {
       /* ── Avatar upload ───────────────────────────────── */
       .af-avatar-wrap {
         display: flex; flex-direction: column; align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 12px;
       }
       .af-avatar-label {
-        font-size: 0.8125rem; font-weight: 500;
-        color: #374151; margin-bottom: 10px;
+        font-size: 0.75rem; font-weight: 500;
+        color: #374151; margin-bottom: 6px;
       }
       .af-avatar-ring {
         position: relative;
-        width: 80px; height: 80px;
+        width: 64px; height: 64px;
       }
       .af-avatar-img {
-        width: 80px; height: 80px; border-radius: 50%;
+        width: 64px; height: 64px; border-radius: 50%;
         object-fit: cover;
-        border: 3px solid #FDD04A;
+        border: 2px solid #FDD04A;
       }
       .af-avatar-remove {
         position: absolute; top: -4px; right: -4px;
@@ -405,18 +405,18 @@ export function AuthFormStyles() {
       }
       .af-avatar-remove:hover { background: #B91C1C; }
       .af-avatar-upload {
-        width: 80px; height: 80px; border-radius: 50%;
+        width: 64px; height: 64px; border-radius: 50%;
         border: 2px dashed #D3D9E8;
         background: #F9FAFB;
         display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        cursor: pointer; gap: 4px;
+        cursor: pointer; gap: 3px;
         color: #9CA3AF;
         transition: border-color 150ms ease-out, background 150ms ease-out;
       }
       .af-avatar-upload:hover { border-color: #1E40AF; background: #EFF6FF; color: #1E40AF; }
       .af-avatar-hint {
-        font-size: 0.75rem; color: #9CA3AF; margin-top: 8px;
+        font-size: 0.6875rem; color: #9CA3AF; margin-top: 5px;
       }
 
       /* ── Password hint list ──────────────────────────── */
