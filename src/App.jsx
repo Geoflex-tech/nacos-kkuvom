@@ -19,7 +19,6 @@ import Events             from "./pages/public/Events";
 import Gallery            from "./pages/public/Gallery";
 import Verify             from "./pages/public/Verify";
 import Contact            from "./pages/public/Contact";
-import Opportunities      from "./pages/public/Opportunities";
 import NotFound           from "./pages/public/NotFound";
 
 // ── Auth pages (no nav/footer) ────────────────────────────────
@@ -37,6 +36,7 @@ import Announcements     from "./pages/portal/Announcements";
 import MyCertificates    from "./pages/portal/MyCertificates";
 import CertificateView   from "./pages/portal/CertificateView";
 import Dues              from "./pages/portal/Dues";
+import Opportunities     from "./pages/public/Opportunities";
 
 // ── Admin ─────────────────────────────────────────────────────
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -61,7 +61,6 @@ export default function App() {
           <Route path="/news/:slug"     element={<NewsDetail />} />
           <Route path="/events"         element={<Events />} />
           <Route path="/gallery"        element={<Gallery />} />
-          <Route path="/opportunities"  element={<Opportunities />} />
           <Route path="/verify"         element={<Verify />} />
           <Route path="/contact"        element={<Contact />} />
           {/* 404 also gets public layout */}
@@ -90,6 +89,10 @@ export default function App() {
           path="/tech-hub"
           element={<Navigate to="/dashboard/tech-hub" replace />}
         />
+        <Route
+          path="/opportunities"
+          element={<Navigate to="/dashboard/opportunities" replace />}
+        />
 
         {/* ════════════════════════════════════════════════
             MEMBER PORTAL — own shell via DashboardLayout
@@ -108,6 +111,7 @@ export default function App() {
           <Route path="/dashboard"              element={<Dashboard />} />
           <Route path="/dashboard/resources"    element={<DashboardResources />} />
           <Route path="/dashboard/tech-hub"     element={<DashboardTechHub />} />
+          <Route path="/dashboard/opportunities" element={<Opportunities />} />
           <Route path="/profile"                element={<Profile />} />
           <Route path="/announcements"          element={<Announcements />} />
           <Route path="/certificates"           element={<MyCertificates />} />

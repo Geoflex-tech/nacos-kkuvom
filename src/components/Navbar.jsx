@@ -10,15 +10,14 @@ import { supabase } from "../lib/supabase";
  * Tech Hub is NOT public; it lives in /dashboard/tech-hub (protected).
  */
 const PUBLIC_LINKS = [
-  { to: "/",             label: "Home"          },
-  { to: "/about",        label: "About"         },
-  { to: "/history",      label: "History"       },
-  { to: "/leadership",   label: "Leadership"    },
-  { to: "/news",         label: "News"          },
-  { to: "/events",       label: "Events"        },
-  { to: "/gallery",      label: "Gallery"       },
-  { to: "/opportunities",label: "Opportunities" },
-  { to: "/contact",      label: "Contact"       },
+  { to: "/",           label: "Home"       },
+  { to: "/about",      label: "About"      },
+  { to: "/history",    label: "History"    },
+  { to: "/leadership", label: "Leadership" },
+  { to: "/news",       label: "News"       },
+  { to: "/events",     label: "Events"     },
+  { to: "/gallery",    label: "Gallery"    },
+  { to: "/contact",    label: "Contact"    },
 ];
 
 export default function Navbar() {

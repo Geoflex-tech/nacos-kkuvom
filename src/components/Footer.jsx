@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
 
 const explore = [
-  { to: "/about",         label: "About"        },
-  { to: "/executives",    label: "Executives"   },
-  { to: "/history",       label: "History"      },
-  { to: "/news",          label: "News"         },
-  { to: "/events",        label: "Events"       },
-  { to: "/gallery",       label: "Gallery"      },
-  { to: "/opportunities", label: "Opportunities"},
+  { to: "/about",      label: "About"       },
+  { to: "/executives", label: "Executives"  },
+  { to: "/history",    label: "History"     },
+  { to: "/news",       label: "News"        },
+  { to: "/events",     label: "Events"      },
+  { to: "/gallery",    label: "Gallery"     },
 ];
 
 const getInvolved = [

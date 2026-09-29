@@ -18,32 +18,34 @@ import { Outlet, NavLink, Link, useNavigate, useLocation } from "react-router-do
 import {
   LayoutDashboard, User, BookOpen, Cpu, Megaphone,
   Award, Wallet, Shield, LogOut, Menu, X, ChevronDown,
-  Home, ExternalLink,
+  Home, ExternalLink, Briefcase,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 
 /* ── Nav items ──────────────────────────────────────────────── */
 const NAV_ITEMS = [
-  { to: "/dashboard",            label: "Overview",      Icon: LayoutDashboard, end: true },
-  { to: "/profile",              label: "Profile",       Icon: User             },
-  { to: "/dashboard/resources",  label: "Resources",     Icon: BookOpen         },
-  { to: "/dashboard/tech-hub",   label: "Tech Hub",      Icon: Cpu              },
-  { to: "/announcements",        label: "Announcements", Icon: Megaphone        },
-  { to: "/certificates",         label: "Certificates",  Icon: Award            },
-  { to: "/dues",                 label: "Dues",          Icon: Wallet           },
+  { to: "/dashboard",                label: "Overview",      Icon: LayoutDashboard, end: true },
+  { to: "/profile",                  label: "Profile",       Icon: User             },
+  { to: "/dashboard/resources",      label: "Resources",     Icon: BookOpen         },
+  { to: "/dashboard/tech-hub",       label: "Tech Hub",      Icon: Cpu              },
+  { to: "/dashboard/opportunities",  label: "Opportunities", Icon: Briefcase        },
+  { to: "/announcements",            label: "Announcements", Icon: Megaphone        },
+  { to: "/certificates",             label: "Certificates",  Icon: Award            },
+  { to: "/dues",                     label: "Dues",          Icon: Wallet           },
 ];
 
 /* ── Route → page title map ─────────────────────────────────── */
 const PAGE_TITLES = {
-  "/dashboard":           "Overview",
-  "/profile":             "My Profile",
-  "/dashboard/resources": "Resources",
-  "/dashboard/tech-hub":  "Tech Hub",
-  "/announcements":       "Announcements",
-  "/certificates":        "My Certificates",
-  "/dues":                "Pay Dues",
-  "/admin":               "Admin",
+  "/dashboard":                   "Overview",
+  "/profile":                     "My Profile",
+  "/dashboard/resources":         "Resources",
+  "/dashboard/tech-hub":          "Tech Hub",
+  "/dashboard/opportunities":     "Opportunities",
+  "/announcements":               "Announcements",
+  "/certificates":                "My Certificates",
+  "/dues":                        "Pay Dues",
+  "/admin":                       "Admin",
 };
 
 /* ── Avatar initials ─────────────────────────────────────────── */
