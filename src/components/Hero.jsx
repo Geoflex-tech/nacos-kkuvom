@@ -22,8 +22,8 @@ const features = [
   Below buttons:          64px
   Button gap:             16px   ← was 12px (~var(--space-2))
 
-  paddingTop  = 14 + 52 + 56 = 122px
-  marginTop   = -(14 + 52 + 16) = -82px  (pulls section behind fixed pill)
+  paddingTop  = 14 + 52 + 56 = 122px  (+safe-area-inset-top)
+  marginTop   = -(14 + 52 + 16) = -82px  (+safe-area-inset-top, pulls section behind fixed pill)
   paddingBottom = 64px
 
   SPACING CONSTANTS (mobile <640px)
@@ -38,8 +38,8 @@ const features = [
   Paragraph-to-buttons:   24px
   Below buttons:          48px
 
-  paddingTop  = 10 + 48 + 40 = 98px
-  marginTop   = -(10 + 48 + 16) = -74px
+  paddingTop  = 10 + 48 + 40 = 98px  (+safe-area-inset-top)
+  marginTop   = -(10 + 48 + 16) = -74px  (+safe-area-inset-top)
 */
 
 export default function Hero() {
@@ -54,9 +54,9 @@ export default function Hero() {
           display: "flex",
           alignItems: "flex-start",   /* top-align so content reads from near top */
           overflow: "hidden",
-          /* desktop: pull up behind fixed pill */
-          marginTop: "calc(-1 * (14px + 52px + 16px))",
-          paddingTop:    "calc(14px + 52px + 56px)",   /* navbar + gap-to-seal */
+          /* desktop: pull up behind fixed pill (safe-area-inset-top for notch) */
+          marginTop: "calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px))",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 10px + 52px + 56px)",
           paddingBottom: "64px",
           minHeight: "100svh",
         }}
@@ -330,8 +330,8 @@ export default function Hero() {
         /* ── Mobile hero spacing (<640px) ── */
         @media (max-width: 639px) {
           .hero-section {
-            margin-top:    calc(-1 * (10px + 48px + 16px)) !important;  /* -74px */
-            padding-top:   calc(10px + 48px + 40px) !important;          /* 98px  */
+            margin-top:    calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 48px + 16px)) !important;
+            padding-top:   calc(env(safe-area-inset-top, 0px) + 10px + 48px + 40px) !important;
             padding-bottom: 48px !important;
           }
           .hero-seal {

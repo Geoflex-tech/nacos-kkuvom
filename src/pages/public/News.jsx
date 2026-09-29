@@ -7,17 +7,27 @@ import PageHeader from "../../components/PageHeader";
 export default function News() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     supabase
       .from("news")
       .select("*")
       .order("published_at", { ascending: false })
-      .then(({ data }) => {
-        setItems(data || []);
+      .then(({ data, error: err }) => {
+        if (err) {
+          console.error("[News] Failed to load:", err.code, err.message, err.details);
+          setError("Couldn't load news. Please try again.");
+        } else {
+          setItems(data || []);
+        }
         setLoading(false);
       });
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -29,7 +39,12 @@ export default function News() {
       />
 
       <section className="max-w-5xl mx-auto px-4 py-12">
-        {loading ? (
+        {error ? (
+          <div className="text-center py-16">
+            <p className="text-red-600 mb-4">{error}</p>
+            <button onClick={load} className="px-5 py-2 rounded-full bg-blue-800 text-white text-sm font-semibold">Try again</button>
+          </div>
+        ) : loading ? (
           <p className="text-center text-gray-500 py-16">Loading news...</p>
         ) : items.length === 0 ? (
           <div className="card-flat p-10 text-center">

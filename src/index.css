@@ -31,6 +31,9 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  /* Navy background kills the white gap/bounce above the navbar on mobile.
+     Pages with white tops override body bg via their own wrapper. */
+  background-color: #12245F;
 }
 
 body {
@@ -41,6 +44,8 @@ body {
   background-color: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   margin: 0;
+  /* Prevents the white rubber-band bounce at the top on iOS/Android */
+  overscroll-behavior-y: none;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -62,17 +62,26 @@ export default function History() {
   const [loading, setLoading]       = useState(true);
   const [error, setError]           = useState(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     supabase
       .from("milestones")
       .select("id, year, title, description, image_url, sort_date")
       .order("sort_date", { ascending: true, nullsFirst: false })
       .then(({ data, error: err }) => {
-        if (err) setError(err.message);
-        else setMilestones(data || []);
+        if (err) {
+          // Log the full technical error to console only — never show raw errors to visitors
+          console.error("[History] Failed to load milestones:", err.code, err.message, err.details);
+          setError("Couldn't load history. Please try again.");
+        } else {
+          setMilestones(data || []);
+        }
         setLoading(false);
       });
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
@@ -89,7 +98,22 @@ export default function History() {
           {/* Error */}
           {error && (
             <div className="ht-empty" role="alert">
-              <p style={{ color: "#DC2626" }}>Couldn't load history. Please try again.</p>
+              <p style={{ color: "#DC2626", marginBottom: "16px" }}>{error}</p>
+              <button
+                onClick={load}
+                style={{
+                  padding: "8px 20px",
+                  borderRadius: "999px",
+                  background: "#1E3A8A",
+                  color: "#fff",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  fontWeight: 600,
+                }}
+              >
+                Try again
+              </button>
             </div>
           )}
 

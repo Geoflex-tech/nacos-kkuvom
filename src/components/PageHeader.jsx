@@ -55,8 +55,8 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
           overflow: hidden;
           background-color: #0F1B4D;
 
-          /* clear fixed pill: 14px offset + 52px height + 40px gap */
-          padding-top:    calc(14px + 52px + 48px);
+          /* clear fixed pill: safe-area + 10px offset + 52px height + 48px gap */
+          padding-top:    calc(env(safe-area-inset-top, 0px) + 10px + 52px + 48px);
           padding-bottom: 72px;
           min-height: 300px;
 
@@ -64,7 +64,7 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
           align-items: flex-end;
 
           /* slide behind fixed navbar pill */
-          margin-top: calc(-1 * (14px + 52px + 16px));
+          margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
         }
 
         /* ── 2. Glows ─────────────────────────────────── */
@@ -200,9 +200,9 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
         @media (max-width: 1023px) {
           .ph-wrap {
             min-height: 240px;
-            padding-top:    calc(10px + 48px + 36px);
+            padding-top:    calc(env(safe-area-inset-top, 0px) + 10px + 48px + 36px);
             padding-bottom: 48px;
-            margin-top: calc(-1 * (10px + 48px + 16px));
+            margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 48px + 16px));
           }
           .ph-logo {
             width: 180px;

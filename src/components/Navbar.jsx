@@ -195,10 +195,14 @@ export default function Navbar() {
         /* ─── Outer wrapper ──────────────────────────────────── */
         .pill-wrap {
           position: fixed;
-          top: 14px;
+          top: 0;
           left: 0;
           right: 0;
           z-index: 100;
+          /* Transparent — only the pill itself is white.
+             safe-area-inset-top pushes the pill below the notch/status bar. */
+          background: transparent;
+          padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
           padding-inline: 16px;
           pointer-events: none;
         }
@@ -487,15 +491,14 @@ export default function Navbar() {
           .pill-actions { display: none; }
           .pill-burger  { display: flex; }
           .pill { padding: 6px 6px 6px 14px; height: 48px; }
-          .pill-wrap { top: 10px; padding-inline: 16px; }
+          .pill-wrap { padding-inline: 16px; }
         }
-        /* Mobile drawer position */
+        /* Mobile drawer — sits just below the pill */
         .mob-drawer {
-          top: calc(10px + 48px + 8px); /* mobile default: offset + pill + gap */
+          top: calc(env(safe-area-inset-top, 0px) + 10px + 48px + 8px);
         }
         @media (min-width: 1100px) {
           .pill-wrap { padding-inline: 24px; }
-          /* drawer only shows below 1100px, so this is fine */
         }
 
         /* At 1280px+, give links a bit more room */
