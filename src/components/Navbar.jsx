@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, LayoutDashboard, LogOut, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
@@ -25,6 +25,12 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { isMember, isExec, profile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const drawerRef  = useRef(null);
+  const burgerRef  = useRef(null);
+
+  // Close drawer on route change
+  useEffect(() => { setOpen(false); }, [location.pathname]);
 
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 20);
@@ -32,9 +38,42 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
+  // Body scroll lock
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  // Focus trap + Escape in mobile drawer
+  const handleDrawerKey = useCallback((e) => {
+    if (e.key === "Escape") {
+      setOpen(false);
+      burgerRef.current?.focus();
+      return;
+    }
+    if (e.key !== "Tab") return;
+    const drawer = drawerRef.current;
+    if (!drawer) return;
+    const focusable = Array.from(drawer.querySelectorAll(
+      'a[href], button:not([disabled]), [tabindex="0"]'
+    ));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  }, []);
+
+  // Move focus into drawer when it opens
+  useEffect(() => {
+    if (open) {
+      setTimeout(() => {
+        drawerRef.current?.querySelector('a[href], button:not([disabled])')?.focus();
+      }, 50);
+    }
   }, [open]);
 
   const logout = async () => {
@@ -109,6 +148,7 @@ export default function Navbar() {
 
           {/* Burger — mobile only (<1100px) */}
           <button
+            ref={burgerRef}
             className="pill-burger"
             onClick={() => setOpen((o) => !o)}
             aria-label={open ? "Close menu" : "Open menu"}
@@ -126,7 +166,15 @@ export default function Navbar() {
           {/* Backdrop */}
           <div className="mob-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />
 
-          <div id="mob-menu" className="mob-drawer" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <div
+            id="mob-menu"
+            ref={drawerRef}
+            className="mob-drawer"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
+            onKeyDown={handleDrawerKey}
+          >
             {/* User block */}
             {isMember && (
               <Link to="/profile" onClick={() => setOpen(false)} className="mob-user">
@@ -204,6 +252,8 @@ export default function Navbar() {
           background: transparent;
           padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
           padding-inline: 16px;
+          padding-left: max(16px, env(safe-area-inset-left));
+          padding-right: max(16px, env(safe-area-inset-right));
           pointer-events: none;
         }
 
@@ -255,7 +305,7 @@ export default function Navbar() {
         .pill-links {
           display: flex;
           align-items: center;
-          gap: 0px;
+          gap: 2px;
           list-style: none;
           margin: 0;
           padding: 0;
@@ -271,7 +321,7 @@ export default function Navbar() {
           display: inline-block;
           padding: 6px 10px;
           border-radius: 999px;
-          font-size: 0.84375rem;   /* 13.5px */
+          font-size: clamp(0.7rem, 1.1vw, 0.8125rem);
           font-weight: 400;
           color: #4B5563;
           text-decoration: none;
@@ -424,6 +474,11 @@ export default function Navbar() {
           display: flex;
           flex-direction: column;
           gap: 4px;
+          /* Prevent overflow on very small / short screens */
+          max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px);
+          max-height: calc(100vh - 80px); /* fallback */
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
         }
 
         .mob-user {
