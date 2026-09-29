@@ -126,7 +126,7 @@ export default function ManageCertificates() {
 
         <input
           className="input"
-          placeholder="Signed by (e.g. Ezekiel Geoffrey Izam, Acting President)"
+          placeholder="Signed by (e.g. Chapter President, Acting President)"
           value={form.signed_by}
           onChange={update("signed_by")}
         />
