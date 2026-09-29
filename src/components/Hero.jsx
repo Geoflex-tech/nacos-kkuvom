@@ -126,16 +126,15 @@ export default function Hero({ stats = {} }) {
           min-height: 100dvh;
         }
 
-        /* ── Background image (blurred logo watermark) ── */
+        /* ── Background image (blurred logo) ── */
         .hero-bg-img {
           position: absolute;
           inset: 0;
-          background-color: #0f1f5c;
           background-image: url('/logo.jpeg');
-          background-size: 38%;
-          background-position: center center;
-          background-repeat: no-repeat;
-          filter: blur(6px) brightness(0.25);
+          background-size: cover;
+          background-position: center;
+          filter: blur(3px) brightness(0.35);
+          transform: scale(1.05);
           pointer-events: none;
           z-index: 0;
         }
