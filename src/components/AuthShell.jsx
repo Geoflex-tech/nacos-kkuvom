@@ -76,6 +76,8 @@ export default function AuthShell({ headline, subtext, children }) {
         /* ── Shell ─────────────────────────────────────────── */
         .as-root {
           display: flex;
+          min-height: 100svh;
+          min-height: 100dvh;
           min-height: 100vh;
         }
 
@@ -176,6 +178,8 @@ export default function AuthShell({ headline, subtext, children }) {
         .as-mob-bar {
           display: flex; align-items: center; gap: 10px;
           padding: 14px 20px;
+          padding-left: max(20px, env(safe-area-inset-left));
+          padding-right: max(20px, env(safe-area-inset-right));
           background: #12245F;
         }
         .as-mob-name {
