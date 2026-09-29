@@ -21,6 +21,7 @@ import Register from "./pages/public/Register";
 import NotFound from "./pages/public/NotFound";
 import ForgotPassword from "./pages/public/ForgotPassword";
 import ResetPassword from "./pages/public/ResetPassword";
+import Opportunities from "./pages/public/Opportunities";
 // Member portal
 import Dashboard from "./pages/portal/Dashboard";
 import Profile from "./pages/portal/Profile";
@@ -56,7 +57,7 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
-
+          <Route path="/opportunities" element={<Opportunities />} />
           {/* Member portal */}
           <Route
             path="/dashboard"

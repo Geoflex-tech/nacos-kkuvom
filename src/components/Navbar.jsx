@@ -13,6 +13,7 @@ const links = [
   { to: "/events", label: "Events" },
   { to: "/gallery", label: "Gallery" },
   { to: "/tech-hub", label: "Tech Hub" },
+  { to: "/opportunities", label: "Opportunities" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -37,10 +38,13 @@ export default function Navbar() {
   const dashboardLabel = isExec ? "Admin" : "Dashboard";
 
   return (
-   <header className="sticky top-0 z-50 bg-nacos-blue/95 backdrop-blur-md text-white shadow-sm">
+    <header className="sticky top-0 z-50 bg-nacos-blue/95 backdrop-blur-md text-white shadow-sm">
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-bold text-lg shrink-0"
+        >
           <img
             src="/logo.jpeg"
             alt="NACOS KKU VOM"
@@ -52,7 +56,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden lg:flex items-center gap-5 text-sm font-medium">
+        <ul className="hidden lg:flex items-center gap-4 text-sm font-medium">
           {links.map((l) => (
             <li key={l.to}>
               <NavLink
@@ -73,7 +77,6 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           {isMember ? (
             <>
-              {/* Avatar + name */}
               <Link
                 to="/profile"
                 className="flex items-center gap-2 hover:opacity-90 transition group"
@@ -95,7 +98,6 @@ export default function Navbar() {
                 </span>
               </Link>
 
-              {/* Dashboard/Admin button */}
               <NavLink
                 to={dashboardLink}
                 className="inline-flex items-center gap-1.5 bg-nacos-gold text-nacos-blue px-3 py-1.5 rounded-md font-semibold hover:opacity-90 transition text-sm"
@@ -104,7 +106,6 @@ export default function Navbar() {
                 {dashboardLabel}
               </NavLink>
 
-              {/* Logout */}
               <button
                 onClick={logout}
                 className="text-sm text-white/70 hover:text-nacos-gold transition inline-flex items-center gap-1"
@@ -148,7 +149,6 @@ export default function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="lg:hidden bg-nacos-blue border-t border-white/10">
-          {/* Mobile user block */}
           {isMember && (
             <div className="px-4 pt-4 pb-3 border-b border-white/10">
               <Link
@@ -199,7 +199,6 @@ export default function Navbar() {
             ))}
           </ul>
 
-          {/* Mobile auth actions */}
           <div className="px-4 pb-4 pt-2 border-t border-white/10 space-y-2">
             {isMember ? (
               <>

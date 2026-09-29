@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-gradient-to-br from-nacos-blue to-nacos-blue-dark text-white mt-16">
       <div className="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-4 gap-8">
-        {/* Brand column */}
+        {/* Brand */}
         <div className="md:col-span-2">
           <div className="flex items-center gap-2 mb-3">
             <img
@@ -21,7 +21,7 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Quick Links */}
+        {/* Explore */}
         <div>
           <h4 className="font-semibold mb-3">Explore</h4>
           <ul className="text-sm space-y-2 text-white/85">
@@ -56,6 +56,14 @@ export default function Footer() {
             <li>
               <Link to="/gallery" className="hover:text-nacos-gold transition">
                 Gallery
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/opportunities"
+                className="hover:text-nacos-gold transition"
+              >
+                Opportunities
               </Link>
             </li>
           </ul>
@@ -113,9 +121,7 @@ export default function Footer() {
             © {new Date().getFullYear()} NACOS KKU VOM Chapter. All rights
             reserved.
           </p>
-          <p>
-            Built with ❤️ by the Pioneer Administration
-          </p>
+          <p>Built with ❤️ by the Pioneer Administration</p>
         </div>
       </div>
     </footer>
