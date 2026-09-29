@@ -196,7 +196,7 @@ export default function Register() {
             id="reg-name"
             type="text"
             autoComplete="name"
-            placeholder="e.g. Ezekiel Geoffrey Izam"
+            placeholder="e.g. Your Full Name"
             value={form.full_name}
             onChange={update("full_name")}
             className="af-input"
