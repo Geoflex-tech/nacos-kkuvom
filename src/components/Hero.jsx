@@ -29,10 +29,11 @@ export default function Hero({ stats = {} }) {
         aria-label="Welcome to NACOS KKU VOM"
         className="hero-section"
       >
-        {/* Glow: blue top-right */}
-        <div className="hero-glow hero-glow--blue" aria-hidden="true" />
-        {/* Glow: green bottom-left */}
-        <div className="hero-glow hero-glow--green" aria-hidden="true" />
+        {/* Background: logo image with blur + dark tint */}
+        <div className="hero-bg-img" aria-hidden="true" />
+
+        {/* Blue gradient overlay */}
+        <div className="hero-bg-overlay" aria-hidden="true" />
 
         <div className="container hero-content">
 
@@ -113,7 +114,6 @@ export default function Hero({ stats = {} }) {
           display: flex;
           align-items: flex-start;
           overflow: hidden;
-          background-color: #12245F;
 
           /* Pull section behind the fixed pill */
           margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
@@ -125,28 +125,32 @@ export default function Hero({ stats = {} }) {
           min-height: 100vh; /* fallback */
         }
 
-        /* ── Glows ── */
-        .hero-glow {
+        /* ── Background image (blurred logo) ── */
+        .hero-bg-img {
           position: absolute;
-          border-radius: 50%;
+          inset: 0;
+          background-image: url('/logo.jpeg');
+          background-size: cover;
+          background-position: center;
+          filter: blur(3px) brightness(0.35);
+          transform: scale(1.05);
           pointer-events: none;
           z-index: 0;
         }
-        .hero-glow--blue {
-          top: -140px; right: -80px;
-          width: 580px; height: 580px;
-          background: radial-gradient(circle, rgba(30,64,175,0.52) 0%, transparent 70%);
-        }
-        .hero-glow--green {
-          bottom: -140px; left: -60px;
-          width: 500px; height: 500px;
-          background: radial-gradient(circle, rgba(5,150,105,0.22) 0%, transparent 70%);
+
+        /* ── Gradient overlay on top of blurred image ── */
+        .hero-bg-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(30,58,138,0.92) 0%, rgba(30,64,175,0.80) 60%, rgba(5,150,105,0.50) 100%);
+          pointer-events: none;
+          z-index: 1;
         }
 
         /* ── Content wrapper ── */
         .hero-content {
           position: relative;
-          z-index: 1;
+          z-index: 2;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -156,12 +160,12 @@ export default function Hero({ stats = {} }) {
 
         /* ── Seal ── */
         .hero-seal {
-          width: 72px; height: 72px;
+          width: 88px; height: 88px;
           border-radius: 50%;
           overflow: hidden;
-          border: 2.5px solid rgba(255,255,255,0.35);
-          margin-bottom: 20px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+          border: 3px solid rgba(255,255,255,0.40);
+          margin-bottom: 28px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.35);
           flex-shrink: 0;
         }
         .hero-seal__img {
@@ -312,7 +316,7 @@ export default function Hero({ stats = {} }) {
           .hero-section {
             padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 64px);
           }
-          .hero-seal { width: 64px; height: 64px; }
+          .hero-seal { width: 76px; height: 76px; }
           .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
           .hero-cards-wrap { margin-top: -40px; }
         }
@@ -327,8 +331,8 @@ export default function Hero({ stats = {} }) {
             padding-bottom: 80px;
           }
           .hero-seal {
-            width: 56px; height: 56px;
-            margin-bottom: 16px;
+            width: 72px; height: 72px;
+            margin-bottom: 20px;
           }
           .hero-badge {
             font-size: 9.5px;
@@ -373,7 +377,7 @@ export default function Hero({ stats = {} }) {
             padding-bottom: 100px;
           }
           .hero-headline { font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
-          .hero-seal { width: 60px; height: 60px; }
+          .hero-seal { width: 70px; height: 70px; }
         }
         @media (max-height: 420px) {
           .hero-section { padding-bottom: 72px; }
