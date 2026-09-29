@@ -1,0 +1,39 @@
+{
+  "_note": "Backup of hardcoded leadership data removed from useLeadership.js and Home.jsx on 2026-09-29. Restore by re-adding these entries to the executives table in Supabase.",
+  "_restore": "INSERT into public.executives (name, position, rank, tier, slug, status, bio, social_links) VALUES (...) for each entry below.",
+  "people": [
+    {
+      "name": "Ezekiel Geoffrey Izam",
+      "position": "President",
+      "rank": 1,
+      "tier": "executive",
+      "slug": "president",
+      "status": "filled",
+      "bio": "Full-stack developer and backend lead for the NACOS KKU VOM Chapter Portal.",
+      "social_links": { "github": "https://github.com/Geoflex-tech" },
+      "source": "CANONICAL array in useLeadership.js + presidentName fallback in Home.jsx"
+    },
+    {
+      "name": "Retkatmun Gamalliel",
+      "position": "Director of Software",
+      "rank": 8,
+      "tier": "directors",
+      "slug": "director-of-software",
+      "status": "filled",
+      "bio": "Software Engineer and Agentic AI Engineer with 6+ years of experience building innovative software solutions. Works as an Agentic Engineer at Gean Lab and a Software Engineer at Blockfuse Labs. Passionate about AI, Blockchain, and open-source technology, building with Python, JavaScript, TypeScript, Node.js, React.js, and Next.js.",
+      "social_links": { "portfolio": "https://devscholar00.netlify.app" },
+      "source": "CANONICAL array in useLeadership.js"
+    },
+    {
+      "name": "Henry Feng Gyang",
+      "position": "Treasurer",
+      "rank": 6,
+      "tier": "executive",
+      "slug": "treasurer",
+      "status": "filled",
+      "bio": null,
+      "social_links": null,
+      "source": "executives table in DB (old schema row)"
+    }
+  ]
+}
