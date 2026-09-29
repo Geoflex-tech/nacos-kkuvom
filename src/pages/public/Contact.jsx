@@ -130,7 +130,6 @@ export default function Contact() {
               border: "1px solid var(--color-border)",
               borderRadius: "var(--radius-lg)",
               textDecoration: "none",
-              transition: "border-color 150ms ease-out, box-shadow 150ms ease-out",
             };
 
             return href ? (
@@ -138,14 +137,8 @@ export default function Contact() {
                 key={label}
                 href={href}
                 style={cardStyle}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = accent;
-                  e.currentTarget.style.boxShadow = "var(--shadow-md)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--color-border)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
+                className="ct-info-card"
+                data-accent={accent}
               >
                 {inner}
               </a>
@@ -304,6 +297,20 @@ export default function Contact() {
           grid-template-columns: repeat(3, 1fr);
           gap: 14px;
         }
+        @media (hover: hover) {
+          .ct-info-card:hover {
+            border-color: var(--color-blue);
+            box-shadow: var(--shadow-md);
+          }
+        }
+        .ct-info-card {
+          transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+        }
+        .ct-info-card:focus-visible {
+          outline: 2px solid var(--color-blue);
+          outline-offset: 2px;
+          border-radius: var(--radius-lg);
+        }
 
         /* ── Form section ── */
         .ct-form-wrap {
@@ -373,7 +380,6 @@ export default function Contact() {
           .ct-page { padding-top: 40px; padding-bottom: 60px; gap: 40px; }
           .ct-cards { grid-template-columns: 1fr; gap: 10px; }
         }
-
         /* ── Mobile ── */
         @media (max-width: 639px) {
           .ct-page { padding-inline: 16px; padding-top: 32px; }
