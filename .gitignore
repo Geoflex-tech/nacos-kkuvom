@@ -24,3 +24,16 @@ dist-ssr
 *.sw?
 .env
 .env.local
+# AI tool artifacts
+.adal/
+.agents/
+.aider-desk/
+.augment/
+.autohand/
+.bob/
+.claude/
+.codeartsdoer/
+.codebuddy/
+.codemaker/
+.codestudio/
+.commandcode/
