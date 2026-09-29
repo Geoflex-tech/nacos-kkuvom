@@ -9,6 +9,17 @@ const DEPARTMENTS = [
   "Information Technology",
 ];
 
+const MATRIC_REGEX = /^KKU\/\d{4}\/SC\/\d{3}$/;
+
+function validateMatric(value) {
+  if (!value) return "Matric number is required.";
+  const cleaned = value.trim().toUpperCase();
+  if (!MATRIC_REGEX.test(cleaned)) {
+    return "Invalid format. Use: KKU/YYYY/SC/NNN (e.g. KKU/2024/SC/001)";
+  }
+  return null;
+}
+
 export default function Register() {
   const [form, setForm] = useState({
     full_name: "",
@@ -29,6 +40,14 @@ export default function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Validate matric before anything else
+    const matricError = validateMatric(form.matric_no);
+    if (matricError) {
+      setError(matricError);
+      return;
+    }
+
     setLoading(true);
 
     // 1. Create auth user with metadata
@@ -60,7 +79,7 @@ export default function Register() {
       .from("profiles")
       .update({
         full_name: form.full_name,
-        matric_no: form.matric_no,
+        matric_no: form.matric_no.trim().toUpperCase(),
         level: form.level,
         phone: form.phone,
         department: form.department,
@@ -77,6 +96,8 @@ export default function Register() {
 
     navigate("/dashboard");
   };
+
+  const matricErr = form.matric_no ? validateMatric(form.matric_no) : null;
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -112,7 +133,6 @@ export default function Register() {
       {/* Right panel — form */}
       <div className="flex items-start justify-center p-6 md:p-10 bg-white">
         <div className="w-full max-w-md">
-          {/* Back link */}
           <Link
             to="/"
             className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-nacos-blue mb-6"
@@ -120,7 +140,6 @@ export default function Register() {
             <ArrowLeft size={14} /> Back to website
           </Link>
 
-          {/* Header */}
           <h2 className="text-2xl font-bold text-nacos-blue mb-1">
             Create account
           </h2>
@@ -134,7 +153,6 @@ export default function Register() {
             </Link>
           </p>
 
-          {/* Form */}
           <form onSubmit={handleRegister} className="space-y-4">
             {/* Full name */}
             <div>
@@ -197,12 +215,24 @@ export default function Register() {
                 Matric number
               </label>
               <input
-                className="input"
-                placeholder="e.g. KKU/2023/SC/003"
+                className={`input ${
+                  matricErr
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
+                    : ""
+                }`}
+                placeholder="KKU/2024/SC/001"
                 value={form.matric_no}
-                onChange={update("matric_no")}
+                onChange={(e) =>
+                  setForm({ ...form, matric_no: e.target.value.toUpperCase() })
+                }
                 required
               />
+              {matricErr && (
+                <p className="text-xs text-red-600 mt-1.5">{matricErr}</p>
+              )}
+              <p className="text-xs text-gray-400 mt-1.5">
+                Format: KKU/YYYY/SC/NNN
+              </p>
             </div>
 
             {/* Department */}
@@ -240,7 +270,7 @@ export default function Register() {
                 <option value="200L">200L</option>
                 <option value="300L">300L</option>
                 <option value="400L">400L</option>
-              
+
               </select>
             </div>
 
@@ -280,8 +310,8 @@ export default function Register() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-3 inline-flex items-center justify-center gap-2"
+              disabled={loading || !!matricErr}
+              className="btn-primary w-full py-3 inline-flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
               {loading ? "Creating account..." : "Create account"}
