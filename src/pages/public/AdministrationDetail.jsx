@@ -1,490 +1,711 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
-  ArrowLeft,
-  ArrowRight,
-  Trophy,
-  FolderKanban,
-  ExternalLink,
-  Quote,
-  Calendar,
-  MapPin,
-  Users,
+  ArrowLeft, ArrowRight, Trophy, FolderKanban,
+  ExternalLink, Quote, Calendar, MapPin, Users, RefreshCw,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
-const STATUS_COLORS = {
-  planned: "bg-gray-100 text-gray-600",
-  "in-progress": "bg-yellow-100 text-yellow-700",
-  completed: "bg-green-100 text-green-700",
-  archived: "bg-gray-200 text-gray-500",
+/* ── Status pill colours ─────────────────────────────────── */
+const STATUS_STYLES = {
+  planned:      { bg: "#F1F5F9", color: "#475569" },
+  "in-progress":{ bg: "#FEF3C7", color: "#92400E" },
+  completed:    { bg: "#D1FAE5", color: "#065F46" },
+  archived:     { bg: "#E5E7EB", color: "#4B5563" },
 };
 
+/* ── Loading skeleton strip ──────────────────────────────── */
+function Skel({ w = "100%", h = 14, r = 6, mb = 0 }) {
+  return (
+    <div aria-hidden="true" style={{
+      width: w, height: h, borderRadius: r, marginBottom: mb,
+      background: "linear-gradient(90deg,#E2E8F0 25%,#F1F5F9 50%,#E2E8F0 75%)",
+      backgroundSize: "200% 100%", animation: "ad-shimmer 1.4s infinite",
+    }} />
+  );
+}
+
+/* ── Section heading ─────────────────────────────────────── */
+function SecHeading({ eyebrow, icon: Icon, iconColor, children }) {
+  return (
+    <div className="ad-sec-head">
+      <p className="ad-eyebrow">{eyebrow}</p>
+      <h2 className="ad-sec-title">
+        {Icon && <Icon size={22} color={iconColor} aria-hidden="true" />}
+        {children}
+      </h2>
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════ */
 export default function AdministrationDetail() {
   const { id } = useParams();
-  const [admin, setAdmin] = useState(null);
-  const [executives, setExecutives] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [news, setNews] = useState([]);
-  const [gallery, setGallery] = useState([]);
-  const [nextAdmin, setNextAdmin] = useState(null);
-  const [prevAdmin, setPrevAdmin] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const [admin, setAdmin]         = useState(null);
+  const [executives, setExecs]    = useState([]);
+  const [events, setEvents]       = useState([]);
+  const [news, setNews]           = useState([]);
+  const [gallery, setGallery]     = useState([]);
+  const [nextAdmin, setNext]      = useState(null);
+  const [prevAdmin, setPrev]      = useState(null);
+  const [loading, setLoading]     = useState(true);
+  const [notFound, setNotFound]   = useState(false);
 
   useEffect(() => {
     (async () => {
       const { data: a } = await supabase
-        .from("administrations")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
+        .from("administrations").select("*").eq("id", id).maybeSingle();
 
-      if (!a) {
-        setNotFound(true);
-        setLoading(false);
-        return;
-      }
+      if (!a) { setNotFound(true); setLoading(false); return; }
       setAdmin(a);
 
-      const [execsRes, eventsRes, newsRes, galleryRes, othersRes] =
-        await Promise.all([
-          supabase
-            .from("executives")
-            .select("*")
-            .eq("administration_id", id)
-            .order("order_index"),
-          supabase
-            .from("events")
-            .select("*")
-            .eq("administration_id", id)
-            .order("event_date", { ascending: false }),
-          supabase
-            .from("news")
-            .select("*")
-            .eq("administration_id", id)
-            .order("published_at", { ascending: false }),
-          supabase
-            .from("gallery")
-            .select("*")
-            .eq("administration_id", id)
-            .order("uploaded_at", { ascending: false }),
-          supabase
-            .from("administrations")
-            .select("id, session_label, administration_name, start_date")
-            .order("start_date", { ascending: true }),
-        ]);
+      const [execsR, eventsR, newsR, galleryR, othersR] = await Promise.all([
+        supabase.from("executives").select("*").eq("administration_id", id).order("order_index"),
+        supabase.from("events").select("*").eq("administration_id", id).order("event_date", { ascending: false }),
+        supabase.from("news").select("*").eq("administration_id", id).order("published_at", { ascending: false }),
+        supabase.from("gallery").select("*").eq("administration_id", id).order("uploaded_at", { ascending: false }),
+        supabase.from("administrations").select("id,session_label,administration_name,start_date").order("start_date", { ascending: true }),
+      ]);
 
-      setExecutives(execsRes.data || []);
-      setEvents(eventsRes.data || []);
-      setNews(newsRes.data || []);
-      setGallery(galleryRes.data || []);
+      setExecs(execsR.data || []);
+      setEvents(eventsR.data || []);
+      setNews(newsR.data || []);
+      setGallery(galleryR.data || []);
 
-      const sorted = othersRes.data || [];
+      const sorted = othersR.data || [];
       const idx = sorted.findIndex((x) => x.id === id);
-      if (idx > 0) setPrevAdmin(sorted[idx - 1]);
-      if (idx >= 0 && idx < sorted.length - 1) setNextAdmin(sorted[idx + 1]);
+      if (idx > 0)                      setPrev(sorted[idx - 1]);
+      if (idx >= 0 && idx < sorted.length - 1) setNext(sorted[idx + 1]);
 
       setLoading(false);
     })();
   }, [id]);
 
+  /* ── Loading ── */
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center text-gray-500">
-        Loading administration...
+      <div className="ad-page" style={{ paddingTop: "48px" }}>
+        <div className="ad-hero ad-hero--skeleton">
+          <Skel w="80px" h={26} r={999} mb={16} />
+          <Skel w="60%" h={40} r={8} mb={12} />
+          <Skel w="45%" h={22} r={6} />
+        </div>
+        <div className="ad-body" aria-busy="true">
+          {[1,2,3].map((i) => (
+            <div key={i} className="ad-section">
+              <Skel w="120px" h={13} r={6} mb={10} />
+              <Skel w="50%" h={26} r={6} mb={20} />
+              <Skel w="100%" h={14} r={6} mb={8} />
+              <Skel w="90%" h={14} r={6} mb={8} />
+              <Skel w="70%" h={14} r={6} />
+            </div>
+          ))}
+        </div>
+        <style>{`@keyframes ad-shimmer{from{background-position:200% 0}to{background-position:-200% 0}}`}</style>
       </div>
     );
   }
 
+  /* ── Not found ── */
   if (notFound) {
     return (
-      <section className="max-w-2xl mx-auto px-4 py-20 text-center">
-        <h1 className="text-3xl font-bold text-nacos-blue mb-4">
-          Not found
-        </h1>
-        <p className="text-gray-500 mb-6">
-          This administration record doesn't exist.
-        </p>
-        <Link to="/history" className="btn-primary inline-block">
-          Back to History
-        </Link>
-      </section>
+      <div className="ad-page ad-state">
+        <h1 className="ad-state__heading">Not found</h1>
+        <p className="ad-state__body">This administration record doesn't exist.</p>
+        <Link to="/history" className="btn btn-primary" style={{ marginTop: "8px" }}>← Back to History</Link>
+      </div>
     );
   }
 
-  const achievements = Array.isArray(admin.achievements)
-    ? admin.achievements
-    : [];
-  const projects = Array.isArray(admin.projects) ? admin.projects : [];
+  const achievements = Array.isArray(admin.achievements) ? admin.achievements : [];
+  const projects     = Array.isArray(admin.projects)     ? admin.projects     : [];
+
+  const fmtDate = (d) =>
+    d ? new Date(d).toLocaleDateString("en-NG", { month: "long", year: "numeric" }) : null;
 
   return (
     <>
-      {/* Hero with cover image */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
+      {/* ── Hero banner ──────────────────────────────── */}
+      <header className="ad-hero">
         {admin.cover_image && (
-          <div className="absolute inset-0">
-            <img
-              src={admin.cover_image}
-              alt=""
-              className="w-full h-full object-cover opacity-25"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-nacos-blue/80 via-nacos-blue/80 to-nacos-green/80" />
-          </div>
+          <>
+            <div className="ad-hero__bg-img" aria-hidden="true">
+              <img src={admin.cover_image} alt="" />
+            </div>
+            <div className="ad-hero__bg-overlay" aria-hidden="true" />
+          </>
         )}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/10 blur-3xl animate-float-slow" />
-          <div className="absolute -bottom-32 -right-24 w-96 h-96 rounded-full bg-nacos-green-light/20 blur-3xl animate-float" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-30" />
-        </div>
 
-        <div className="relative max-w-5xl mx-auto px-4 py-16 md:py-20 text-white">
-          <Link
-            to="/history"
-            className="inline-flex items-center gap-1 text-sm text-white/80 hover:text-nacos-gold transition mb-6"
-          >
-            <ArrowLeft size={14} />
-            Back to History
+        <div className="ad-hero__content">
+          <Link to="/history" className="ad-back">
+            <ArrowLeft size={14} aria-hidden="true" /> Back to History
           </Link>
 
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            <span className="badge bg-white/15 backdrop-blur text-white font-mono border border-white/20">
-              {admin.session_label}
-            </span>
+          <div className="ad-hero__badges">
+            <span className="ad-hero__badge ad-hero__badge--session">{admin.session_label}</span>
             {admin.is_current && (
-              <span className="badge bg-nacos-gold text-nacos-blue font-bold">
-                ★ CURRENT
-              </span>
+              <span className="ad-hero__badge ad-hero__badge--current">★ Current</span>
             )}
           </div>
 
-          <h1 className="text-3xl md:text-5xl font-extrabold mb-3 leading-tight">
-            {admin.administration_name}
-          </h1>
+          <h1 className="ad-hero__title">{admin.administration_name}</h1>
 
           {admin.motto && (
-            <p className="text-white/90 italic text-lg md:text-xl max-w-3xl">
-              "{admin.motto}"
-            </p>
+            <p className="ad-hero__motto">"{admin.motto}"</p>
           )}
 
           {(admin.start_date || admin.end_date) && (
-            <p className="text-white/70 text-sm mt-4">
-              {admin.start_date &&
-                new Date(admin.start_date).toLocaleDateString("default", {
-                  month: "long",
-                  year: "numeric",
-                })}
-              {admin.end_date &&
-                ` — ${new Date(admin.end_date).toLocaleDateString("default", {
-                  month: "long",
-                  year: "numeric",
-                })}`}
+            <p className="ad-hero__dates">
+              {[fmtDate(admin.start_date), fmtDate(admin.end_date)].filter(Boolean).join(" — ")}
             </p>
           )}
         </div>
-      </section>
+      </header>
 
-      <section className="max-w-5xl mx-auto px-4 py-12 space-y-14">
-        {/* About */}
-        {admin.description && (
-          <div>
-            <p className="section-eyebrow">About</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-4">
-              About This Administration
-            </h2>
-            <div className="card-flat p-6 md:p-8">
-              <p className="text-gray-700 leading-relaxed whitespace-pre-line text-base md:text-lg">
-                {admin.description}
-              </p>
+      {/* ── Page body ────────────────────────────────── */}
+      <div className="ad-page">
+        <div className="ad-body">
+
+          {/* About */}
+          {admin.description && (
+            <div className="ad-section">
+              <SecHeading eyebrow="About">About This Administration</SecHeading>
+              <div className="ad-prose-card">
+                <p className="ad-prose">{admin.description}</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Achievements */}
-        {achievements.length > 0 && (
-          <div>
-            <p className="section-eyebrow">Milestones</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6 flex items-center gap-3">
-              <Trophy size={24} className="text-nacos-gold" />
-              Achievements
-            </h2>
-
-            <div className="relative">
-              <div className="absolute left-4 top-2 bottom-2 w-0.5 bg-gradient-to-b from-nacos-gold via-nacos-green to-nacos-blue/20" />
-              <div className="space-y-4">
+          {/* Achievements */}
+          {achievements.length > 0 && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Milestones" icon={Trophy} iconColor="#D97706">
+                Achievements
+              </SecHeading>
+              <div className="ad-timeline">
                 {achievements.map((a, i) => (
-                  <div key={i} className="relative pl-14">
-                    <div className="absolute left-1.5 top-4 h-6 w-6 rounded-full bg-nacos-gold border-4 border-white shadow-md flex items-center justify-center">
-                      <span className="text-nacos-blue text-[10px] font-bold">
-                        {i + 1}
-                      </span>
+                  <div key={i} className="ad-timeline__item">
+                    <div className="ad-timeline__dot" aria-hidden="true">
+                      <span>{i + 1}</span>
                     </div>
-                    <div className="card p-5">
-                      <div className="flex items-start justify-between gap-4 flex-wrap">
-                        <h3 className="font-bold text-nacos-blue text-lg">
-                          {a.title}
-                        </h3>
+                    <div className="ad-card ad-timeline__card">
+                      <div className="ad-achievement-top">
+                        <h3 className="ad-card__heading">{a.title}</h3>
                         {a.date && (
-                          <span className="text-xs text-gray-500 font-medium">
-                            {new Date(a.date).toLocaleDateString("default", {
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            })}
+                          <span className="ad-meta-date">
+                            {new Date(a.date).toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" })}
                           </span>
                         )}
                       </div>
-                      {a.description && (
-                        <p className="text-gray-600 mt-2 leading-relaxed">
-                          {a.description}
-                        </p>
-                      )}
+                      {a.description && <p className="ad-card__body">{a.description}</p>}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Projects */}
-        {projects.length > 0 && (
-          <div>
-            <p className="section-eyebrow">Initiatives</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6 flex items-center gap-3">
-              <FolderKanban size={24} className="text-nacos-green" />
-              Projects
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {projects.map((p, i) => (
-                <div key={i} className="card p-5 flex flex-col">
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="font-bold text-nacos-blue text-lg leading-tight">
-                      {p.name}
-                    </h3>
-                    {p.status && (
-                      <span
-                        className={`badge shrink-0 ${
-                          STATUS_COLORS[p.status] || "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        {p.status}
-                      </span>
+          {/* Projects */}
+          {projects.length > 0 && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Initiatives" icon={FolderKanban} iconColor="var(--color-green)">
+                Projects
+              </SecHeading>
+              <div className="ad-grid-2">
+                {projects.map((p, i) => (
+                  <div key={i} className="ad-card ad-card--flex">
+                    <div className="ad-project-top">
+                      <h3 className="ad-card__heading">{p.name}</h3>
+                      {p.status && (
+                        <span className="ad-status-pill" style={{
+                          background: (STATUS_STYLES[p.status] || STATUS_STYLES.planned).bg,
+                          color:      (STATUS_STYLES[p.status] || STATUS_STYLES.planned).color,
+                        }}>
+                          {p.status}
+                        </span>
+                      )}
+                    </div>
+                    {p.description && <p className="ad-card__body ad-card__body--grow">{p.description}</p>}
+                    {p.url && (
+                      <a href={p.url} target="_blank" rel="noreferrer" className="ad-ext-link">
+                        View project <ExternalLink size={12} aria-hidden="true" />
+                      </a>
                     )}
                   </div>
-                  {p.description && (
-                    <p className="text-gray-600 text-sm leading-relaxed flex-1">
-                      {p.description}
-                    </p>
-                  )}
-                  {p.url && (
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1 text-nacos-green font-semibold text-sm mt-4 hover:underline"
-                    >
-                      View project <ExternalLink size={12} />
-                    </a>
-                  )}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Executives */}
-        {executives.length > 0 && (
-          <div>
-            <p className="section-eyebrow">Leadership</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6 flex items-center gap-3">
-              <Users size={24} className="text-nacos-blue" />
-              Executives
-            </h2>
+          {/* Executives */}
+          {executives.length > 0 && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Leadership" icon={Users} iconColor="var(--color-blue)">
+                Executives
+              </SecHeading>
+              <div className="ad-exec-grid">
+                {executives.map((e) => (
+                  <div key={e.id} className="ad-exec-card">
+                    {e.image_url ? (
+                      <img
+                        src={e.image_url}
+                        alt={e.name}
+                        className="ad-exec-photo"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="ad-exec-photo ad-exec-photo--fallback" aria-hidden="true">
+                        {e.name?.[0] || "?"}
+                      </div>
+                    )}
+                    <h3 className="ad-exec-name">{e.name}</h3>
+                    <p className="ad-exec-pos">{e.position}</p>
+                    {e.level && <p className="ad-exec-level">{e.level}</p>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {executives.map((e) => (
-                <div key={e.id} className="card p-5 text-center">
-                  {e.image_url ? (
+          {/* Events */}
+          {events.length > 0 && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Activities" icon={Calendar} iconColor="var(--color-blue)">
+                Events
+              </SecHeading>
+              <div className="ad-grid-2">
+                {events.map((e) => (
+                  <div key={e.id} className="ad-card">
+                    {e.event_date && (
+                      <p className="ad-event-date">
+                        {new Date(e.event_date).toDateString()}
+                      </p>
+                    )}
+                    <h3 className="ad-card__heading">{e.title}</h3>
+                    {e.location && (
+                      <p className="ad-card__meta">
+                        <MapPin size={12} aria-hidden="true" /> {e.location}
+                      </p>
+                    )}
+                    {e.description && (
+                      <p className="ad-card__body ad-card__body--clamp">{e.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* News */}
+          {news.length > 0 && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Updates">News & Posts</SecHeading>
+              <div className="ad-grid-2">
+                {news.map((n) => (
+                  <Link key={n.id} to={`/news/${n.slug}`} className="ad-card ad-card--link">
+                    <h3 className="ad-card__heading ad-card__heading--link">{n.title}</h3>
+                    <p className="ad-card__meta">{new Date(n.published_at).toDateString()}</p>
+                    <p className="ad-card__body ad-card__body--clamp">{n.body}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Gallery */}
+          {gallery.length > 0 && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Moments">Gallery</SecHeading>
+              <div className="ad-gallery-grid">
+                {gallery.slice(0, 8).map((g) => (
+                  <div key={g.id} className="ad-gallery-item">
                     <img
-                      src={e.image_url}
-                      alt={e.name}
-                      className="h-24 w-24 mx-auto rounded-full object-cover border-4 border-nacos-gold"
+                      src={g.image_url}
+                      alt={g.caption || ""}
+                      loading="lazy"
+                      className="ad-gallery-img"
                     />
-                  ) : (
-                    <div className="h-24 w-24 mx-auto rounded-full bg-gradient-to-br from-nacos-blue to-nacos-green text-white flex items-center justify-center text-3xl font-bold border-4 border-nacos-gold">
-                      {e.name?.[0] || "?"}
-                    </div>
-                  )}
-                  <h3 className="mt-3 font-bold text-nacos-blue text-sm leading-tight">
-                    {e.name}
-                  </h3>
-                  <p className="text-xs text-nacos-green font-semibold mt-1">
-                    {e.position}
-                  </p>
-                  {e.level && (
-                    <p className="text-xs text-gray-400 mt-0.5">{e.level}</p>
-                  )}
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Events */}
-        {events.length > 0 && (
-          <div>
-            <p className="section-eyebrow">Activities</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6 flex items-center gap-3">
-              <Calendar size={24} className="text-nacos-blue" />
-              Events
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {events.map((e) => (
-                <div key={e.id} className="card p-5">
-                  {e.event_date && (
-                    <p className="text-xs text-nacos-green font-bold uppercase tracking-wide mb-2">
-                      {new Date(e.event_date).toDateString()}
-                    </p>
-                  )}
-                  <h3 className="font-bold text-nacos-blue">{e.title}</h3>
-                  {e.location && (
-                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                      <MapPin size={11} /> {e.location}
-                    </p>
-                  )}
-                  {e.description && (
-                    <p className="text-sm text-gray-600 mt-3 line-clamp-3">
-                      {e.description}
-                    </p>
-                  )}
-                </div>
-              ))}
+          {/* Legacy note */}
+          {admin.legacy_note && (
+            <div className="ad-section">
+              <SecHeading eyebrow="Handover" icon={Quote} iconColor="#D97706">
+                Legacy Note
+              </SecHeading>
+              <div className="ad-legacy">
+                <div className="ad-legacy__bg" aria-hidden="true" />
+                <Quote size={40} className="ad-legacy__icon" aria-hidden="true" />
+                <p className="ad-legacy__text">{admin.legacy_note}</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* News */}
-        {news.length > 0 && (
-          <div>
-            <p className="section-eyebrow">Updates</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6">
-              News & Posts
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              {news.map((n) => (
-                <Link
-                  key={n.id}
-                  to={`/news/${n.slug}`}
-                  className="card p-5 block group"
-                >
-                  <h3 className="font-semibold text-nacos-blue group-hover:text-nacos-green transition">
-                    {n.title}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(n.published_at).toDateString()}
+          {/* Prev / Next */}
+          {(prevAdmin || nextAdmin) && (
+            <div className="ad-nav-row">
+              {prevAdmin ? (
+                <Link to={`/history/${prevAdmin.id}`} className="ad-nav-card">
+                  <p className="ad-nav-card__label">
+                    <ArrowLeft size={12} aria-hidden="true" /> Previous
                   </p>
-                  <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                    {n.body}
-                  </p>
+                  <p className="ad-nav-card__name">{prevAdmin.administration_name}</p>
+                  <p className="ad-nav-card__session">{prevAdmin.session_label}</p>
                 </Link>
-              ))}
+              ) : <div />}
+
+              {nextAdmin && (
+                <Link to={`/history/${nextAdmin.id}`} className="ad-nav-card ad-nav-card--right">
+                  <p className="ad-nav-card__label" style={{ justifyContent: "flex-end" }}>
+                    Next <ArrowRight size={12} aria-hidden="true" />
+                  </p>
+                  <p className="ad-nav-card__name">{nextAdmin.administration_name}</p>
+                  <p className="ad-nav-card__session">{nextAdmin.session_label}</p>
+                </Link>
+              )}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Gallery */}
-        {gallery.length > 0 && (
-          <div>
-            <p className="section-eyebrow">Moments</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6">
-              Gallery
-            </h2>
+        </div>
+      </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-              {gallery.slice(0, 8).map((g) => (
-                <div
-                  key={g.id}
-                  className="relative overflow-hidden rounded-xl aspect-square"
-                >
-                  <img
-                    src={g.image_url}
-                    alt={g.caption || ""}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+      <style>{`
+        @keyframes ad-shimmer { from{background-position:200% 0} to{background-position:-200% 0} }
 
-        {/* Legacy note */}
-        {admin.legacy_note && (
-          <div>
-            <p className="section-eyebrow">Handover</p>
-            <h2 className="section-title text-2xl md:text-3xl mb-6 flex items-center gap-3">
-              <Quote size={24} className="text-nacos-gold" />
-              Legacy Note
-            </h2>
+        /* ── Hero ── */
+        .ad-hero {
+          position: relative;
+          background: #12245F;
+          overflow: hidden;
+          padding-top:    calc(env(safe-area-inset-top, 0px) + 10px + 52px + 72px);
+          padding-bottom: 64px;
+          margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
+        }
+        .ad-hero--skeleton {
+          padding-top: 48px;
+          margin-top: 0;
+        }
+        .ad-hero__bg-img {
+          position: absolute; inset: 0; z-index: 0;
+        }
+        .ad-hero__bg-img img {
+          width: 100%; height: 100%; object-fit: cover; opacity: 0.22; display: block;
+        }
+        .ad-hero__bg-overlay {
+          position: absolute; inset: 0; z-index: 1;
+          background: linear-gradient(135deg, rgba(18,36,95,0.92) 0%, rgba(30,64,175,0.80) 60%, rgba(5,150,105,0.45) 100%);
+        }
+        .ad-hero__content {
+          position: relative; z-index: 2;
+          max-width: 1040px; margin-inline: auto;
+          padding-inline: 24px;
+          display: flex; flex-direction: column; gap: 12px;
+        }
 
-            <div className="relative bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green text-white rounded-3xl p-8 md:p-10 overflow-hidden">
-              <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-nacos-gold/20 blur-3xl" />
-              <Quote
-                size={48}
-                className="text-nacos-gold/40 mb-4"
-              />
-              <p className="text-white/95 leading-relaxed whitespace-pre-line text-base md:text-lg relative">
-                {admin.legacy_note}
-              </p>
-            </div>
-          </div>
-        )}
+        /* Back link */
+        .ad-back {
+          display: inline-flex; align-items: center; gap: 6px;
+          font-size: var(--text-sm); font-weight: 500;
+          color: rgba(255,255,255,0.70); text-decoration: none;
+          transition: color 150ms ease-out;
+          align-self: flex-start;
+        }
+        .ad-back:hover { color: #FCD34D; }
+        .ad-back:focus-visible { outline: 2px solid #FCD34D; outline-offset: 3px; border-radius: 3px; }
 
-        {/* Prev / Next navigation */}
-        {(prevAdmin || nextAdmin) && (
-          <div className="grid sm:grid-cols-2 gap-4 pt-6 border-t">
-            {prevAdmin ? (
-              <Link
-                to={`/history/${prevAdmin.id}`}
-                className="card p-5 group hover:border-nacos-blue/30"
-              >
-                <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
-                  <ArrowLeft size={12} /> Previous administration
-                </p>
-                <p className="font-bold text-nacos-blue group-hover:text-nacos-green transition">
-                  {prevAdmin.administration_name}
-                </p>
-                <p className="text-xs text-gray-500 font-mono mt-0.5">
-                  {prevAdmin.session_label}
-                </p>
-              </Link>
-            ) : (
-              <div />
-            )}
+        /* Badges */
+        .ad-hero__badges { display: flex; flex-wrap: wrap; gap: 8px; }
+        .ad-hero__badge {
+          display: inline-flex; align-items: center;
+          padding: 3px 12px; border-radius: var(--radius-pill);
+          font-size: 12px; font-weight: 600;
+        }
+        .ad-hero__badge--session {
+          background: rgba(255,255,255,0.14);
+          border: 1px solid rgba(255,255,255,0.20);
+          color: rgba(255,255,255,0.85);
+          font-family: monospace;
+        }
+        .ad-hero__badge--current {
+          background: #FCD34D; color: #1E3A8A;
+        }
 
-            {nextAdmin && (
-              <Link
-                to={`/history/${nextAdmin.id}`}
-                className="card p-5 group hover:border-nacos-blue/30 text-right"
-              >
-                <p className="text-xs text-gray-500 mb-1 flex items-center gap-1 justify-end">
-                  Next administration <ArrowRight size={12} />
-                </p>
-                <p className="font-bold text-nacos-blue group-hover:text-nacos-green transition">
-                  {nextAdmin.administration_name}
-                </p>
-                <p className="text-xs text-gray-500 font-mono mt-0.5">
-                  {nextAdmin.session_label}
-                </p>
-              </Link>
-            )}
-          </div>
-        )}
-      </section>
+        .ad-hero__title {
+          font-size: clamp(1.75rem, 4vw, 3rem);
+          font-weight: 700; color: #fff;
+          line-height: 1.1; margin: 0;
+        }
+        .ad-hero__motto {
+          font-size: clamp(0.9375rem, 2vw, 1.125rem);
+          color: rgba(255,255,255,0.82);
+          font-style: italic; margin: 0;
+          max-width: 56ch;
+        }
+        .ad-hero__dates {
+          font-size: var(--text-sm); color: rgba(255,255,255,0.60); margin: 0;
+        }
+
+        /* ── Page wrapper ── */
+        .ad-page {
+          max-width: 1040px; margin-inline: auto;
+          padding-inline: 24px;
+          padding-bottom: 80px;
+        }
+        .ad-body { padding-top: 48px; display: flex; flex-direction: column; gap: 56px; }
+
+        /* ── States ── */
+        .ad-state {
+          text-align: center; padding: 80px 24px;
+          display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .ad-state__heading { font-size: 1.5rem; font-weight: 700; color: var(--color-blue-dark); margin: 0; }
+        .ad-state__body    { font-size: var(--text-base); color: var(--color-text-muted); margin: 0; }
+
+        /* ── Section heading ── */
+        .ad-section {}
+        .ad-sec-head { margin-bottom: 24px; }
+        .ad-eyebrow {
+          font-size: 11px; font-weight: 600; letter-spacing: 2px;
+          text-transform: uppercase; color: var(--color-green);
+          margin: 0 0 6px;
+        }
+        .ad-sec-title {
+          font-size: clamp(1.25rem, 3vw, 1.75rem);
+          font-weight: 700; color: var(--color-blue-dark);
+          margin: 0; display: flex; align-items: center; gap: 10px;
+        }
+
+        /* ── Prose card ── */
+        .ad-prose-card {
+          background: var(--color-surface); border: 1px solid var(--color-border);
+          border-radius: var(--radius-lg); padding: 28px 32px;
+        }
+        .ad-prose {
+          font-size: var(--text-md); color: var(--color-text-secondary);
+          line-height: 1.8; margin: 0; white-space: pre-line;
+        }
+
+        /* ── Generic card ── */
+        .ad-card {
+          background: var(--color-surface); border: 1px solid var(--color-border);
+          border-radius: var(--radius-lg); padding: 20px;
+          display: flex; flex-direction: column; gap: 8px;
+        }
+        .ad-card--flex { display: flex; flex-direction: column; }
+        .ad-card--link {
+          text-decoration: none;
+          transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
+        }
+        .ad-card--link:hover {
+          border-color: var(--color-blue);
+          box-shadow: var(--shadow-md);
+          transform: translateY(-2px);
+        }
+        .ad-card--link:focus-visible { outline: 2px solid var(--color-blue); outline-offset: 2px; }
+
+        .ad-card__heading {
+          font-size: var(--text-md); font-weight: 700;
+          color: var(--color-blue-dark); margin: 0; line-height: 1.3;
+        }
+        .ad-card__heading--link { transition: color 150ms ease-out; }
+        .ad-card--link:hover .ad-card__heading--link { color: var(--color-green); }
+
+        .ad-card__body {
+          font-size: var(--text-sm); color: var(--color-text-secondary);
+          line-height: 1.65; margin: 0;
+        }
+        .ad-card__body--grow { flex: 1; }
+        .ad-card__body--clamp {
+          display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .ad-card__meta {
+          display: flex; align-items: center; gap: 5px;
+          font-size: var(--text-xs); color: var(--color-text-muted); margin: 0;
+        }
+
+        /* ── 2-col grid ── */
+        .ad-grid-2 {
+          display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;
+        }
+
+        /* ── Achievement timeline ── */
+        .ad-timeline { position: relative; display: flex; flex-direction: column; gap: 16px; }
+        .ad-timeline::before {
+          content: ""; position: absolute; left: 20px; top: 0; bottom: 0;
+          width: 2px;
+          background: linear-gradient(to bottom, #D97706, var(--color-green), rgba(30,64,175,0.2));
+        }
+        .ad-timeline__item {
+          position: relative; display: flex; align-items: flex-start;
+          gap: 16px; padding-left: 52px;
+        }
+        .ad-timeline__dot {
+          position: absolute; left: 9px; top: 16px;
+          width: 24px; height: 24px; border-radius: 50%;
+          background: #D97706; border: 3px solid #fff;
+          box-shadow: 0 0 0 1px #D97706;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; z-index: 1;
+        }
+        .ad-timeline__dot span { font-size: 9px; font-weight: 700; color: #fff; }
+        .ad-timeline__card { flex: 1; }
+
+        .ad-achievement-top {
+          display: flex; align-items: flex-start; justify-content: space-between;
+          gap: 12px; flex-wrap: wrap;
+        }
+        .ad-meta-date {
+          font-size: var(--text-xs); color: var(--color-text-muted); white-space: nowrap;
+        }
+
+        /* ── Project cards ── */
+        .ad-project-top {
+          display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+        }
+        .ad-status-pill {
+          display: inline-flex; align-items: center;
+          padding: 2px 8px; border-radius: var(--radius-pill);
+          font-size: 11px; font-weight: 600; white-space: nowrap; flex-shrink: 0;
+        }
+        .ad-ext-link {
+          display: inline-flex; align-items: center; gap: 4px;
+          font-size: var(--text-sm); font-weight: 600;
+          color: var(--color-green); text-decoration: none;
+          margin-top: 4px; transition: color 150ms ease-out;
+        }
+        .ad-ext-link:hover { color: #047857; text-decoration: underline; }
+
+        /* ── Exec grid ── */
+        .ad-exec-grid {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+        }
+        .ad-exec-card {
+          background: var(--color-surface); border: 1px solid var(--color-border);
+          border-radius: var(--radius-lg); padding: 20px 14px;
+          text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px;
+        }
+        .ad-exec-photo {
+          width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+          border: 3px solid #D97706; display: block;
+        }
+        .ad-exec-photo--fallback {
+          width: 80px; height: 80px; border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-blue-dark), var(--color-green));
+          color: #fff; font-size: 1.75rem; font-weight: 700;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .ad-exec-name { font-size: var(--text-sm); font-weight: 700; color: var(--color-blue-dark); margin: 0; }
+        .ad-exec-pos  { font-size: 12px; font-weight: 600; color: var(--color-green); margin: 0; }
+        .ad-exec-level{ font-size: 11px; color: var(--color-text-muted); margin: 0; }
+
+        /* ── Event specifics ── */
+        .ad-event-date {
+          font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+          text-transform: uppercase; color: var(--color-green); margin: 0;
+        }
+
+        /* ── Gallery grid ── */
+        .ad-gallery-grid {
+          display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+        }
+        .ad-gallery-item {
+          aspect-ratio: 1; border-radius: var(--radius-md); overflow: hidden;
+          background: var(--color-bg-alt);
+        }
+        .ad-gallery-img {
+          width: 100%; height: 100%; object-fit: cover; display: block;
+          transition: transform 300ms ease-out;
+        }
+        .ad-gallery-item:hover .ad-gallery-img { transform: scale(1.06); }
+
+        /* ── Legacy note ── */
+        .ad-legacy {
+          position: relative; overflow: hidden;
+          background: linear-gradient(135deg, #12245F 0%, var(--color-blue) 60%, #0D9488 100%);
+          border-radius: var(--radius-xl); padding: 40px 36px;
+          display: flex; flex-direction: column; gap: 14px;
+        }
+        .ad-legacy__bg {
+          position: absolute; top: -60px; right: -60px;
+          width: 240px; height: 240px; border-radius: 50%;
+          background: rgba(217,119,6,0.25); filter: blur(50px);
+          pointer-events: none;
+        }
+        .ad-legacy__icon { color: rgba(252,211,77,0.35); }
+        .ad-legacy__text {
+          font-size: var(--text-md); color: rgba(255,255,255,0.92);
+          line-height: 1.8; margin: 0; white-space: pre-line;
+          position: relative; z-index: 1;
+        }
+
+        /* ── Prev/Next nav ── */
+        .ad-nav-row {
+          display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+          padding-top: 24px; border-top: 1px solid var(--color-border);
+        }
+        .ad-nav-card {
+          background: var(--color-surface); border: 1px solid var(--color-border);
+          border-radius: var(--radius-lg); padding: 16px 20px;
+          text-decoration: none;
+          display: flex; flex-direction: column; gap: 4px;
+          transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+        }
+        .ad-nav-card:hover { border-color: var(--color-blue); box-shadow: var(--shadow-md); }
+        .ad-nav-card:focus-visible { outline: 2px solid var(--color-blue); outline-offset: 2px; }
+        .ad-nav-card--right { text-align: right; }
+        .ad-nav-card__label {
+          display: flex; align-items: center; gap: 4px;
+          font-size: var(--text-xs); color: var(--color-text-muted); margin: 0;
+        }
+        .ad-nav-card__name {
+          font-size: var(--text-base); font-weight: 700;
+          color: var(--color-blue-dark); margin: 0;
+          transition: color 150ms ease-out;
+        }
+        .ad-nav-card:hover .ad-nav-card__name { color: var(--color-green); }
+        .ad-nav-card__session {
+          font-size: var(--text-xs); color: var(--color-text-muted);
+          font-family: monospace; margin: 0;
+        }
+
+        /* ── Tablet: adjust grids ── */
+        @media (max-width: 1023px) {
+          .ad-exec-grid { grid-template-columns: repeat(3, 1fr); }
+          .ad-gallery-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 768px) {
+          .ad-grid-2 { grid-template-columns: 1fr; }
+          .ad-exec-grid { grid-template-columns: repeat(2, 1fr); }
+          .ad-gallery-grid { grid-template-columns: repeat(2, 1fr); }
+          .ad-prose-card { padding: 20px; }
+          .ad-legacy { padding: 28px 24px; }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 639px) {
+          .ad-hero__content { padding-inline: 16px; }
+          .ad-page { padding-inline: 16px; }
+          .ad-body { padding-top: 32px; gap: 40px; }
+          .ad-exec-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+          .ad-gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .ad-nav-row { grid-template-columns: 1fr; }
+          .ad-nav-card--right { text-align: left; }
+          .ad-nav-card--right .ad-nav-card__label { justify-content: flex-start; }
+          .ad-legacy { padding: 24px 20px; }
+          .ad-timeline::before { left: 14px; }
+          .ad-timeline__item { padding-left: 42px; }
+          .ad-timeline__dot  { left: 3px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .ad-card--link, .ad-nav-card, .ad-gallery-img,
+          .ad-back, .ad-ext-link { transition: none; }
+        }
+      `}</style>
     </>
   );
 }
