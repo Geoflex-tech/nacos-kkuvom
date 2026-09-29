@@ -64,7 +64,12 @@ export default function Home() {
 
   return (
     <>
-      <Hero />
+      <Hero stats={{
+        news:      news.length      || null,
+        events:    stats.events     || null,
+        resources: stats.resources  || null,
+        members:   stats.members    || null,
+      }} />
 
       {/* ── Stats Band ────────────────────────────────────── */}
       <section style={{ background: "var(--color-bg-alt)", borderBottom: "1px solid var(--color-border)" }}>
