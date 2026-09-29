@@ -17,13 +17,20 @@ export default function PublicLayout() {
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <Navbar />
       {/*
-        No paddingTop here — every page handles its own top spacing:
-        - Hero pages use a negative marginTop to slide under the fixed pill.
-        - Inner pages use <PageHeader> which has its own margin-top + padding-top
-          (both already account for env(safe-area-inset-top)).
-        Adding paddingTop here would double-count the offset on hero pages.
+        paddingTop clears the fixed floating pill for plain pages
+        (Verify, NotFound, NewsDetail, Executives, etc.) that don't
+        have their own PageHeader or Hero.
+
+        Hero and PageHeader both apply a negative margin-top equal to
+        this value so they slide up behind the pill instead.
+
+        Formula: env(safe-area-inset-top) + 10px offset + 52px pill + 16px gap = 78px
       */}
-      <main id="main-content" className="min-h-[70vh]">
+      <main
+        id="main-content"
+        className="min-h-[70vh]"
+        style={{ paddingTop: "calc(env(safe-area-inset-top, 0px) + 10px + 52px + 16px)" }}
+      >
         <Outlet />
       </main>
       <Footer />
