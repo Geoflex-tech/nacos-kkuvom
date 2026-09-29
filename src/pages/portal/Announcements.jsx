@@ -258,7 +258,7 @@ export function DashPageStyles() {
         display: flex; align-items: center; justify-content: space-between;
         gap: 12px;
       }
-      .dp-hist-ref  { font-size: 0.75rem; color: #9CA3AF; margin: 2px 0 0; font-family: monospace; }
+      .dp-hist-ref  { font-size: 0.75rem; color: #9CA3AF; margin: 2px 0 0; font-family: monospace; overflow-wrap: anywhere; word-break: break-all; }
       .dp-hist-amount { font-size: 0.9375rem; font-weight: 600; color: #1E3A8A; margin: 0; }
       .dp-hist-status { font-size: 0.8125rem; font-weight: 600; }
       .dp-hist-status--ok  { color: #059669; }
@@ -282,7 +282,7 @@ export function DashPageStyles() {
       .dp-input {
         width: 100%; height: 44px; padding: 0 12px;
         border: 1px solid #D3D9E8; border-radius: 8px;
-        background: #fff; font-size: 0.875rem;
+        background: #fff; font-size: 1rem;
         color: #0F172A; font-family: inherit;
         box-sizing: border-box; outline: none;
         transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
@@ -294,7 +294,7 @@ export function DashPageStyles() {
       .dp-select {
         width: 100%; height: 44px; padding: 0 12px;
         border: 1px solid #D3D9E8; border-radius: 8px;
-        background: #fff; font-size: 0.875rem;
+        background: #fff; font-size: 1rem;
         color: #0F172A; font-family: inherit;
         box-sizing: border-box; outline: none; cursor: pointer;
         appearance: none;

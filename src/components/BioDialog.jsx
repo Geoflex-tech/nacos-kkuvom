@@ -228,8 +228,9 @@ export default function BioDialog({ leader, triggerRef, onClose }) {
           top: 50%;
           left: 50%;
           transform: translate(-50%, calc(-50% + 8px));
-          width: min(520px, calc(100vw - 32px));
+          width: min(520px, calc(100% - 32px));
           max-height: 90vh;
+          max-height: 90dvh;
           overflow-y: auto;
           background: #ffffff;
           border-radius: 16px;
@@ -380,9 +381,12 @@ export default function BioDialog({ leader, triggerRef, onClose }) {
             right: 0;
             width: 100%;
             max-height: 85vh;
+            max-height: 85dvh;
             border-radius: 20px 20px 0 0;
             transform: none;
             animation: bd-slide-up 150ms ease-out forwards;
+            /* account for iOS home indicator */
+            padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
           }
         }
         @keyframes bd-slide-up {
