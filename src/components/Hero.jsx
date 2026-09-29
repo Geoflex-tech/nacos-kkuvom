@@ -131,8 +131,9 @@ export default function Hero({ stats = {} }) {
           position: absolute;
           inset: 0;
           background-image: url('/logo.jpeg');
-          background-size: cover;
+          background-size: 55%;
           background-position: center;
+          background-repeat: no-repeat;
           filter: blur(3px) brightness(0.35);
           transform: scale(1.05);
           pointer-events: none;
