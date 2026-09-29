@@ -1,307 +1,328 @@
 import { useEffect, useState } from "react";
-import { Camera, X, Save } from "lucide-react";
+import { Camera, X, Save, User, CheckCircle2, AlertCircle } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../context/AuthContext";
 import { compressImage } from "../../utils/compressImage";
 import ChangePasswordCard from "../../components/ChangePasswordCard";
+import { DashPageStyles } from "./Announcements";
+
 export default function Profile() {
   const { profile, session, refreshProfile } = useAuth();
   const [form, setForm] = useState({
-    full_name: "",
-    matric_no: "",
-    level: "",
-    phone: "",
-    department: "Computer Science",
+    full_name: "", matric_no: "", level: "",
+    phone: "", department: "Computer Science",
   });
   const [avatarPreview, setAvatarPreview] = useState(null);
-  const [avatarFile, setAvatarFile] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [avatarFile, setAvatarFile]       = useState(null);
+  const [saving, setSaving]     = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [msg, setMsg]           = useState({ text: "", type: "" });
 
   useEffect(() => {
     if (profile) {
       setForm({
-        full_name: profile.full_name || "",
-        matric_no: profile.matric_no || "",
-        level: profile.level || "",
-        phone: profile.phone || "",
+        full_name:  profile.full_name  || "",
+        matric_no:  profile.matric_no  || "",
+        level:      profile.level      || "",
+        phone:      profile.phone      || "",
         department: profile.department || "Computer Science",
       });
       setAvatarPreview(profile.avatar_url || null);
     }
   }, [profile]);
 
-  const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+  const update = (key) => (e) =>
+    setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
   const handleAvatarPick = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
-      setMessage("Error: Please choose an image file.");
+      setMsg({ text: "Please choose a JPG or PNG image.", type: "err" });
       return;
     }
-
-    setMessage("Compressing photo...");
-
+    setMsg({ text: "Compressing photo…", type: "inf" });
     try {
       const compressed = await compressImage(file, 800, 0.82);
       setAvatarFile(compressed);
       setAvatarPreview(URL.createObjectURL(compressed));
-      setMessage("");
+      setMsg({ text: "", type: "" });
     } catch (err) {
-      setMessage("Error: " + err.message);
+      setMsg({ text: "Could not process photo: " + err.message, type: "err" });
     }
   };
 
   const cancelAvatarChange = () => {
     setAvatarFile(null);
     setAvatarPreview(profile?.avatar_url || null);
-    setMessage("");
+    setMsg({ text: "", type: "" });
   };
 
   const save = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setMessage("");
+    setMsg({ text: "", type: "" });
 
-    let newAvatarUrl = profile?.avatar_url || null;
+    let avatarUrl = profile?.avatar_url || null;
 
     if (avatarFile) {
       setUploading(true);
-      const ext = "jpg";
-      const fileName = `member-${session.user.id}-${Date.now()}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
+      const fileName = `member-${session.user.id}-${Date.now()}.jpg`;
+      const { error: uploadErr } = await supabase.storage
         .from("avatars")
         .upload(fileName, avatarFile, { upsert: true });
-
       setUploading(false);
-
-      if (uploadError) {
-        setMessage("Photo upload failed: " + uploadError.message);
+      if (uploadErr) {
+        setMsg({ text: "Photo upload failed: " + uploadErr.message, type: "err" });
         setSaving(false);
         return;
       }
-
-      const { data } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(fileName);
-      newAvatarUrl = data.publicUrl;
+      const { data } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      avatarUrl = data.publicUrl;
     }
 
-    const { error: profileError } = await supabase
+    const { error: profileErr } = await supabase
       .from("profiles")
-      .update({
-        ...form,
-        avatar_url: newAvatarUrl,
-      })
+      .update({ ...form, avatar_url: avatarUrl })
       .eq("id", session.user.id);
 
     setSaving(false);
-
-    if (profileError) {
-      setMessage("Error: " + profileError.message);
+    if (profileErr) {
+      setMsg({ text: profileErr.message, type: "err" });
       return;
     }
 
-    setMessage("Profile updated ✅");
+    setMsg({ text: "Profile updated successfully.", type: "ok" });
     setAvatarFile(null);
     await refreshProfile();
   };
 
   const initials = (form.full_name || profile?.email || "M")
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+    .split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
+
+  const busy = saving || uploading;
 
   return (
-    <section className="max-w-3xl mx-auto px-4 py-10">
-      <div className="mb-8">
-        <p className="section-eyebrow">Account</p>
-        <h1 className="section-title text-2xl md:text-3xl">My Profile</h1>
-        <p className="text-gray-500 mt-2">
-          Manage your personal information and profile photo
-        </p>
+    <div className="dp-wrap">
+      {/* Page header */}
+      <div className="dp-page-head">
+        <div className="dp-page-icon" aria-hidden="true">
+          <User size={20} />
+        </div>
+        <div>
+          <h1 className="dp-page-title">My Profile</h1>
+          <p className="dp-page-sub">Manage your personal information and profile photo</p>
+        </div>
       </div>
 
-      <form onSubmit={save} className="space-y-6">
-        <div className="card-flat p-6">
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="relative">
+      <form onSubmit={save}>
+        {/* ── Avatar card ─────────────────────────────── */}
+        <div className="dp-form-card" style={{ marginBottom: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
+            {/* Avatar */}
+            <div style={{ position: "relative", flexShrink: 0 }}>
               {avatarPreview ? (
                 <img
                   src={avatarPreview}
-                  alt="Avatar"
-                  className="h-28 w-28 rounded-full object-cover border-4 border-nacos-gold shadow-card"
+                  alt="Profile photo"
+                  style={{
+                    width: 80, height: 80, borderRadius: "50%",
+                    objectFit: "cover",
+                    border: "3px solid #F59E0B",
+                  }}
                 />
               ) : (
-                <div className="h-28 w-28 rounded-full bg-gradient-to-br from-nacos-blue to-nacos-green text-white flex items-center justify-center text-4xl font-bold border-4 border-nacos-gold">
+                <div
+                  style={{
+                    width: 80, height: 80, borderRadius: "50%",
+                    background: "#1E40AF", color: "#fff",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "1.25rem", fontWeight: 700,
+                    border: "3px solid #F59E0B",
+                  }}
+                  aria-label={`Initials: ${initials}`}
+                >
                   {initials}
                 </div>
               )}
-
-              <label className="absolute bottom-0 right-0 h-9 w-9 rounded-full bg-nacos-blue text-white flex items-center justify-center cursor-pointer hover:bg-nacos-blue-light transition shadow-md border-2 border-white">
-                <Camera size={16} />
+              {/* Camera overlay */}
+              <label
+                style={{
+                  position: "absolute", bottom: 0, right: 0,
+                  width: 28, height: 28, borderRadius: "50%",
+                  background: "#1E40AF", color: "#fff",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  cursor: "pointer", border: "2px solid #fff",
+                }}
+                aria-label="Change profile photo"
+              >
+                <Camera size={13} aria-hidden="true" />
                 <input
-                  type="file"
-                  accept="image/*"
+                  type="file" accept="image/*"
                   onChange={handleAvatarPick}
-                  className="hidden"
+                  style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
+                  tabIndex={-1}
                 />
               </label>
             </div>
 
-            <div className="flex-1 text-center sm:text-left">
-              <p className="font-bold text-nacos-blue text-lg">
+            {/* Info */}
+            <div>
+              <p style={{ fontWeight: 600, color: "#1E3A8A", margin: "0 0 2px" }}>
                 {form.full_name || "Member"}
               </p>
-              <p className="text-sm text-gray-500">{profile?.email}</p>
-              <p className="text-xs text-gray-400 mt-1">
-                {profile?.matric_no || "No matric yet"}
+              <p style={{ fontSize: "0.8125rem", color: "#6B7280", margin: 0 }}>
+                {profile?.email}
               </p>
-
-              <div className="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
-                <label className="text-xs text-nacos-blue font-semibold hover:underline cursor-pointer">
+              <p style={{ fontSize: "0.75rem", color: "#9CA3AF", margin: "4px 0 0" }}>
+                {profile?.matric_no || "No matric number yet"}
+              </p>
+              <div style={{ display: "flex", gap: 12, marginTop: 8, flexWrap: "wrap" }}>
+                <label
+                  style={{ fontSize: "0.8125rem", color: "#1E40AF", fontWeight: 500, cursor: "pointer" }}
+                >
                   Change photo
                   <input
-                    type="file"
-                    accept="image/*"
+                    type="file" accept="image/*"
                     onChange={handleAvatarPick}
-                    className="hidden"
+                    style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
+                    tabIndex={-1}
                   />
                 </label>
                 {avatarFile && (
                   <button
                     type="button"
                     onClick={cancelAvatarChange}
-                    className="text-xs text-red-600 font-semibold hover:underline flex items-center gap-1"
+                    style={{
+                      background: "none", border: "none",
+                      fontSize: "0.8125rem", color: "#DC2626", fontWeight: 500,
+                      cursor: "pointer", padding: 0,
+                      display: "flex", alignItems: "center", gap: 4,
+                    }}
                   >
-                    <X size={12} /> Cancel
+                    <X size={12} aria-hidden="true" /> Cancel
                   </button>
                 )}
               </div>
-
-              <p className="text-xs text-gray-400 mt-2">
-                Any size accepted · Auto-compressed on upload
+              <p style={{ fontSize: "0.75rem", color: "#9CA3AF", margin: "4px 0 0" }}>
+                Any size · Auto-compressed on upload
               </p>
             </div>
           </div>
         </div>
 
-        <div className="card-flat p-6 space-y-4">
-          <h2 className="font-bold text-nacos-blue">Personal Information</h2>
+        {/* ── Personal info card ───────────────────────── */}
+        <div className="dp-form-card" style={{ marginBottom: 12 }}>
+          <h2 className="dp-form-section-title">Personal Information</h2>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
+          <div className="dp-field">
+            <label htmlFor="prof-name" className="dp-label">Full name</label>
             <input
-              className="input"
+              id="prof-name"
+              className="dp-input"
               value={form.full_name}
               onChange={update("full_name")}
               required
+              disabled={busy}
             />
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Matric Number
-              </label>
+          <div className="dp-grid-2">
+            <div className="dp-field">
+              <label htmlFor="prof-matric" className="dp-label">Matric number</label>
               <input
-                className="input"
+                id="prof-matric"
+                className="dp-input"
                 value={form.matric_no}
                 onChange={update("matric_no")}
                 required
+                disabled={busy}
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Level
-              </label>
+            <div className="dp-field">
+              <label htmlFor="prof-level" className="dp-label">Level</label>
               <select
-                className="input"
+                id="prof-level"
+                className="dp-select"
                 value={form.level}
                 onChange={update("level")}
                 required
+                disabled={busy}
               >
                 <option value="">Select level</option>
                 <option value="100L">100L</option>
                 <option value="200L">200L</option>
                 <option value="300L">300L</option>
                 <option value="400L">400L</option>
-            
+                <option value="500L">500L</option>
               </select>
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone
-            </label>
+          <div className="dp-field">
+            <label htmlFor="prof-phone" className="dp-label">Phone number</label>
             <input
-              className="input"
+              id="prof-phone"
+              type="tel"
+              className="dp-input"
               value={form.phone}
               onChange={update("phone")}
               required
+              disabled={busy}
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Department
-            </label>
+          <div className="dp-field">
+            <label htmlFor="prof-dept" className="dp-label">Department</label>
             <input
-              className="input bg-gray-50 cursor-not-allowed"
+              id="prof-dept"
+              className="dp-input"
               value={form.department}
               disabled
             />
-            <p className="text-xs text-gray-400 mt-1">
-              Department is fixed to Computer Science
-            </p>
+            <p className="dp-input-hint">Department is fixed to Computer Science.</p>
           </div>
         </div>
 
-        {message && (
-          <p
-            className={`text-sm rounded-md p-3 ${
-              message.startsWith("Error")
-                ? "text-red-600 bg-red-50 border border-red-100"
-                : message.includes("Compressing")
-                ? "text-blue-600 bg-blue-50 border border-blue-100"
-                : "text-green-600 bg-green-50 border border-green-100"
-            }`}
+        {/* Status message */}
+        {msg.text && (
+          <div
+            className={`dp-msg dp-msg--${msg.type}`}
+            role="alert"
+            aria-live="polite"
+            style={{ marginBottom: 12 }}
           >
-            {message}
-          </p>
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {msg.type === "ok"
+                ? <CheckCircle2 size={15} aria-hidden="true" />
+                : <AlertCircle  size={15} aria-hidden="true" />}
+              {msg.text}
+            </span>
+          </div>
         )}
 
+        {/* Save button */}
         <button
           type="submit"
-          disabled={saving || uploading}
-          className="btn-primary w-full py-3"
+          className="dp-save-btn"
+          disabled={busy}
+          aria-busy={busy}
         >
-          {uploading ? (
-            "Uploading photo..."
-          ) : saving ? (
-            "Saving..."
+          {busy ? (
+            <><span className="dp-pay-spinner" aria-hidden="true" />
+              {uploading ? "Uploading photo…" : "Saving…"}</>
           ) : (
-            <>
-              <Save size={16} />
-              Save Changes
-            </>
+            <><Save size={15} aria-hidden="true" /> Save Changes</>
           )}
         </button>
       </form>
-      {/* Password change section */}
-<div className="mt-6">
-  <ChangePasswordCard />
-</div>
-    </section>
+
+      {/* Password change */}
+      <div style={{ marginTop: 4 }}>
+        <ChangePasswordCard />
+      </div>
+
+      <DashPageStyles />
+    </div>
   );
 }

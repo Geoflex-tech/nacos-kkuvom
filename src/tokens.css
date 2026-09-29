@@ -1,0 +1,88 @@
+/* ============================================================
+   NACOS KKU VOM — Design Tokens (Light Theme)
+   ============================================================ */
+
+:root {
+  /* ── Backgrounds ─────────────────────────────────────────── */
+  --color-bg:           #FFFFFF;
+  --color-bg-alt:       #F4F7FB;
+  --color-surface:      #FFFFFF;
+  --color-surface-alt:  #EEF3FB;
+  --color-footer:       #1E3A8A;
+
+  /* ── Borders ─────────────────────────────────────────────── */
+  --color-border:       #DDE3F0;
+  --color-border-strong:#B8C4DF;
+
+  /* ── Text ────────────────────────────────────────────────── */
+  --color-text-primary:   #0F172A;
+  --color-text-secondary: #334155;
+  --color-text-muted:     #64748B;
+  --color-text-inverse:   #FFFFFF;
+
+  /* ── Blue (primary) ──────────────────────────────────────── */
+  --color-blue:         #1E40AF;
+  --color-blue-hover:   #1D4ED8;
+  --color-blue-light:   #DBEAFE;
+  --color-blue-dark:    #1E3A8A;
+
+  /* ── Green (accent) ──────────────────────────────────────── */
+  --color-green:        #059669;
+  --color-green-light:  #D1FAE5;
+
+  /* ── Yellow (accent) ─────────────────────────────────────── */
+  --color-yellow:       #D97706;
+  --color-yellow-light: #FEF3C7;
+
+  /* ── Error ───────────────────────────────────────────────── */
+  --color-error:        #DC2626;
+
+  /* ── Focus ───────────────────────────────────────────────── */
+  --focus-ring: 0 0 0 2px #fff, 0 0 0 4px var(--color-blue);
+
+  /* ── Typography ──────────────────────────────────────────── */
+  --font-family: "Inter", system-ui, -apple-system, sans-serif;
+
+  --text-xs:   0.75rem;
+  --text-sm:   0.8125rem;
+  --text-base: 0.875rem;
+  --text-md:   1rem;
+  --text-lg:   1.25rem;
+  --text-xl:   2rem;
+  --text-2xl:  3rem;
+  --text-3xl:  3.5rem;
+
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold:   700;
+
+  /* ── Spacing (8px grid) ──────────────────────────────────── */
+  --space-1:  0.5rem;
+  --space-2:  1rem;
+  --space-3:  1.5rem;
+  --space-4:  2rem;
+  --space-5:  2.5rem;
+  --space-6:  3rem;
+  --space-8:  4rem;
+  --space-10: 5rem;
+
+  /* ── Radius ──────────────────────────────────────────────── */
+  --radius-sm:   0.5rem;
+  --radius-md:   0.75rem;
+  --radius-lg:   1.25rem;
+  --radius-xl:   1.5rem;
+  --radius-pill: 9999px;
+
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(30,64,175,0.10), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:  0 10px 30px rgba(30,64,175,0.14);
+
+  /* ── Transitions ─────────────────────────────────────────── */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+
+  /* ── Navbar ──────────────────────────────────────────────── */
+  --navbar-height: 4rem;
+}

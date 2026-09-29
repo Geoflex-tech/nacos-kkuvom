@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Newspaper, ArrowRight, User } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import PageHeader from "../../components/PageHeader";
 
 export default function News() {
   const [items, setItems] = useState([]);
@@ -20,22 +21,12 @@ export default function News() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/10 blur-3xl animate-float-slow" />
-          <div className="absolute -bottom-32 -right-24 w-96 h-96 rounded-full bg-nacos-green-light/20 blur-3xl animate-float" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-30" />
-        </div>
-        <div className="relative max-w-5xl mx-auto px-4 py-16 md:py-20 text-center text-white">
-          <p className="text-sm uppercase tracking-widest text-white/70 mb-3">
-            Latest Updates
-          </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">News & Posts</h1>
-          <p className="text-white/85 text-lg max-w-2xl mx-auto">
-            Stories, announcements, and updates from NACOS KKU VOM Chapter.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        label="Latest Updates"
+        titleBold="CHAPTER"
+        titleLight="NEWS"
+        description="Stories, announcements, and updates from NACOS KKU VOM Chapter."
+      />
 
       <section className="max-w-5xl mx-auto px-4 py-12">
         {loading ? (

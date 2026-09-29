@@ -1,17 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Lock, CheckCircle2 } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import AuthShell from "../../components/AuthShell";
+import { AuthFormStyles } from "./Login";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [done, setDone] = useState(false);
+  const [confirm, setConfirm]   = useState("");
+  const [showPw, setShowPw]     = useState(false);
+  const [showCf, setShowCf]     = useState(false);
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+  const [done, setDone]         = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
-  const [invalid, setInvalid] = useState(false);
-  const navigate = useNavigate();
+  const [invalid, setInvalid]   = useState(false);
+  const navigate                = useNavigate();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -31,6 +35,7 @@ export default function ResetPassword() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError("");
 
     if (password.length < 6) {
@@ -43,126 +48,180 @@ export default function ResetPassword() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.updateUser({ password });
+    const { error: err } = await supabase.auth.updateUser({ password });
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
+    if (err) { setError(err.message); return; }
 
     setDone(true);
-    setTimeout(() => navigate("/login"), 2500);
+    setTimeout(() => navigate("/login"), 2800);
   };
 
+  /* ── Verifying ── */
   if (!sessionReady && !invalid) {
     return (
-      <div className="max-w-md mx-auto px-4 py-20 text-center text-gray-500">
-        Verifying reset link...
-      </div>
+      <AuthShell headline="Reset your password." subtext="">
+        <div style={{ textAlign: "center", color: "#6B7280", padding: "40px 0" }}>
+          Verifying reset link…
+        </div>
+        <AuthFormStyles />
+      </AuthShell>
     );
   }
 
+  /* ── Invalid / expired ── */
   if (invalid) {
     return (
-      <section className="max-w-md mx-auto px-4 py-20">
-        <div className="card-flat p-8 text-center">
-          <div className="text-5xl mb-4">⚠️</div>
-          <h1 className="text-xl font-bold text-nacos-blue mb-2">
-            Link expired or invalid
-          </h1>
-          <p className="text-gray-600 text-sm mb-6">
-            This password reset link has expired or is not valid. Please
-            request a new one.
+      <AuthShell headline="Link expired." subtext="This reset link is no longer valid.">
+        <div className="af-head" style={{ textAlign: "center" }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: "50%",
+            background: "#FEF2F2", display: "flex",
+            alignItems: "center", justifyContent: "center",
+            margin: "0 auto 16px",
+          }}>
+            <AlertTriangle size={26} color="#DC2626" aria-hidden="true" />
+          </div>
+          <h1 className="af-title" style={{ textAlign: "center" }}>Link expired or invalid</h1>
+          <p className="af-sub">
+            This password reset link has expired or has already been used.
+            Please request a new one.
           </p>
-          <Link to="/forgot-password" className="btn-primary inline-flex">
-            Request new link
-          </Link>
         </div>
-      </section>
+        <Link
+          to="/forgot-password"
+          className="af-btn"
+          style={{ display: "flex", marginTop: 24, textDecoration: "none" }}
+        >
+          Request a new link
+        </Link>
+        <AuthFormStyles />
+      </AuthShell>
     );
   }
 
+  /* ── Done ── */
   if (done) {
     return (
-      <section className="max-w-md mx-auto px-4 py-20">
-        <div className="card-flat p-8 text-center">
-          <div className="h-16 w-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 size={32} />
+      <AuthShell headline="Password updated." subtext="">
+        <div className="af-head" style={{ textAlign: "center" }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: "50%",
+            background: "#F0FDF4", display: "flex",
+            alignItems: "center", justifyContent: "center",
+            margin: "0 auto 16px",
+          }}>
+            <CheckCircle2 size={28} color="#059669" aria-hidden="true" />
           </div>
-          <h1 className="text-xl font-bold text-nacos-blue mb-2">
-            Password updated
-          </h1>
-          <p className="text-gray-600 text-sm mb-2">
-            Your password has been reset successfully.
-          </p>
-          <p className="text-xs text-gray-400">
-            Redirecting you to login...
+          <h1 className="af-title" style={{ textAlign: "center" }}>Password updated</h1>
+          <p className="af-sub">
+            Your password has been reset successfully. Redirecting you to
+            sign in…
           </p>
         </div>
-      </section>
+        <AuthFormStyles />
+      </AuthShell>
     );
   }
 
+  /* ── Form ── */
   return (
-    <section className="max-w-md mx-auto px-4 py-20">
-      <div className="text-center mb-8">
-        <div className="inline-flex h-14 w-14 rounded-2xl bg-nacos-blue/10 text-nacos-blue items-center justify-center mb-4">
-          <Lock size={24} />
-        </div>
-        <h1 className="text-2xl font-bold text-nacos-blue mb-2">
-          Set a new password
-        </h1>
-        <p className="text-gray-500 text-sm">
-          Choose a strong password you'll remember.
-        </p>
+    <AuthShell
+      headline="Set a new password."
+      subtext="Choose a strong password you'll remember."
+    >
+      <div className="af-head">
+        <h1 className="af-title">New password</h1>
+        <p className="af-sub">Must be at least 6 characters.</p>
       </div>
 
-      <form onSubmit={submit} className="card-flat p-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            New password
-          </label>
-          <input
-            type="password"
-            className="input"
-            placeholder="Min 6 characters"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            minLength={6}
-            required
-          />
+      {error && (
+        <div className="af-err-box" role="alert" aria-live="assertive">
+          <AlertCircle size={15} aria-hidden="true" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <form onSubmit={submit} noValidate>
+        <div className="af-field">
+          <label htmlFor="rp-password" className="af-label">New password</label>
+          <div className="af-pw-wrap">
+            <input
+              id="rp-password"
+              type={showPw ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="Min 6 characters"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="af-input af-input--pw"
+              minLength={6}
+              required
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className="af-pw-toggle"
+              onClick={() => setShowPw((v) => !v)}
+              aria-label={showPw ? "Hide password" : "Show password"}
+              aria-pressed={showPw}
+            >
+              {showPw
+                ? <EyeOff size={16} aria-hidden="true" />
+                : <Eye    size={16} aria-hidden="true" />}
+            </button>
+          </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Confirm password
-          </label>
-          <input
-            type="password"
-            className="input"
-            placeholder="Re-enter password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            minLength={6}
-            required
-          />
+        <div className="af-field">
+          <label htmlFor="rp-confirm" className="af-label">Confirm new password</label>
+          <div className="af-pw-wrap">
+            <input
+              id="rp-confirm"
+              type={showCf ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="Re-enter password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="af-input af-input--pw"
+              minLength={6}
+              required
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className="af-pw-toggle"
+              onClick={() => setShowCf((v) => !v)}
+              aria-label={showCf ? "Hide password" : "Show password"}
+              aria-pressed={showCf}
+            >
+              {showCf
+                ? <EyeOff size={16} aria-hidden="true" />
+                : <Eye    size={16} aria-hidden="true" />}
+            </button>
+          </div>
+          {/* Mismatch hint */}
+          {confirm.length > 0 && password !== confirm && (
+            <p className="af-field-err">
+              <AlertCircle size={12} aria-hidden="true" /> Passwords do not match
+            </p>
+          )}
         </div>
-
-        {error && (
-          <p className="text-red-500 text-sm bg-red-50 border border-red-100 rounded-md p-2.5">
-            {error}
-          </p>
-        )}
 
         <button
           type="submit"
+          className="af-btn"
           disabled={loading}
-          className="btn-primary w-full"
+          aria-busy={loading}
         >
-          {loading ? "Updating..." : "Update Password"}
+          {loading ? (
+            <><span className="af-spinner" aria-hidden="true" /> Updating password…</>
+          ) : (
+            "Update password"
+          )}
         </button>
       </form>
-    </section>
+
+      <AuthFormStyles />
+    </AuthShell>
   );
 }

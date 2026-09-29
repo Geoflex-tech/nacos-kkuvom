@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Upload, X, User as UserIcon } from "lucide-react";
+import { Eye, EyeOff, X, UserCircle2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { compressImage } from "../../utils/compressImage";
+import AuthShell from "../../components/AuthShell";
+import { AuthFormStyles } from "./Login";
+
 export default function Register() {
   const [form, setForm] = useState({
     full_name: "",
@@ -12,44 +15,56 @@ export default function Register() {
     level: "",
     phone: "",
   });
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar]           = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [showPw, setShowPw]           = useState(false);
+  const [error, setError]             = useState("");
+  const [loading, setLoading]         = useState(false);
+  const navigate                      = useNavigate();
 
-  const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
+  const update = (key) => (e) =>
+    setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
+  /* ── Password rule checks ─────────────────────────── */
+  const pwLen  = form.password.length >= 6;
+  const pwMix  = /[A-Za-z]/.test(form.password) && /[0-9]/.test(form.password);
+
+  /* ── Avatar handlers ──────────────────────────────── */
   const handleAvatarChange = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setError("Profile photo must be a JPG or PNG image.");
+      return;
+    }
+    setError("");
+    try {
+      const compressed = await compressImage(file, 800, 0.82);
+      setAvatar(compressed);
+      setAvatarPreview(URL.createObjectURL(compressed));
+    } catch (err) {
+      setError("Could not process photo: " + err.message);
+    }
+  };
 
-  if (!file.type.startsWith("image/")) {
-    setError("Profile photo must be an image file (JPG, PNG).");
-    return;
-  }
-
-  setError("");
-  try {
-    const compressed = await compressImage(file, 800, 0.82);
-    setAvatar(compressed);
-    setAvatarPreview(URL.createObjectURL(compressed));
-  } catch (err) {
-    setError("Could not process photo: " + err.message);
-  }
-};
   const clearAvatar = () => {
     setAvatar(null);
     if (avatarPreview) URL.revokeObjectURL(avatarPreview);
     setAvatarPreview(null);
   };
 
+  /* ── Submit ───────────────────────────────────────── */
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (loading) return;
     setError("");
 
     if (!avatar) {
-      setError("Profile photo is required.");
+      setError("A profile photo is required.");
+      return;
+    }
+    if (!pwLen) {
+      setError("Password must be at least 6 characters.");
       return;
     }
 
@@ -67,15 +82,14 @@ export default function Register() {
       setLoading(false);
       return;
     }
-
     if (!data.user) {
       setError("Registration failed. Please try again.");
       setLoading(false);
       return;
     }
 
-    // 2. Upload avatar to Supabase Storage
-    const ext = avatar.name.split(".").pop().toLowerCase();
+    // 2. Upload avatar
+    const ext      = avatar.name.split(".").pop().toLowerCase();
     const fileName = `member-${data.user.id}-${Date.now()}.${ext}`;
 
     const { error: uploadError } = await supabase.storage
@@ -92,14 +106,14 @@ export default function Register() {
       .from("avatars")
       .getPublicUrl(fileName);
 
-    // 3. Update profile with extra fields + avatar
+    // 3. Update profile
     const { error: profileError } = await supabase
       .from("profiles")
       .update({
-        full_name: form.full_name,
-        matric_no: form.matric_no,
-        level: form.level,
-        phone: form.phone,
+        full_name:  form.full_name,
+        matric_no:  form.matric_no,
+        level:      form.level,
+        phone:      form.phone,
         department: "Computer Science",
         avatar_url: urlData.publicUrl,
       })
@@ -116,118 +130,165 @@ export default function Register() {
   };
 
   return (
-    <section className="max-w-md mx-auto px-4 py-16">
-      <h1 className="text-2xl font-bold text-nacos-blue mb-2 text-center">
-        Member Registration
-      </h1>
-      <p className="text-center text-gray-500 text-sm mb-8">
-        Join NACOS KKU VOM Chapter · Open to Computing students only
-      </p>
+    <AuthShell
+      headline="Join the chapter."
+      subtext="Register as a member of NACOS KKU Vom Chapter. Open to Computing students only."
+    >
+      {/* Heading */}
+      <div className="af-head">
+        <h1 className="af-title">Create account</h1>
+        <p className="af-sub">
+          Already a member?{" "}
+          <Link to="/login" className="af-link">
+            Sign in
+          </Link>
+        </p>
+      </div>
 
-      <form onSubmit={handleRegister} className="card-flat p-6 space-y-4">
-        {/* Avatar upload */}
-        <div className="text-center">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Profile Photo <span className="text-red-500">*</span>
-          </label>
+      {/* Form-level error */}
+      {error && (
+        <div className="af-err-box" role="alert" aria-live="assertive">
+          <AlertCircle size={15} aria-hidden="true" />
+          <span>{error}</span>
+        </div>
+      )}
 
+      <form onSubmit={handleRegister} noValidate>
+
+        {/* ── Avatar ──────────────────────────────────── */}
+        <div className="af-avatar-wrap">
+          <span className="af-avatar-label">
+            Profile photo <span aria-hidden="true" style={{ color: "#DC2626" }}>*</span>
+          </span>
           {avatarPreview ? (
-            <div className="relative inline-block">
-              <img
-                src={avatarPreview}
-                alt="Preview"
-                className="h-24 w-24 rounded-full object-cover border-4 border-nacos-gold mx-auto"
-              />
+            <div className="af-avatar-ring">
+              <img src={avatarPreview} alt="Preview" className="af-avatar-img" />
               <button
                 type="button"
+                className="af-avatar-remove"
                 onClick={clearAvatar}
-                className="absolute -top-1 -right-1 h-7 w-7 rounded-full bg-red-500 text-white flex items-center justify-center shadow-md hover:bg-red-600 transition"
+                aria-label="Remove profile photo"
               >
-                <X size={14} />
+                <X size={12} aria-hidden="true" />
               </button>
             </div>
           ) : (
-            <label className="cursor-pointer inline-flex flex-col items-center justify-center h-24 w-24 rounded-full bg-gray-100 hover:bg-gray-200 border-2 border-dashed border-gray-300 text-gray-500 transition mx-auto">
-              <UserIcon size={24} />
-              <span className="text-xs mt-1">Upload</span>
+            <label className="af-avatar-upload" aria-label="Upload profile photo">
+              <UserCircle2 size={26} aria-hidden="true" />
+              <span style={{ fontSize: "0.6875rem" }}>Upload</span>
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarChange}
-                className="hidden"
+                className="sr-only"
+                style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
+                tabIndex={-1}
               />
             </label>
           )}
-
-          <p className="text-xs text-gray-400 mt-2">
-            JPG or PNG · Max 2 MB
-          </p>
+          <p className="af-avatar-hint">JPG or PNG · Max 2 MB</p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name
-          </label>
+        {/* ── Personal info ────────────────────────────── */}
+        <div className="af-field">
+          <label htmlFor="reg-name" className="af-label">Full name</label>
           <input
-            className="input"
+            id="reg-name"
+            type="text"
+            autoComplete="name"
             placeholder="e.g. Ezekiel Geoffrey Izam"
             value={form.full_name}
             onChange={update("full_name")}
+            className="af-input"
             required
+            disabled={loading}
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Email
-          </label>
+        <div className="af-field">
+          <label htmlFor="reg-email" className="af-label">Email address</label>
           <input
+            id="reg-email"
             type="email"
-            className="input"
+            autoComplete="email"
+            inputMode="email"
             placeholder="you@example.com"
             value={form.email}
             onChange={update("email")}
+            className="af-input"
             required
+            disabled={loading}
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Password
-          </label>
-          <input
-            type="password"
-            className="input"
-            placeholder="Min 6 characters"
-            value={form.password}
-            onChange={update("password")}
-            minLength={6}
-            required
-          />
+        <div className="af-field">
+          <label htmlFor="reg-password" className="af-label">Password</label>
+          <div className="af-pw-wrap">
+            <input
+              id="reg-password"
+              type={showPw ? "text" : "password"}
+              autoComplete="new-password"
+              placeholder="Min 6 characters"
+              value={form.password}
+              onChange={update("password")}
+              className="af-input af-input--pw"
+              minLength={6}
+              required
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className="af-pw-toggle"
+              onClick={() => setShowPw((v) => !v)}
+              aria-label={showPw ? "Hide password" : "Show password"}
+              aria-pressed={showPw}
+            >
+              {showPw
+                ? <EyeOff size={16} aria-hidden="true" />
+                : <Eye    size={16} aria-hidden="true" />}
+            </button>
+          </div>
+          {/* Inline password rules */}
+          {form.password.length > 0 && (
+            <ul className="af-pw-rules" aria-label="Password requirements">
+              <li className={`af-pw-rule${pwLen ? " af-pw-rule--ok" : ""}`}>
+                <span className="af-pw-rule--dot" aria-hidden="true" />
+                At least 6 characters
+                {pwLen && <CheckCircle2 size={11} aria-label="met" />}
+              </li>
+              <li className={`af-pw-rule${pwMix ? " af-pw-rule--ok" : ""}`}>
+                <span className="af-pw-rule--dot" aria-hidden="true" />
+                Mix of letters and numbers (recommended)
+                {pwMix && <CheckCircle2 size={11} aria-label="met" />}
+              </li>
+            </ul>
+          )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Matric Number
-          </label>
+        {/* ── Academic info ────────────────────────────── */}
+        <div className="af-field">
+          <label htmlFor="reg-matric" className="af-label">Matric number</label>
           <input
-            className="input"
+            id="reg-matric"
+            type="text"
             placeholder="e.g. KKU/2023/SC/003"
             value={form.matric_no}
             onChange={update("matric_no")}
+            className="af-input"
             required
+            disabled={loading}
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Level
-          </label>
+        <div className="af-field">
+          <label htmlFor="reg-level" className="af-label">Level</label>
           <select
-            className="input"
+            id="reg-level"
             value={form.level}
             onChange={update("level")}
+            className="af-select"
             required
+            disabled={loading}
           >
             <option value="">Select level</option>
             <option value="100L">100L</option>
@@ -238,53 +299,55 @@ export default function Register() {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number
-          </label>
+        <div className="af-field">
+          <label htmlFor="reg-phone" className="af-label">Phone number</label>
           <input
-            className="input"
+            id="reg-phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
             placeholder="e.g. 09084850109"
             value={form.phone}
             onChange={update("phone")}
+            className="af-input"
             required
+            disabled={loading}
           />
         </div>
 
-        <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 flex gap-2">
-          <span className="text-blue-600 shrink-0">ℹ️</span>
-          <p className="text-xs text-blue-800 leading-relaxed">
-            Registration is limited to students of the{" "}
-            <strong>Computer Science Department</strong>, Karl Kumm University,
-            Vom. Your profile photo is required and will be visible to
-            executives.
-          </p>
+        {/* Info note */}
+        <div className="af-info">
+          Registration is limited to students of the{" "}
+          <strong>Computer Science Department</strong>, Karl Kumm University,
+          Vom. Your application will be reviewed by an executive before approval.
         </div>
 
-        {error && (
-          <p className="text-red-500 text-sm bg-red-50 border border-red-100 rounded-md p-2.5">
-            {error}
-          </p>
-        )}
-
+        {/* Submit */}
         <button
           type="submit"
+          className="af-btn"
           disabled={loading}
-          className="btn-primary w-full"
+          aria-busy={loading}
         >
-          {loading ? "Creating account..." : "Create Account"}
+          {loading ? (
+            <>
+              <span className="af-spinner" aria-hidden="true" />
+              Creating account…
+            </>
+          ) : (
+            "Create account"
+          )}
         </button>
-
-        <p className="text-center text-sm text-gray-500">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-nacos-blue font-semibold hover:underline"
-          >
-            Login
-          </Link>
-        </p>
       </form>
-    </section>
+
+      <p className="af-footer-text">
+        Already a member?{" "}
+        <Link to="/login" className="af-link">
+          Sign in
+        </Link>
+      </p>
+
+      <AuthFormStyles />
+    </AuthShell>
   );
 }

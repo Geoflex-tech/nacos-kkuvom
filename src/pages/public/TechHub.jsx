@@ -1,23 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Code,
-  Globe,
-  Shield,
-  Database,
-  Brain,
-  Palette,
-  Network,
-  Briefcase,
-  GitBranch,
-  Smartphone,
-  Cloud,
-  BookOpen,
-  Video,
-  FileText,
-  Wrench,
-  ExternalLink,
+  Code, Globe, Shield, Database, Brain, Palette,
+  Network, Briefcase, GitBranch, Smartphone, Cloud,
+  BookOpen, Video, FileText, Wrench, ExternalLink,
 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
+import PageHeader from "../../components/PageHeader";
 
 const CATEGORIES = [
   { id: "all", label: "All", Icon: BookOpen },
@@ -35,14 +23,9 @@ const CATEGORIES = [
 ];
 
 const TYPE_ICONS = {
-  course: Video,
-  video: Video,
-  article: FileText,
-  docs: FileText,
-  book: BookOpen,
-  tool: Wrench,
-  repo: GitBranch,
-  tutorial: Video,
+  course: Video, video: Video, article: FileText,
+  docs: FileText, book: BookOpen, tool: Wrench,
+  repo: GitBranch, tutorial: Video,
 };
 
 const LEVEL_COLORS = {
@@ -76,15 +59,8 @@ export default function TechHub() {
       if (category !== "all" && r.category !== category) return false;
       if (level !== "all" && r.level !== level) return false;
       if (q) {
-        const haystack = [
-          r.title,
-          r.description,
-          r.category,
-          (r.tags || []).join(" "),
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
+        const haystack = [r.title, r.description, r.category, (r.tags || []).join(" ")]
+          .filter(Boolean).join(" ").toLowerCase();
         if (!haystack.includes(q)) return false;
       }
       return true;
@@ -93,29 +69,18 @@ export default function TechHub() {
 
   const counts = useMemo(() => {
     const c = { all: items.length };
-    items.forEach((r) => {
-      c[r.category] = (c[r.category] || 0) + 1;
-    });
+    items.forEach((r) => { c[r.category] = (c[r.category] || 0) + 1; });
     return c;
   }, [items]);
 
   return (
     <>
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-nacos-blue to-nacos-green text-white">
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center">
-          <p className="text-sm uppercase tracking-widest text-white/70 mb-3">
-            Learn · Build · Grow
-          </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-            NACOS KKU Tech Hub
-          </h1>
-          <p className="text-white/85 text-lg max-w-2xl mx-auto">
-            A curated library of the best free tech resources on the internet —
-            handpicked for Nigerian Computing students.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        label="Learn and Grow"
+        titleBold="STUDY"
+        titleLight="RESOURCES"
+        description="A curated library of the best free tech resources — handpicked for Nigerian Computing students."
+      />
 
       <section className="max-w-6xl mx-auto px-4 py-10">
         {/* Search */}
