@@ -101,9 +101,9 @@ export default function Footer() {
         { to: "/verify",   label: "Verify Certificate" },
       ];
 
-  /* Filtered social icons — only those with valid https URLs */
-  const activeSocials = SOCIAL_ORDER.filter((key) => isValidUrl(SOCIAL_LINKS[key]));
-  const hasSocials = activeSocials.length > 0;
+  /* Show all four icons always — link to URL when available, # when not yet set */
+  const activeSocials = SOCIAL_ORDER;
+  const hasSocials = true;
 
   return (
     <footer className="site-footer" aria-label="Site footer">
@@ -138,12 +138,13 @@ export default function Footer() {
                 return (
                   <a
                     key={key}
-                    href={SOCIAL_LINKS[key]}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={SOCIAL_LINKS[key] || "#"}
+                    target={SOCIAL_LINKS[key] ? "_blank" : undefined}
+                    rel={SOCIAL_LINKS[key] ? "noopener noreferrer" : undefined}
                     aria-label={label}
                     className="ft-social-btn"
                     role="listitem"
+                    onClick={!SOCIAL_LINKS[key] ? (e) => e.preventDefault() : undefined}
                   >
                     <Icon />
                   </a>
