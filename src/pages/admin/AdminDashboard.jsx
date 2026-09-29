@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <section className="max-w-6xl mx-auto px-4 py-10">
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-nacos-blue">Admin Dashboard</h1>
@@ -57,12 +57,12 @@ export default function AdminDashboard() {
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-6 border-b overflow-x-auto">
+      <div className="flex flex-wrap gap-2 mb-6 border-b overflow-x-auto pb-px">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 font-semibold border-b-2 -mb-px transition whitespace-nowrap ${
+            className={`px-4 py-2.5 min-h-[44px] font-semibold border-b-2 -mb-px transition whitespace-nowrap ${
               tab === t.id
                 ? "border-nacos-blue text-nacos-blue"
                 : "border-transparent text-gray-500 hover:text-nacos-blue"

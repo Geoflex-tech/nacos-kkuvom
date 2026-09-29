@@ -208,7 +208,7 @@ export default function AdminOverview() {
       {/* Stats grid */}
       <div>
         <h3 className="font-bold text-nacos-blue mb-4">Chapter at a Glance</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {statCards.map((s) => {
             const Icon = s.Icon;
             return (
@@ -293,7 +293,7 @@ export default function AdminOverview() {
               {recentCertificates.map((c) => (
                 <div key={c.id} className="card p-3">
                   <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="font-mono text-[10px] bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded">
+                    <span className="font-mono text-[10px] bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded" style={{overflowWrap: 'anywhere', wordBreak: 'break-all'}}>
                       {c.certificate_number}
                     </span>
                     <span

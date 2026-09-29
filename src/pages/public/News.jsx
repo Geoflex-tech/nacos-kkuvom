@@ -176,10 +176,15 @@ export default function News() {
           text-decoration: none;
           transition: border-color 150ms ease-out, box-shadow 150ms ease-out, transform 150ms ease-out;
         }
-        .nw-card:hover {
-          border-color: var(--color-blue);
-          box-shadow: var(--shadow-md);
-          transform: translateY(-2px);
+        @media (hover: hover) {
+          .nw-card:hover {
+            border-color: var(--color-blue);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+          }
+          .nw-card--featured:hover .nw-card__cover-img { transform: scale(1.04); }
+          .nw-card:hover .nw-card__title { color: var(--color-green); }
+          .nw-card:hover .nw-card__readmore { gap: 8px; }
         }
         .nw-card:focus-visible {
           outline: 2px solid var(--color-blue);
@@ -205,7 +210,7 @@ export default function News() {
           display: block;
           transition: transform 300ms ease-out;
         }
-        .nw-card--featured:hover .nw-card__cover-img { transform: scale(1.04); }
+        /* hover handled in @media (hover: hover) block above */
 
         /* Body */
         .nw-card__body {
@@ -241,7 +246,7 @@ export default function News() {
           transition: color 150ms ease-out;
         }
         .nw-card__title--featured { font-size: clamp(1.125rem, 2.5vw, 1.375rem); }
-        .nw-card:hover .nw-card__title { color: var(--color-green); }
+        /* color change on hover handled in @media (hover: hover) block above */
 
         /* Meta row */
         .nw-card__meta {
@@ -281,7 +286,7 @@ export default function News() {
           margin-top: 4px;
           transition: gap 150ms ease-out;
         }
-        .nw-card:hover .nw-card__readmore { gap: 8px; }
+        /* gap expand on hover handled in @media (hover: hover) block above */
 
         /* ── Skeletons ── */
         .nw-skel {

@@ -145,8 +145,6 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
           max-width: 1040px;
           margin: 0 auto;
           padding-inline: 24px;
-          /* Constrain text to left 65% so it never touches the logo */
-          max-width: min(1040px, 65vw + 24px);
         }
 
         .ph-label {
@@ -159,11 +157,13 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
         }
 
         .ph-title {
-          font-size: clamp(2.5rem, 5.5vw, 4rem);
+          font-size: clamp(1.75rem, 5.5vw, 4rem);
           line-height: 1.05;
           text-transform: uppercase;
           color: #ffffff;
           margin: 0 0 14px 0;
+          overflow-wrap: break-word;
+          word-break: break-word;
         }
         .ph-bold  { font-weight: 700; }
         .ph-light { font-weight: 300; }
@@ -174,10 +174,6 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
           max-width: 520px;
           line-height: 1.6;
           margin: 0 0 20px 0;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
         }
 
         .ph-cta {
@@ -209,7 +205,6 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
             height: 180px;
           }
           .ph-container {
-            max-width: 1040px;
             padding-inline: 16px;
           }
         }
@@ -222,26 +217,37 @@ export default function PageHeader({ label, titleBold, titleLight, description, 
             padding-bottom: 40px;
             margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
           }
-          .ph-title { font-size: 2rem; }
-
-          .ph-logo {
-            width: 110px;
-            height: 110px;
-            right: 4%;
+          .ph-title {
+            font-size: clamp(1.625rem, 8vw, 2.25rem);
           }
-          .ph-logo img { opacity: 0.14; }
 
-          /* Slightly stronger overlay on mobile to protect text */
+          /* hide decorative logo on very small screens to avoid text overlap */
+          .ph-logo {
+            width: 90px;
+            height: 90px;
+            right: 4%;
+            top: auto;
+            bottom: 16px;
+            transform: none;
+          }
+          .ph-logo img { opacity: 0.10; }
+
+          /* Stronger overlay to protect text */
           .ph-overlay {
             background: linear-gradient(
               90deg,
-              rgba(10,20,55,0.82)  0%,
-              rgba(10,20,55,0.50) 100%
+              rgba(10,20,55,0.88)  0%,
+              rgba(10,20,55,0.55) 100%
             );
           }
 
-          /* Text uses full width on small screens */
-          .ph-container { max-width: 100%; }
+          .ph-container { padding-inline: 16px; }
+        }
+
+        /* ── 320px edge case ──────────────────────────── */
+        @media (max-width: 360px) {
+          .ph-title { font-size: 1.5rem; }
+          .ph-logo  { display: none; }
         }
 
         /* ── Reduced motion ───────────────────────────── */

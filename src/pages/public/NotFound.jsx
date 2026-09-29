@@ -1,5 +1,12 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Mail } from "lucide-react";
+import { ArrowLeft, Mail, Home, BookOpen, Calendar, Users } from "lucide-react";
+
+const SUGGESTIONS = [
+  { to: "/",          label: "Home",      Icon: Home },
+  { to: "/about",     label: "About",     Icon: Users },
+  { to: "/events",    label: "Events",    Icon: Calendar },
+  { to: "/tech-hub",  label: "Tech Hub",  Icon: BookOpen },
+];
 
 export default function NotFound() {
   return (
@@ -12,10 +19,10 @@ export default function NotFound() {
       <h1 id="nf-heading" className="nf-heading">Page not found</h1>
 
       <p className="nf-body">
-        The page you're looking for doesn't exist, was moved, or the link may be broken.
+        The page you&apos;re looking for doesn&apos;t exist, was moved, or the link may be broken.
       </p>
 
-      {/* Actions */}
+      {/* Primary actions */}
       <div className="nf-actions">
         <Link to="/" className="btn btn-primary nf-btn">
           <ArrowLeft size={15} aria-hidden="true" />
@@ -27,6 +34,21 @@ export default function NotFound() {
         </Link>
       </div>
 
+      {/* Suggested pages */}
+      <div className="nf-suggestions" aria-label="Suggested pages">
+        <p className="nf-suggestions__label">Or explore:</p>
+        <ul className="nf-suggestions__list" role="list">
+          {SUGGESTIONS.map(({ to, label, Icon }) => (
+            <li key={to}>
+              <Link to={to} className="nf-suggestion-link">
+                <Icon size={14} aria-hidden="true" />
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <style>{`
         .nf-page {
           display: flex;
@@ -34,7 +56,7 @@ export default function NotFound() {
           align-items: center;
           text-align: center;
           padding: 80px 24px;
-          max-width: 480px;
+          max-width: 520px;
           margin-inline: auto;
         }
 
@@ -45,7 +67,6 @@ export default function NotFound() {
           line-height: 1;
           margin: 0 0 8px;
           letter-spacing: -4px;
-          /* Overlay the number with a blue outline effect */
           -webkit-text-stroke: 3px var(--color-blue);
         }
 
@@ -69,11 +90,56 @@ export default function NotFound() {
           gap: 12px;
           flex-wrap: wrap;
           justify-content: center;
+          margin-bottom: 40px;
         }
 
         .nf-btn {
           min-width: 140px;
           justify-content: center;
+        }
+
+        /* Suggested links */
+        .nf-suggestions {
+          border-top: 1px solid var(--color-border);
+          padding-top: 24px;
+          width: 100%;
+        }
+
+        .nf-suggestions__label {
+          font-size: var(--text-sm);
+          color: var(--color-text-muted);
+          margin: 0 0 12px;
+        }
+
+        .nf-suggestions__list {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+        }
+
+        .nf-suggestion-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 14px;
+          border-radius: 999px;
+          border: 1px solid var(--color-border);
+          font-size: var(--text-sm);
+          color: var(--color-text);
+          text-decoration: none;
+          transition: background 0.15s, color 0.15s;
+        }
+
+        @media (hover: hover) {
+          .nf-suggestion-link:hover {
+            background: var(--color-blue);
+            color: #fff;
+            border-color: var(--color-blue);
+          }
         }
 
         @media (max-width: 480px) {

@@ -251,7 +251,8 @@ export function AuthFormStyles() {
         border: 1px solid #D3D9E8;
         border-radius: 8px;
         background: #fff;
-        font-size: 0.875rem;
+        /* 16px minimum to prevent iOS Safari auto-zoom on focus */
+        font-size: 1rem;
         color: #0F172A;
         font-family: inherit;
         box-sizing: border-box;
@@ -288,7 +289,7 @@ export function AuthFormStyles() {
         width: 100%; height: 44px;
         padding: 0 12px;
         border: 1px solid #D3D9E8; border-radius: 8px;
-        background: #fff; font-size: 0.875rem;
+        background: #fff; font-size: 1rem;
         color: #0F172A; font-family: inherit;
         box-sizing: border-box;
         transition: border-color 150ms ease-out, box-shadow 150ms ease-out;

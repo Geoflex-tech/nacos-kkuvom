@@ -384,6 +384,7 @@ export default function DashboardLayout() {
           flex-direction: column;
           height: 100%;
           padding: 0;
+          padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         /* Logo */
@@ -457,6 +458,8 @@ export default function DashboardLayout() {
           border-bottom: 1px solid #E2E6EF;
           display: flex; align-items: center;
           padding: 0 16px;
+          padding-left: max(16px, env(safe-area-inset-left));
+          padding-right: max(16px, env(safe-area-inset-right));
           gap: 12px;
         }
 
@@ -475,6 +478,7 @@ export default function DashboardLayout() {
           font-size: 0.9375rem; font-weight: 600;
           color: #0F172A; margin: 0; flex: 1;
           white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+          min-width: 0;
         }
 
         .dl-topbar-right {
@@ -579,6 +583,7 @@ export default function DashboardLayout() {
           transform: translateX(-100%);
           transition: transform 250ms ease-out;
           overflow-y: auto;
+          padding-bottom: env(safe-area-inset-bottom, 0px);
         }
         .dl-drawer--open { transform: translateX(0); }
 

@@ -338,7 +338,7 @@ export default function Footer() {
           padding: 0;
           display: flex;
           flex-direction: column;
-          gap: 9px;
+          gap: 6px;
         }
 
         .ft-link {
@@ -347,11 +347,11 @@ export default function Footer() {
           text-decoration: none;
           transition: color 150ms ease-out;
           display: inline-block;
-          /* ensure 44px touch zone on mobile */
-          padding-block: 2px;
+          /* ensure comfortable touch zone */
+          padding-block: 4px;
         }
-        .ft-link:hover {
-          color: #ffffff;
+        @media (hover: hover) {
+          .ft-link:hover { color: #ffffff; }
         }
         .ft-link:focus-visible {
           outline: 2px solid #FCD34D;

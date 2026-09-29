@@ -121,8 +121,9 @@ export default function Hero({ stats = {} }) {
           /* Desktop: safe-area + pill(62px) + 72px gap = 134px */
           padding-top:    calc(env(safe-area-inset-top, 0px) + 10px + 52px + 72px);
           padding-bottom: 120px;
-          min-height: 100svh;
-          min-height: 100vh; /* fallback */
+          /* vh fallback first, then modern units that exclude browser chrome */
+          min-height: 100vh;
+          min-height: 100dvh;
         }
 
         /* ── Background image (blurred logo) ── */
@@ -279,15 +280,16 @@ export default function Hero({ stats = {} }) {
           height: 100%;
           transition: transform 150ms ease-out, box-shadow 150ms ease-out;
         }
-        .feat-card:hover,
-        .feat-card:focus-visible {
-          transform: translateY(-3px);
-          box-shadow: var(--shadow-lg);
-          outline: none;
-        }
         .feat-card:focus-visible {
           outline: 2px solid var(--color-blue);
           outline-offset: 2px;
+        }
+        @media (hover: hover) {
+          .feat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            outline: none;
+          }
         }
         .feat-card__icon {
           width: 36px; height: 36px;
@@ -329,8 +331,7 @@ export default function Hero({ stats = {} }) {
             margin-top:     calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
             padding-top:    calc(env(safe-area-inset-top, 0px) + 10px + 52px + 56px);
             padding-bottom: 80px;
-          }
-          .hero-seal {
+          }          .hero-seal {
             width: 72px; height: 72px;
             margin-bottom: 20px;
           }
