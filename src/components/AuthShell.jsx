@@ -206,7 +206,7 @@ export default function AuthShell({ headline, subtext, children }) {
           display: flex;
           flex-direction: column;
           justify-content: center;
-          padding: 28px 20px 48px;
+          padding: 16px 20px 32px;
           width: 100%;
           max-width: 420px;
           margin-inline: auto;
@@ -224,7 +224,7 @@ export default function AuthShell({ headline, subtext, children }) {
           }
 
           .as-form-wrap {
-            padding: 72px 48px 56px;
+            padding: 40px 48px 40px;
             max-width: 476px;   /* 380px form + 48px padding each side */
           }
         }

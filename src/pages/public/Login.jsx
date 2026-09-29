@@ -190,10 +190,10 @@ export function AuthFormStyles() {
   return (
     <style>{`
       /* ── Heading ─────────────────────────────────────── */
-      .af-head { margin-bottom: 28px; }
+      .af-head { margin-bottom: 20px; }
       .af-title {
-        font-size: 1.375rem; font-weight: 500;
-        color: #0F172A; margin: 0 0 6px;
+        font-size: 1.25rem; font-weight: 600;
+        color: #0F172A; margin: 0 0 4px;
       }
       .af-sub {
         font-size: 0.875rem; color: #64748B; margin: 0; line-height: 1.5;
@@ -220,7 +220,7 @@ export function AuthFormStyles() {
       .af-ok-box svg { flex-shrink: 0; margin-top: 1px; }
 
       /* ── Fields ──────────────────────────────────────── */
-      .af-field { margin-bottom: 18px; }
+      .af-field { margin-bottom: 12px; }
 
       .af-label-row {
         display: flex; align-items: center;
@@ -371,7 +371,7 @@ export function AuthFormStyles() {
 
       /* ── Info banner ─────────────────────────────────── */
       .af-info {
-        padding: 10px 14px; margin-bottom: 20px;
+        padding: 8px 12px; margin-bottom: 14px;
         background: #EFF6FF; border: 1px solid #BFDBFE;
         border-radius: 8px;
         font-size: 0.8125rem; color: #1E40AF; line-height: 1.5;
@@ -380,11 +380,11 @@ export function AuthFormStyles() {
       /* ── Avatar upload ───────────────────────────────── */
       .af-avatar-wrap {
         display: flex; flex-direction: column; align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: 16px;
       }
       .af-avatar-label {
         font-size: 0.8125rem; font-weight: 500;
-        color: #374151; margin-bottom: 10px;
+        color: #374151; margin-bottom: 8px;
       }
       .af-avatar-ring {
         position: relative;
