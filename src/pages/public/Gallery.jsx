@@ -219,9 +219,21 @@ export default function Gallery() {
           object-fit: cover; display: block;
           transition: transform 350ms ease-out;
         }
-        .gl-thumb:hover .gl-thumb__img,
+        @media (hover: hover) {
+          .gl-thumb:hover .gl-thumb__img {
+            transform: scale(1.07);
+          }
+          .gl-thumb:hover .gl-thumb__overlay {
+            opacity: 1;
+            background: rgba(15, 23, 42, 0.35);
+          }
+        }
         .gl-thumb:focus-visible .gl-thumb__img {
           transform: scale(1.07);
+        }
+        .gl-thumb:focus-visible .gl-thumb__overlay {
+          opacity: 1;
+          background: rgba(15, 23, 42, 0.35);
         }
 
         /* Zoom icon overlay */
@@ -232,11 +244,6 @@ export default function Gallery() {
           color: #fff;
           opacity: 0;
           transition: opacity 200ms ease-out, background 200ms ease-out;
-        }
-        .gl-thumb:hover .gl-thumb__overlay,
-        .gl-thumb:focus-visible .gl-thumb__overlay {
-          opacity: 1;
-          background: rgba(15, 23, 42, 0.35);
         }
 
         /* Caption bar */
@@ -287,13 +294,16 @@ export default function Gallery() {
           align-items: center;
           justify-content: center;
           padding: 16px;
+          padding-left: max(16px, env(safe-area-inset-left));
+          padding-right: max(16px, env(safe-area-inset-right));
           pointer-events: none; /* clicks pass through to backdrop to close */
         }
 
         .gl-lb__close {
           position: fixed;
-          top: 16px; right: 16px;
-          width: 40px; height: 40px;
+          top: max(16px, env(safe-area-inset-top, 16px));
+          right: max(16px, env(safe-area-inset-right, 16px));
+          width: 44px; height: 44px;
           border-radius: 50%;
           background: rgba(255,255,255,0.12);
           border: 1px solid rgba(255,255,255,0.20);
@@ -311,6 +321,7 @@ export default function Gallery() {
           pointer-events: all;
           max-width: min(90vw, 1000px);
           max-height: 80vh;
+          max-height: 80dvh;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -319,6 +330,7 @@ export default function Gallery() {
         .gl-lb__img {
           max-width: 100%;
           max-height: 80vh;
+          max-height: 80dvh;
           border-radius: var(--radius-lg);
           box-shadow: 0 24px 64px rgba(0,0,0,0.60);
           display: block;
