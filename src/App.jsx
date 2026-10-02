@@ -32,7 +32,7 @@ import Announcements from "./pages/portal/Announcements";
 import MyCertificates from "./pages/portal/MyCertificates";
 import CertificateView from "./pages/portal/CertificateView";
 import Dues from "./pages/portal/Dues";
-
+import MyProjects from "./pages/portal/MyProjects";
 // Admin
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
@@ -70,7 +70,8 @@ export default function App() {
           <Route path="/certificates" element={<ProtectedRoute><MyCertificates /></ProtectedRoute>} />
           <Route path="/certificates/:id" element={<ProtectedRoute><CertificateView /></ProtectedRoute>} />
           <Route path="/dues" element={<ProtectedRoute><Dues /></ProtectedRoute>} />
-
+          <Route path="/projects" element={<ProtectedRoute><MyProjects /></ProtectedRoute>} />
+          
           {/* Admin */}
           <Route path="/admin" element={<ProtectedRoute requireRole="exec"><AdminDashboard /></ProtectedRoute>} />
 

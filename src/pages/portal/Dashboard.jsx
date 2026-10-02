@@ -9,6 +9,17 @@ import {
   Calendar,
   ArrowRight,
 } from "lucide-react";
+import {
+  User,
+  BookOpen,
+  Megaphone,
+  Wallet,
+  Award,
+  Calendar,
+  ArrowRight,
+  Briefcase,
+  FolderKanban,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "../../lib/supabase";
 
@@ -138,11 +149,19 @@ export default function Dashboard() {
       </div>
 
       {/* Quick actions */}
+      
       <div className="mb-8">
         <h2 className="text-lg font-bold text-nacos-blue mb-4">Quick Actions</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {actions.map(({ to, label, desc, Icon, color }) => (
-            <Link
+        {
+  to: "/my-projects",
+  label: "My Projects",
+  desc: "Submit your work to the showcase",
+  Icon: FolderKanban,
+  color: "bg-pink-50 text-pink-700",
+},
+      <Link
               key={to}
               to={to}
               className="card p-5 flex items-center gap-4 hover:shadow-md group"
@@ -164,7 +183,7 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-
+      
       {/* Two-column: upcoming events + announcements */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Upcoming events */}
