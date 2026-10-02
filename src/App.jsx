@@ -38,7 +38,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <main className="min-h-[70vh]">
+      <main className="min-h-[70vh] pt-[88px]">
         <Routes>
           {/* Public */}
           <Route path="/" element={<Home />} />
