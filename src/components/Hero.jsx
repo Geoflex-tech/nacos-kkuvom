@@ -1,89 +1,389 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Newspaper, Calendar, BookOpen, Users } from "lucide-react";
 
-export default function Hero() {
+const FEATURES = [
+  {
+    key: "news",
+    label: "Latest News",
+    subLabel: (s) => (s.news != null ? `${s.news} article${s.news !== 1 ? "s" : ""}` : null),
+    icon: Newspaper,
+    to: "/news",
+    bg: "var(--color-blue-light)",
+    color: "var(--color-blue)",
+  },
+  {
+    key: "events",
+    label: "Upcoming Events",
+    subLabel: (s) => (s.events != null ? `${s.events} event${s.events !== 1 ? "s" : ""}` : null),
+    icon: Calendar,
+    to: "/events",
+    bg: "var(--color-green-light)",
+    color: "var(--color-green)",
+  },
+  {
+    key: "resources",
+    label: "Resources",
+    subLabel: (s) => (s.resources != null ? `${s.resources} resource${s.resources !== 1 ? "s" : ""}` : null),
+    icon: BookOpen,
+    to: "/resources",
+    bg: "var(--color-blue-light)",
+    color: "var(--color-blue)",
+  },
+  {
+    key: "members",
+    label: "Members",
+    subLabel: (s) => (s.members != null ? `${s.members} member${s.members !== 1 ? "s" : ""}` : null),
+    icon: Users,
+    to: "/register",
+    bg: "var(--color-yellow-light)",
+    color: "var(--color-yellow)",
+  },
+];
+
+export default function Hero({ stats = {} }) {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
-      {/* Animated background blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/15 blur-3xl animate-float-slow" />
-        <div className="absolute top-1/2 -right-32 w-[28rem] h-[28rem] rounded-full bg-white/10 blur-3xl animate-float" />
-        <div className="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full bg-nacos-gold/10 blur-3xl animate-float-slow" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-20" />
-      </div>
+    <>
+      <section aria-label="Welcome to NACOS KKU VOM" className="hero-section">
+        <div className="hero-bg-img" aria-hidden="true" />
+        <div className="hero-bg-overlay" aria-hidden="true" />
 
-      <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28 lg:py-32">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Text */}
-          <div className="text-white text-center lg:text-left animate-fade-in-up">
-            <span className="inline-flex items-center gap-2 bg-white/15 backdrop-blur border border-white/25 text-xs md:text-sm font-semibold px-3 py-1.5 rounded-full mb-6">
-              <Sparkles size={14} className="text-nacos-gold" />
-              Official Chapter Portal · 2026/2027
-            </span>
-
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight mb-6">
-              Welcome to{" "}
-              <span className="text-gradient">NACOS KKU VOM</span>{" "}
-              Chapter
-            </h1>
-
-            <p className="text-white/90 text-lg md:text-xl mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              The official digital home of Computing students at Karl Kumm
-              University, Vom. Building skills, community, and a legacy of
-              excellence — one generation at a time.
-            </p>
-
-            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-              <Link
-                to="/register"
-                className="btn-gold text-base px-6 py-3 inline-flex items-center gap-2"
-              >
-                Join NACOS
-                <ArrowRight size={18} />
-              </Link>
-              <Link
-                to="/tech-hub"
-                className="inline-flex items-center gap-2 border-2 border-white/40 text-white px-6 py-3 rounded-lg font-semibold hover:bg-white/15 transition-all duration-200"
-              >
-                Explore Tech Hub
-              </Link>
-            </div>
-
-            <p className="text-white/70 text-sm mt-8">
-              Free to join · Open to all Computing students
-            </p>
+        <div className="container hero-content">
+          <div className="hero-seal">
+            <img
+              src="/logo.png"
+              alt="NACOS KKU VOM logo"
+              loading="eager"
+              className="hero-seal__img"
+            />
           </div>
 
-          {/* Logo visual */}
-          <div className="flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="absolute inset-0 bg-nacos-gold/30 rounded-full blur-3xl animate-pulse" />
-              <div className="relative h-64 w-64 md:h-80 md:w-80 rounded-full bg-white/10 backdrop-blur border-2 border-white/30 flex items-center justify-center p-8">
-                <img
-                  src="/logo.png"
-                  alt="NACOS KKU VOM"
-                  className="h-full w-full object-contain rounded-full"
-                />
-              </div>
-            </div>
+          <span className="hero-badge">Official Chapter Portal · 2026/2027</span>
+
+          <h1 className="hero-headline">
+            Empowering{" "}
+            <span className="hero-headline__accent">Computing</span>{" "}
+            Students at KKU Vom
+          </h1>
+
+          <p className="hero-para">
+            The official digital home of NACOS KKU Vom Chapter — building
+            skills, community, and a legacy of excellence one generation at a
+            time.
+          </p>
+
+          <div className="hero-btns">
+            <Link to="/about" className="hero-btn hero-btn--solid">
+              About Us <ArrowRight size={15} aria-hidden="true" />
+            </Link>
+            <Link to="/events" className="hero-btn hero-btn--ghost">
+              View Events
+            </Link>
           </div>
         </div>
+      </section>
+
+      <div className="container hero-cards-wrap">
+        <ul className="feature-grid" role="list" aria-label="Key sections">
+          {FEATURES.map(({ key, label, subLabel, icon: Icon, to, bg, color }) => {
+            const sub = subLabel(stats);
+            return (
+              <li key={key}>
+                <Link to={to} aria-label={label} className="feat-card">
+                  <div
+                    className="feat-card__icon"
+                    aria-hidden="true"
+                    style={{ background: bg }}
+                  >
+                    <Icon size={16} color={color} strokeWidth={2} aria-hidden="true" />
+                  </div>
+                  <span className="feat-card__title">{label}</span>
+                  {sub && <span className="feat-card__sub">{sub}</span>}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </div>
 
-      {/* Wave divider */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg
-          viewBox="0 0 1440 60"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-8 md:h-12"
-        >
-          <path
-            d="M0 30L60 25C120 20 240 10 360 10C480 10 600 20 720 25C840 30 960 30 1080 25C1200 20 1320 10 1380 5L1440 0V60H0V30Z"
-            fill="white"
-          />
-        </svg>
-      </div>
-    </section>
+      <style>{`
+        /* ---- CSS Variables (self-contained fallback) ---- */
+        :root {
+          --color-blue: #1E40AF;
+          --color-blue-light: #DBEAFE;
+          --color-green: #059669;
+          --color-green-light: #D1FAE5;
+          --color-yellow: #D97706;
+          --color-yellow-light: #FEF3C7;
+          --color-border: #E5E7EB;
+          --color-text-primary: #111827;
+          --color-text-muted: #6B7280;
+          --radius-lg: 16px;
+          --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+          --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+        }
+
+        /* ---- Hero section ---- */
+        .hero-section {
+          position: relative;
+          display: flex;
+          align-items: flex-start;
+          overflow: hidden;
+          margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
+          padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 72px);
+          padding-bottom: 120px;
+          min-height: 100vh;
+          min-height: 100dvh;
+        }
+
+        .hero-bg-img {
+          position: absolute;
+          inset: 0;
+          background-image: url('/logo.png');
+          background-size: cover;
+          background-position: center;
+          filter: blur(3px) brightness(0.35);
+          transform: scale(1.05);
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .hero-bg-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(30,58,138,0.92) 0%, rgba(30,64,175,0.80) 60%, rgba(5,150,105,0.50) 100%);
+          pointer-events: none;
+          z-index: 1;
+        }
+
+        .hero-content {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          width: 100%;
+        }
+
+        .hero-seal {
+          width: 88px;
+          height: 88px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 3px solid rgba(255,255,255,0.40);
+          margin-bottom: 28px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.35);
+          flex-shrink: 0;
+        }
+        .hero-seal__img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .hero-badge {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+          color: rgba(255,255,255,0.72);
+          border: 1px solid rgba(255,255,255,0.22);
+          border-radius: 9999px;
+          padding: 5px 14px;
+          margin-bottom: 22px;
+          white-space: nowrap;
+        }
+
+        .hero-headline {
+          font-size: clamp(2rem, 4vw, 3.25rem);
+          font-weight: 700;
+          color: #ffffff;
+          line-height: 1.1;
+          margin: 0 0 18px;
+          max-width: 640px;
+        }
+        .hero-headline__accent { color: #FCD34D; }
+
+        .hero-para {
+          font-size: clamp(0.9375rem, 1.5vw, 1rem);
+          color: rgba(255,255,255,0.80);
+          line-height: 1.65;
+          max-width: 520px;
+          margin: 0 0 32px;
+        }
+
+        .hero-btns {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+        .hero-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          height: 46px;
+          padding: 0 28px;
+          border-radius: 9999px;
+          font-size: 0.875rem;
+          font-weight: 600;
+          text-decoration: none;
+          white-space: nowrap;
+          transition: transform 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out;
+        }
+        .hero-btn--solid {
+          background: #ffffff;
+          color: #1E3A8A;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+        }
+        .hero-btn--solid:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(0,0,0,0.28);
+        }
+        .hero-btn--ghost {
+          background: transparent;
+          color: #ffffff;
+          border: 1.5px solid rgba(255,255,255,0.45);
+        }
+        .hero-btn--ghost:hover {
+          background: rgba(255,255,255,0.10);
+          border-color: rgba(255,255,255,0.70);
+        }
+
+        /* ---- Feature cards ---- */
+        .hero-cards-wrap {
+          margin-top: -56px;
+          position: relative;
+          z-index: 10;
+          padding-bottom: 8px;
+        }
+        .feature-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+        }
+        .feat-card {
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          padding: 20px;
+          background: #ffffff;
+          border: 1px solid var(--color-border);
+          border-radius: var(--radius-lg);
+          box-shadow: var(--shadow-md);
+          text-decoration: none;
+          height: 100%;
+          transition: transform 150ms ease-out, box-shadow 150ms ease-out;
+        }
+        .feat-card:focus-visible {
+          outline: 2px solid var(--color-blue);
+          outline-offset: 2px;
+        }
+        @media (hover: hover) {
+          .feat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+          }
+        }
+        .feat-card__icon {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .feat-card__title {
+          font-size: 0.8125rem;
+          font-weight: 600;
+          color: var(--color-text-primary);
+          line-height: 1.3;
+        }
+        .feat-card__sub {
+          font-size: 0.75rem;
+          color: var(--color-text-muted);
+          line-height: 1.4;
+        }
+
+        /* ---- Responsive ---- */
+        @media (min-width: 640px) and (max-width: 1023px) {
+          .hero-section {
+            padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 64px);
+          }
+          .hero-seal { width: 76px; height: 76px; }
+          .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+          .hero-cards-wrap { margin-top: -40px; }
+        }
+
+        @media (max-width: 639px) {
+          .hero-section {
+            margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
+            padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 56px);
+            padding-bottom: 80px;
+          }
+          .hero-seal { width: 72px; height: 72px; margin-bottom: 20px; }
+          .hero-badge {
+            font-size: 9.5px;
+            letter-spacing: 0.09em;
+            padding: 5px 12px;
+            margin-bottom: 16px;
+          }
+          .hero-headline {
+            font-size: clamp(1.625rem, 7.5vw, 2rem);
+            margin-bottom: 14px;
+          }
+          .hero-para {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin-bottom: 26px;
+          }
+          .hero-btns {
+            flex-direction: column;
+            width: 100%;
+            gap: 12px;
+          }
+          .hero-btn {
+            width: 100%;
+            height: 50px;
+            font-size: 0.9375rem;
+          }
+          .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+          .hero-cards-wrap { margin-top: -32px; }
+          .feat-card { padding: 16px; gap: 8px; }
+        }
+
+        @media (max-height: 700px) and (min-width: 640px) {
+          .hero-section {
+            padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 48px);
+            min-height: unset;
+            padding-bottom: 100px;
+          }
+          .hero-headline { font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
+          .hero-seal { width: 70px; height: 70px; }
+        }
+        @media (max-height: 420px) {
+          .hero-section { padding-bottom: 72px; }
+          .hero-seal { width: 44px; height: 44px; margin-bottom: 12px; }
+          .hero-headline { font-size: 1.5rem; }
+          .hero-para { display: none; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .feat-card:hover,
+          .hero-btn--solid:hover,
+          .hero-btn--ghost:hover {
+            transform: none;
+            transition: none;
+          }
+        }
+      `}</style>
+    </>
   );
 }
