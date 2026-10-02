@@ -60,7 +60,7 @@ export default function Hero() {
               <div className="absolute inset-0 bg-nacos-gold/30 rounded-full blur-3xl animate-pulse" />
               <div className="relative h-64 w-64 md:h-80 md:w-80 rounded-full bg-white/10 backdrop-blur border-2 border-white/30 flex items-center justify-center p-8">
                 <img
-                  src="/logo.jpeg"
+                  src="/logo.png"
                   alt="NACOS KKU VOM"
                   className="h-full w-full object-contain rounded-full"
                 />

@@ -97,7 +97,7 @@ export default function CertificateView() {
           <div className="flex items-center justify-center gap-8 md:gap-14 mb-5">
             <div className="h-24 w-24 md:h-28 md:w-28 flex items-center justify-center">
               <img
-                src="/logo.jpeg"
+                src="/logo.png"
                 alt="NACOS KKU VOM"
                 className="max-h-full max-w-full object-contain"
               />

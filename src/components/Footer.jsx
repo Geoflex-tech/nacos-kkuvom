@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="md:col-span-2">
           <div className="flex items-center gap-2 mb-3">
             <img
-              src="/logo.jpeg"
+              src="/logo.png"
               alt="NACOS"
               className="h-10 w-10 object-contain"
             />

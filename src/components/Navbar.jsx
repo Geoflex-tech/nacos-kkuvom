@@ -42,7 +42,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-bold text-lg shrink-0">
           <img
-            src="/logo.jpeg"
+            src="/logo.png"
             alt="NACOS KKU VOM"
             className="h-10 w-10 object-contain"
           />
