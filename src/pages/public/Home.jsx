@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Users,
-  Calendar,
-  Award,
-  BookOpen,
-  ArrowRight,
-  MapPin,
-  Clock,
-} from "lucide-react";
+import { ArrowRight, MapPin, Clock } from "lucide-react";
 import Hero from "../../components/Hero";
 import { supabase } from "../../lib/supabase";
 
@@ -17,12 +9,7 @@ export default function Home() {
   const [events, setEvents] = useState([]);
   const [execs, setExecs] = useState([]);
   const [president, setPresident] = useState(null);
-  const [stats, setStats] = useState({
-    members: 0,
-    events: 0,
-    certificates: 0,
-    resources: 0,
-  });
+  const [stats, setStats] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -34,6 +21,8 @@ export default function Home() {
         certsRes,
         resourcesRes,
         presidentRes,
+        allNewsCount,
+        allEventsCount,
       ] = await Promise.all([
         supabase
           .from("news")
@@ -56,7 +45,7 @@ export default function Home() {
           .from("certificates")
           .select("*", { count: "exact", head: true }),
         supabase
-          .from("tech_hub_resources")
+          .from("resources")
           .select("*", { count: "exact", head: true }),
         supabase
           .from("executives")
@@ -64,22 +53,28 @@ export default function Home() {
           .or("position.ilike.%president%,position.ilike.%President%")
           .order("order_index")
           .limit(1),
+        supabase.from("news").select("*", { count: "exact", head: true }),
+        supabase
+          .from("events")
+          .select("*", { count: "exact", head: true })
+          .gte("event_date", new Date().toISOString()),
       ]);
 
       setNews(newsRes.data || []);
       setEvents(eventsRes.data || []);
       setExecs(execsRes.data || []);
       setPresident(presidentRes.data?.[0] || null);
+
       setStats({
-        members: membersRes.count || 0,
-        events: eventsRes.data?.length || 0,
-        certificates: certsRes.count || 0,
+        news: allNewsCount.count || 0,
+        events: allEventsCount.count || 0,
         resources: resourcesRes.count || 0,
+        members: membersRes.count || 0,
+        certificates: certsRes.count || 0,
       });
     })();
   }, []);
 
-  // Fallback if no president exec is found
   const presidentName = president?.name || "Ezekiel Geoffrey Izam";
   const presidentPosition = president?.position
     ? `${president.position}, NACOS KKU VOM Chapter`
@@ -87,36 +82,10 @@ export default function Home() {
 
   return (
     <>
-      <Hero />
-
-      {/* Stats band */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {[
-              { label: "Members", value: stats.members, Icon: Users },
-              { label: "Events", value: stats.events, Icon: Calendar },
-              { label: "Certificates", value: stats.certificates, Icon: Award },
-              { label: "Tech Resources", value: stats.resources, Icon: BookOpen },
-            ].map(({ label, value, Icon }) => (
-              <div key={label} className="text-center">
-                <div className="inline-flex h-12 w-12 rounded-xl bg-nacos-blue/5 text-nacos-blue items-center justify-center mb-3">
-                  <Icon size={22} />
-                </div>
-                <p className="text-3xl md:text-4xl font-extrabold text-nacos-blue">
-                  {value}
-                </p>
-                <p className="text-xs md:text-sm text-gray-500 font-medium mt-1 uppercase tracking-wide">
-                  {label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Hero stats={stats} />
 
       {/* President's Welcome */}
-      <section className="bg-gray-50">
+      <section className="bg-white">
         <div className="section">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-10">
@@ -157,12 +126,8 @@ export default function Home() {
                     something that lasts.
                   </p>
                   <div>
-                    <p className="font-bold text-nacos-blue">
-                      {presidentName}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {presidentPosition}
-                    </p>
+                    <p className="font-bold text-nacos-blue">{presidentName}</p>
+                    <p className="text-sm text-gray-500">{presidentPosition}</p>
                   </div>
                 </div>
               </div>
@@ -171,9 +136,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured executives */}
+      {/* Featured execs */}
       {execs.length > 0 && (
-        <section className="bg-white">
+        <section className="bg-gray-50">
           <div className="section">
             <div className="flex items-end justify-between mb-10">
               <div>
@@ -230,8 +195,8 @@ export default function Home() {
         </section>
       )}
 
-      {/* Latest News + Events side by side */}
-      <section className="bg-gray-50">
+      {/* News + Events */}
+      <section className="bg-white">
         <div className="section">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* News */}
@@ -304,10 +269,7 @@ export default function Home() {
                   {events.map((e) => {
                     const d = new Date(e.event_date);
                     return (
-                      <div
-                        key={e.id}
-                        className="card p-5 flex gap-4 items-start"
-                      >
+                      <div key={e.id} className="card p-5 flex gap-4 items-start">
                         <div className="shrink-0 w-16 text-center bg-nacos-blue text-white rounded-xl overflow-hidden">
                           <div className="text-xs uppercase tracking-wide bg-nacos-blue-dark py-1">
                             {d.toLocaleString("default", { month: "short" })}
@@ -339,36 +301,6 @@ export default function Home() {
                   })}
                 </div>
               )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Tech Hub teaser */}
-      <section className="bg-white">
-        <div className="section">
-          <div className="rounded-3xl bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green p-8 md:p-12 text-white relative overflow-hidden">
-            <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full bg-nacos-gold/20 blur-3xl" />
-            <div className="relative grid md:grid-cols-[1fr_auto] items-center gap-6">
-              <div>
-                <p className="text-xs uppercase tracking-widest text-nacos-gold font-bold mb-2">
-                  New · Learn Free
-                </p>
-                <h2 className="text-2xl md:text-4xl font-extrabold mb-3">
-                  {stats.resources}+ curated resources, handpicked
-                </h2>
-                <p className="text-white/85 max-w-xl">
-                  From freeCodeCamp to fast.ai — the best free courses, books,
-                  and tools for Computing students, organized by category and
-                  skill level.
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Link to="/tech-hub" className="btn-gold whitespace-nowrap">
-                  Explore Tech Hub
-                  <ArrowRight size={16} />
-                </Link>
-              </div>
             </div>
           </div>
         </div>
