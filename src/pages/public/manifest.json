@@ -4,8 +4,8 @@
   "description": "Official digital portal of NACOS KKU Vom Chapter",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B3D91",
-  "theme_color": "#0B3D91",
+  "background_color": "#1E40AF",
+  "theme_color": "#1E40AF",
   "icons": [
     {
       "src": "/favicon.png",

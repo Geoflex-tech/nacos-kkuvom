@@ -83,6 +83,7 @@ export default function AdminDashboard() {
       {tab === "certificates" && <ManageCertificates />}
       {tab === "messages" && <Messages />}
       {tab === "techhub" && <ManageTechHub />}
+      {tab === "opportunities" && <ManageOpportunities />}
     </section>
   );
 }
