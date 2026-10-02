@@ -15,6 +15,7 @@ import Events from "./pages/public/Events";
 import Gallery from "./pages/public/Gallery";
 import TechHub from "./pages/public/TechHub";
 import Verify from "./pages/public/Verify";
+import Opportunities from "./pages/public/Opportunities";
 import Contact from "./pages/public/Contact";
 import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/events" element={<Events />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/tech-hub" element={<TechHub />} />
+          <Route path="/opportunities" element={<Opportunities />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />

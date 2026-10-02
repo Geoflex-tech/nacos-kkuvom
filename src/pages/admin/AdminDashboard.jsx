@@ -13,6 +13,7 @@ import ManageMembers from "./ManageMembers";
 import ManageCertificates from "./ManageCertificates";
 import Messages from "./Messages";
 import ManageTechHub from "./ManageTechHub";
+import ManageOpportunities from "./ManageOpportunities";
 export default function AdminDashboard() {
   const { profile } = useAuth();
   const [tab, setTab] = useState("overview");
@@ -31,6 +32,7 @@ export default function AdminDashboard() {
   { id: "announcements", label: "Announcements" },
   { id: "resources", label: "Resources" },
   { id: "techhub", label: "Tech Hub" },
+    { id: "opportunities", label: "Opportunities" },
   { id: "gallery", label: "Gallery" },
   { id: "members", label: "Members" },
   { id: "certificates", label: "Certificates" },
