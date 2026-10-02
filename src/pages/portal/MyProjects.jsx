@@ -4,7 +4,7 @@ import {
   Pencil,
   Trash2,
   X,
-  Github,
+  GitBranch,
   ExternalLink,
   CheckCircle,
   XCircle,
@@ -68,8 +68,7 @@ export default function MyProjects() {
     setMessage("");
   };
 
-  const update = (key) => (e) =>
-    setForm({ ...form, [key]: e.target.value });
+  const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
   const submit = async (e) => {
     e.preventDefault();
@@ -292,7 +291,8 @@ export default function MyProjects() {
             onChange={update("image_url")}
           />
           <p className="text-xs text-gray-400 mt-1">
-            Paste a link to a screenshot image (Imgur, Google Drive direct link, etc.)
+            Paste a link to a screenshot image (Imgur, Google Drive direct
+            link, etc.)
           </p>
         </div>
 
@@ -314,11 +314,7 @@ export default function MyProjects() {
           className="btn-primary w-full py-3 inline-flex items-center justify-center gap-2"
         >
           <Plus size={16} />
-          {saving
-            ? "Saving..."
-            : editing
-            ? "Save Changes"
-            : "Submit Project"}
+          {saving ? "Saving..." : editing ? "Save Changes" : "Submit Project"}
         </button>
       </form>
 
@@ -370,7 +366,6 @@ export default function MyProjects() {
                   </div>
                 </div>
 
-                {/* Admin notes if rejected */}
                 {p.status === "rejected" && p.admin_notes && (
                   <div className="bg-red-50 border border-red-100 rounded-md p-3 mb-3">
                     <p className="text-xs text-red-800">
@@ -388,7 +383,7 @@ export default function MyProjects() {
                       rel="noreferrer"
                       className="text-xs text-gray-600 hover:text-nacos-blue inline-flex items-center gap-1"
                     >
-                      <Github size={12} /> GitHub
+                      <GitBranch size={12} /> GitHub
                     </a>
                   )}
                   {p.demo_url && (
