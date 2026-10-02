@@ -1,389 +1,237 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Newspaper, Calendar, BookOpen, Users } from "lucide-react";
+import { SOCIAL } from "../constants/social";
 
-const FEATURES = [
-  {
-    key: "news",
-    label: "Latest News",
-    subLabel: (s) => (s.news != null ? `${s.news} article${s.news !== 1 ? "s" : ""}` : null),
-    icon: Newspaper,
-    to: "/news",
-    bg: "var(--color-blue-light)",
-    color: "var(--color-blue)",
-  },
-  {
-    key: "events",
-    label: "Upcoming Events",
-    subLabel: (s) => (s.events != null ? `${s.events} event${s.events !== 1 ? "s" : ""}` : null),
-    icon: Calendar,
-    to: "/events",
-    bg: "var(--color-green-light)",
-    color: "var(--color-green)",
-  },
-  {
-    key: "resources",
-    label: "Resources",
-    subLabel: (s) => (s.resources != null ? `${s.resources} resource${s.resources !== 1 ? "s" : ""}` : null),
-    icon: BookOpen,
-    to: "/resources",
-    bg: "var(--color-blue-light)",
-    color: "var(--color-blue)",
-  },
-  {
-    key: "members",
-    label: "Members",
-    subLabel: (s) => (s.members != null ? `${s.members} member${s.members !== 1 ? "s" : ""}` : null),
-    icon: Users,
-    to: "/register",
-    bg: "var(--color-yellow-light)",
-    color: "var(--color-yellow)",
-  },
-];
+/* ---- Inline SVG icons (no external library needed) ---- */
+const Icon = ({ children, ...props }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+    {...props}
+  >
+    {children}
+  </svg>
+);
 
-export default function Hero({ stats = {} }) {
+const SOCIAL_ICONS = {
+  instagram: (
+    <Icon>
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </Icon>
+  ),
+  twitter: (
+    <Icon>
+      <path d="M18 2h3l-7 8 8 12h-6l-5-7-6 7H2l8-9-8-11h6l5 6z" />
+    </Icon>
+  ),
+  whatsapp: (
+    <Icon>
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    </Icon>
+  ),
+  facebook: (
+    <Icon>
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+    </Icon>
+  ),
+  linkedin: (
+    <Icon>
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+      <rect x="2" y="9" width="4" height="12" />
+      <circle cx="4" cy="4" r="2" />
+    </Icon>
+  ),
+  tiktok: (
+    <Icon>
+      <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
+    </Icon>
+  ),
+  youtube: (
+    <Icon>
+      <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+      <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+    </Icon>
+  ),
+  email: (
+    <Icon>
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <polyline points="22,6 12,13 2,6" />
+    </Icon>
+  ),
+};
+
+const SOCIAL_META = {
+  instagram: { label: "Instagram", href: (v) => v },
+  twitter: { label: "Twitter / X", href: (v) => v },
+  whatsapp: { label: "WhatsApp", href: (v) => v },
+  facebook: { label: "Facebook", href: (v) => v },
+  linkedin: { label: "LinkedIn", href: (v) => v },
+  tiktok: { label: "TikTok", href: (v) => v },
+  youtube: { label: "YouTube", href: (v) => v },
+  email: { label: "Email", href: (v) => `mailto:${v}` },
+};
+
+export default function Footer() {
+  const year = new Date().getFullYear();
+
+  // Only render platforms with a value
+  const activeSocials = Object.entries(SOCIAL).filter(
+    ([, value]) => value && value.trim()
+  );
+
   return (
-    <>
-      <section aria-label="Welcome to NACOS KKU VOM" className="hero-section">
-        <div className="hero-bg-img" aria-hidden="true" />
-        <div className="hero-bg-overlay" aria-hidden="true" />
-
-        <div className="container hero-content">
-          <div className="hero-seal">
+    <footer className="bg-gradient-to-br from-nacos-blue to-nacos-blue-dark text-white mt-16">
+      <div className="max-w-7xl mx-auto px-4 py-12 grid md:grid-cols-4 gap-8">
+        {/* Brand */}
+        <div className="md:col-span-2">
+          <div className="flex items-center gap-2 mb-3">
             <img
               src="/logo.png"
-              alt="NACOS KKU VOM logo"
-              loading="eager"
-              className="hero-seal__img"
+              alt="NACOS"
+              className="h-10 w-10 object-contain"
             />
+            <h3 className="font-bold text-lg">NACOS KKU VOM</h3>
           </div>
-
-          <span className="hero-badge">Official Chapter Portal · 2026/2027</span>
-
-          <h1 className="hero-headline">
-            Empowering{" "}
-            <span className="hero-headline__accent">Computing</span>{" "}
-            Students at KKU Vom
-          </h1>
-
-          <p className="hero-para">
-            The official digital home of NACOS KKU Vom Chapter — building
-            skills, community, and a legacy of excellence one generation at a
-            time.
+          <p className="text-sm text-white/85 max-w-md leading-relaxed mb-6">
+            The Nigeria Association of Computing Students, Karl Kumm
+            University, Vom Campus Chapter — building skills, community, and a
+            legacy of excellence.
           </p>
 
-          <div className="hero-btns">
-            <Link to="/about" className="hero-btn hero-btn--solid">
-              About Us <ArrowRight size={15} aria-hidden="true" />
-            </Link>
-            <Link to="/events" className="hero-btn hero-btn--ghost">
-              View Events
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <div className="container hero-cards-wrap">
-        <ul className="feature-grid" role="list" aria-label="Key sections">
-          {FEATURES.map(({ key, label, subLabel, icon: Icon, to, bg, color }) => {
-            const sub = subLabel(stats);
-            return (
-              <li key={key}>
-                <Link to={to} aria-label={label} className="feat-card">
-                  <div
-                    className="feat-card__icon"
-                    aria-hidden="true"
-                    style={{ background: bg }}
+          {/* Social icons — only shows filled-in platforms */}
+          {activeSocials.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {activeSocials.map(([platform, value]) => {
+                const meta = SOCIAL_META[platform];
+                const icon = SOCIAL_ICONS[platform];
+                if (!meta || !icon) return null;
+                return (
+                  <a
+                    key={platform}
+                    href={meta.href(value)}
+                    target={platform === "email" ? undefined : "_blank"}
+                    rel={platform === "email" ? undefined : "noreferrer"}
+                    aria-label={meta.label}
+                    title={meta.label}
+                    className="h-10 w-10 rounded-full bg-white/10 hover:bg-nacos-gold hover:text-nacos-blue flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5"
                   >
-                    <Icon size={16} color={color} strokeWidth={2} aria-hidden="true" />
-                  </div>
-                  <span className="feat-card__title">{label}</span>
-                  {sub && <span className="feat-card__sub">{sub}</span>}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                    {icon}
+                  </a>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Explore */}
+        <div>
+          <h4 className="font-semibold mb-3">Explore</h4>
+          <ul className="text-sm space-y-2 text-white/85">
+            <li>
+              <Link to="/about" className="hover:text-nacos-gold transition">
+                About
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/executives"
+                className="hover:text-nacos-gold transition"
+              >
+                Executives
+              </Link>
+            </li>
+            <li>
+              <Link to="/history" className="hover:text-nacos-gold transition">
+                History
+              </Link>
+            </li>
+            <li>
+              <Link to="/news" className="hover:text-nacos-gold transition">
+                News
+              </Link>
+            </li>
+            <li>
+              <Link to="/events" className="hover:text-nacos-gold transition">
+                Events
+              </Link>
+            </li>
+            <li>
+              <Link to="/gallery" className="hover:text-nacos-gold transition">
+                Gallery
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Get Involved */}
+        <div>
+          <h4 className="font-semibold mb-3">Get Involved</h4>
+          <ul className="text-sm space-y-2 text-white/85">
+            <li>
+              <Link
+                to="/register"
+                className="hover:text-nacos-gold transition"
+              >
+                Register
+              </Link>
+            </li>
+            <li>
+              <Link to="/login" className="hover:text-nacos-gold transition">
+                Member Login
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/tech-hub"
+                className="hover:text-nacos-gold transition"
+              >
+                Tech Hub
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/opportunities"
+                className="hover:text-nacos-gold transition"
+              >
+                Opportunities
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/verify"
+                className="hover:text-nacos-gold transition"
+              >
+                Verify Certificate
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/contact"
+                className="hover:text-nacos-gold transition"
+              >
+                Contact
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <style>{`
-        /* ---- CSS Variables (self-contained fallback) ---- */
-        :root {
-          --color-blue: #1E40AF;
-          --color-blue-light: #DBEAFE;
-          --color-green: #059669;
-          --color-green-light: #D1FAE5;
-          --color-yellow: #D97706;
-          --color-yellow-light: #FEF3C7;
-          --color-border: #E5E7EB;
-          --color-text-primary: #111827;
-          --color-text-muted: #6B7280;
-          --radius-lg: 16px;
-          --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-          --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
-        }
-
-        /* ---- Hero section ---- */
-        .hero-section {
-          position: relative;
-          display: flex;
-          align-items: flex-start;
-          overflow: hidden;
-          margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
-          padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 72px);
-          padding-bottom: 120px;
-          min-height: 100vh;
-          min-height: 100dvh;
-        }
-
-        .hero-bg-img {
-          position: absolute;
-          inset: 0;
-          background-image: url('/logo.png');
-          background-size: cover;
-          background-position: center;
-          filter: blur(3px) brightness(0.35);
-          transform: scale(1.05);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        .hero-bg-overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(135deg, rgba(30,58,138,0.92) 0%, rgba(30,64,175,0.80) 60%, rgba(5,150,105,0.50) 100%);
-          pointer-events: none;
-          z-index: 1;
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          width: 100%;
-        }
-
-        .hero-seal {
-          width: 88px;
-          height: 88px;
-          border-radius: 50%;
-          overflow: hidden;
-          border: 3px solid rgba(255,255,255,0.40);
-          margin-bottom: 28px;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.35);
-          flex-shrink: 0;
-        }
-        .hero-seal__img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-
-        .hero-badge {
-          display: inline-block;
-          font-size: 11px;
-          font-weight: 600;
-          letter-spacing: 0.13em;
-          text-transform: uppercase;
-          color: rgba(255,255,255,0.72);
-          border: 1px solid rgba(255,255,255,0.22);
-          border-radius: 9999px;
-          padding: 5px 14px;
-          margin-bottom: 22px;
-          white-space: nowrap;
-        }
-
-        .hero-headline {
-          font-size: clamp(2rem, 4vw, 3.25rem);
-          font-weight: 700;
-          color: #ffffff;
-          line-height: 1.1;
-          margin: 0 0 18px;
-          max-width: 640px;
-        }
-        .hero-headline__accent { color: #FCD34D; }
-
-        .hero-para {
-          font-size: clamp(0.9375rem, 1.5vw, 1rem);
-          color: rgba(255,255,255,0.80);
-          line-height: 1.65;
-          max-width: 520px;
-          margin: 0 0 32px;
-        }
-
-        .hero-btns {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-          justify-content: center;
-        }
-        .hero-btn {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
-          height: 46px;
-          padding: 0 28px;
-          border-radius: 9999px;
-          font-size: 0.875rem;
-          font-weight: 600;
-          text-decoration: none;
-          white-space: nowrap;
-          transition: transform 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out;
-        }
-        .hero-btn--solid {
-          background: #ffffff;
-          color: #1E3A8A;
-          box-shadow: 0 4px 14px rgba(0,0,0,0.22);
-        }
-        .hero-btn--solid:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(0,0,0,0.28);
-        }
-        .hero-btn--ghost {
-          background: transparent;
-          color: #ffffff;
-          border: 1.5px solid rgba(255,255,255,0.45);
-        }
-        .hero-btn--ghost:hover {
-          background: rgba(255,255,255,0.10);
-          border-color: rgba(255,255,255,0.70);
-        }
-
-        /* ---- Feature cards ---- */
-        .hero-cards-wrap {
-          margin-top: -56px;
-          position: relative;
-          z-index: 10;
-          padding-bottom: 8px;
-        }
-        .feature-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
-          list-style: none;
-          margin: 0;
-          padding: 0;
-        }
-        .feat-card {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          padding: 20px;
-          background: #ffffff;
-          border: 1px solid var(--color-border);
-          border-radius: var(--radius-lg);
-          box-shadow: var(--shadow-md);
-          text-decoration: none;
-          height: 100%;
-          transition: transform 150ms ease-out, box-shadow 150ms ease-out;
-        }
-        .feat-card:focus-visible {
-          outline: 2px solid var(--color-blue);
-          outline-offset: 2px;
-        }
-        @media (hover: hover) {
-          .feat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-lg);
-          }
-        }
-        .feat-card__icon {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        .feat-card__title {
-          font-size: 0.8125rem;
-          font-weight: 600;
-          color: var(--color-text-primary);
-          line-height: 1.3;
-        }
-        .feat-card__sub {
-          font-size: 0.75rem;
-          color: var(--color-text-muted);
-          line-height: 1.4;
-        }
-
-        /* ---- Responsive ---- */
-        @media (min-width: 640px) and (max-width: 1023px) {
-          .hero-section {
-            padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 64px);
-          }
-          .hero-seal { width: 76px; height: 76px; }
-          .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-          .hero-cards-wrap { margin-top: -40px; }
-        }
-
-        @media (max-width: 639px) {
-          .hero-section {
-            margin-top: calc(-1 * (env(safe-area-inset-top, 0px) + 10px + 52px + 16px));
-            padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 56px);
-            padding-bottom: 80px;
-          }
-          .hero-seal { width: 72px; height: 72px; margin-bottom: 20px; }
-          .hero-badge {
-            font-size: 9.5px;
-            letter-spacing: 0.09em;
-            padding: 5px 12px;
-            margin-bottom: 16px;
-          }
-          .hero-headline {
-            font-size: clamp(1.625rem, 7.5vw, 2rem);
-            margin-bottom: 14px;
-          }
-          .hero-para {
-            font-size: 0.9375rem;
-            line-height: 1.6;
-            margin-bottom: 26px;
-          }
-          .hero-btns {
-            flex-direction: column;
-            width: 100%;
-            gap: 12px;
-          }
-          .hero-btn {
-            width: 100%;
-            height: 50px;
-            font-size: 0.9375rem;
-          }
-          .feature-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-          .hero-cards-wrap { margin-top: -32px; }
-          .feat-card { padding: 16px; gap: 8px; }
-        }
-
-        @media (max-height: 700px) and (min-width: 640px) {
-          .hero-section {
-            padding-top: calc(env(safe-area-inset-top, 0px) + 10px + 52px + 48px);
-            min-height: unset;
-            padding-bottom: 100px;
-          }
-          .hero-headline { font-size: clamp(1.75rem, 3.5vw, 2.75rem); }
-          .hero-seal { width: 70px; height: 70px; }
-        }
-        @media (max-height: 420px) {
-          .hero-section { padding-bottom: 72px; }
-          .hero-seal { width: 44px; height: 44px; margin-bottom: 12px; }
-          .hero-headline { font-size: 1.5rem; }
-          .hero-para { display: none; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .feat-card:hover,
-          .hero-btn--solid:hover,
-          .hero-btn--ghost:hover {
-            transform: none;
-            transition: none;
-          }
-        }
-      `}</style>
-    </>
+      {/* Bottom bar */}
+      <div className="border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-2 text-xs text-white/60">
+          <p>© {year} NACOS KKU VOM Chapter. All rights reserved.</p>
+          <p>Built with ❤️ by the Pioneer Administration</p>
+        </div>
+      </div>
+    </footer>
   );
 }
