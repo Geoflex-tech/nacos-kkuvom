@@ -50,8 +50,22 @@ export default function App() {
           <Route path="/news/:slug" element={<NewsDetail />} />
           <Route path="/events" element={<Events />} />
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/tech-hub" element={<TechHub />} />
-          <Route path="/opportunities" element={<Opportunities />} />
+          <Route
+  path="/tech-hub"
+  element={
+    <ProtectedRoute>
+      <TechHub />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/opportunities"
+  element={
+    <ProtectedRoute>
+      <Opportunities />
+    </ProtectedRoute>
+  }
+/>
           <Route path="/verify" element={<Verify />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/login" element={<Login />} />
