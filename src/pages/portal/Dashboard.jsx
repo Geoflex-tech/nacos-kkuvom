@@ -8,15 +8,6 @@ import {
   Award,
   Calendar,
   ArrowRight,
-} from "lucide-react";
-import {
-  User,
-  BookOpen,
-  Megaphone,
-  Wallet,
-  Award,
-  Calendar,
-  ArrowRight,
   Briefcase,
   FolderKanban,
 } from "lucide-react";
@@ -77,11 +68,32 @@ export default function Dashboard() {
       color: "bg-yellow-50 text-yellow-700",
     },
     {
+      to: "/my-projects",
+      label: "My Projects",
+      desc: "Submit your work",
+      Icon: FolderKanban,
+      color: "bg-pink-50 text-pink-700",
+    },
+    {
       to: "/certificates",
       label: "My Certificates",
-      desc: "View & print your certificates",
+      desc: "View & print yours",
       Icon: Award,
       color: "bg-purple-50 text-purple-700",
+    },
+    {
+      to: "/opportunities",
+      label: "Opportunities",
+      desc: "Scholarships & internships",
+      Icon: Briefcase,
+      color: "bg-cyan-50 text-cyan-700",
+    },
+    {
+      to: "/tech-hub",
+      label: "Tech Hub",
+      desc: "Curated learning resources",
+      Icon: BookOpen,
+      color: "bg-indigo-50 text-indigo-700",
     },
     {
       to: "/dues",
@@ -97,8 +109,16 @@ export default function Dashboard() {
       {/* Welcome header */}
       <div className="bg-gradient-to-br from-nacos-blue to-nacos-green text-white rounded-2xl p-6 md:p-8 mb-8">
         <div className="flex items-center gap-5">
-          <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-white/15 backdrop-blur border-2 border-nacos-gold flex items-center justify-center text-2xl md:text-3xl font-bold shrink-0">
-            {initials}
+          <div className="h-16 w-16 md:h-20 md:w-20 rounded-full bg-white/15 backdrop-blur border-2 border-nacos-gold flex items-center justify-center text-2xl md:text-3xl font-bold shrink-0 overflow-hidden">
+            {profile?.avatar_url ? (
+              <img
+                src={profile.avatar_url}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              initials
+            )}
           </div>
           <div className="min-w-0">
             <p className="text-white/70 text-sm">Welcome back,</p>
@@ -112,7 +132,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Membership stats */}
+      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <div className="card p-5">
           <p className="text-xs text-gray-500 uppercase tracking-wide">
@@ -149,19 +169,11 @@ export default function Dashboard() {
       </div>
 
       {/* Quick actions */}
-      
       <div className="mb-8">
         <h2 className="text-lg font-bold text-nacos-blue mb-4">Quick Actions</h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {actions.map(({ to, label, desc, Icon, color }) => (
-        {
-  to: "/my-projects",
-  label: "My Projects",
-  desc: "Submit your work to the showcase",
-  Icon: FolderKanban,
-  color: "bg-pink-50 text-pink-700",
-},
-      <Link
+            <Link
               key={to}
               to={to}
               className="card p-5 flex items-center gap-4 hover:shadow-md group"
@@ -183,13 +195,14 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
-      
-      {/* Two-column: upcoming events + announcements */}
+
+      {/* Events + Announcements */}
       <div className="grid md:grid-cols-2 gap-6">
-        {/* Upcoming events */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-nacos-blue">Upcoming Events</h2>
+            <h2 className="text-lg font-bold text-nacos-blue">
+              Upcoming Events
+            </h2>
             <Link
               to="/events"
               className="text-xs text-nacos-green font-semibold hover:underline"
@@ -223,7 +236,6 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Announcements */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-nacos-blue">Announcements</h2>
