@@ -20,43 +20,46 @@ export default function History() {
 
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-nacos-blue via-nacos-blue to-nacos-green text-white">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/10 blur-3xl animate-float-slow" />
-          <div className="absolute -bottom-32 -right-24 w-96 h-96 rounded-full bg-nacos-green-light/20 blur-3xl animate-float" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-nacos-gold/15 blur-3xl animate-float-slow" />
+          <div className="absolute -bottom-32 -right-24 w-[28rem] h-[28rem] rounded-full bg-white/10 blur-3xl animate-float" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-20" />
         </div>
-        <div className="relative max-w-5xl mx-auto px-4 py-16 md:py-20 text-center text-white">
-          <p className="text-sm uppercase tracking-widest text-white/70 mb-3">
+
+        <div className="relative max-w-4xl mx-auto px-4 py-20 md:py-24 text-center">
+          <span className="inline-block bg-white/15 backdrop-blur border border-white/25 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-6">
             Legacy
-          </p>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-5">
             Chapter History
           </h1>
-          <p className="text-white/85 text-lg max-w-2xl mx-auto">
+          <p className="text-white/90 text-lg max-w-2xl mx-auto leading-relaxed">
             A digital archive of every administration that has shaped
             NACOS KKU VOM Chapter.
           </p>
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-4 py-12">
+      {/* Timeline */}
+      <section className="max-w-4xl mx-auto px-4 py-16">
         {loading ? (
           <p className="text-center text-gray-500 py-16">Loading history...</p>
         ) : administrations.length === 0 ? (
-          <div className="card-flat p-10 text-center">
-            <HistoryIcon size={32} className="mx-auto text-gray-300 mb-3" />
+          <div className="card-flat p-12 text-center">
+            <HistoryIcon size={40} className="mx-auto text-gray-300 mb-4" />
             <p className="text-gray-500">No administrations recorded yet.</p>
           </div>
         ) : (
           <div className="relative">
-            {/* Timeline line */}
+            {/* Vertical line */}
             <div className="absolute left-6 md:left-8 top-2 bottom-2 w-0.5 bg-gradient-to-b from-nacos-gold via-nacos-green to-nacos-blue/20" />
 
             <div className="space-y-6">
               {administrations.map((a) => (
                 <div key={a.id} className="relative pl-16 md:pl-24">
-                  {/* Timeline dot */}
+                  {/* Dot */}
                   <div
                     className={`absolute left-4 md:left-6 top-6 h-5 w-5 rounded-full border-4 ${
                       a.is_current
